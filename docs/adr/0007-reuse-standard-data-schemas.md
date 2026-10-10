@@ -11,11 +11,12 @@ Memex 不发明能被现有标准表达的结构。内部的 Cognitive Contract 
 | 序列化和 API 边界 | JSON-LD（JSON 与 RDF 的桥梁） |
 | Claim 的结构 | 参照 Wikidata 的 statement 模型（值、限定符、引用、rank），存储为重新具体化的 statement 节点；对外交换时可导出为 nanopublication（assertion / provenance / pubinfo） |
 | Provenance | W3C PROV-O（Entity / Activity / Agent，wasDerivedFrom、wasGeneratedBy、wasAttributedTo） |
-| 时间范围 | OWL-Time 的语义；存储时用 xsd:dateTime 属性作为简写，并保留到 time:Interval 的映射 |
+| 时间范围 | OWL-Time（以 2017 年的 W3C 推荐标准为准）的语义；存储时用 xsd:dateTime 属性作为简写，并保留到 time:Interval 的映射；采用双时态（Valid Time / Recorded Time，见 ADR 0002） |
 | 概念和分类 | RDFS（类）、SKOS（领域词表）、SHACL（约束） |
 | 通用实体 | Core Ontology 中能对齐 schema.org 的概念（Person、Place、Event 等）就直接对齐 |
 | 事件日志的信封 | CloudEvents 1.0（CNCF 毕业项目，JSON 格式） |
-| Trace | OpenTelemetry；与模型和工具相关的部分使用 GenAI 语义约定，认知步骤使用自定义的 `memex.*` 属性 |
+| 认知 Trace | 以 CloudEvents 的形式写入 Event Log；需要时可导出为 OpenTelemetry span，认知步骤使用自定义的 `memex.*` 属性（ADR 0015） |
+| 运维遥测 | OpenTelemetry 的日志、Trace 和指标；与模型和工具相关的部分使用 GenAI 语义约定（ADR 0015） |
 | Capability 的输入输出 | JSON Schema（与 MCP 兼容） |
 | 程序性知识 / 对外协议 | Agent Skills、MCP、A2A（见 ADR 0006） |
 

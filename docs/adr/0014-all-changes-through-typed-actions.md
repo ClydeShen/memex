@@ -10,6 +10,8 @@ status: accepted
 - 在执行前经过 `PolicyProvider` 检查。`PolicyProvider` 是可配依赖，默认实现是"全部允许"。
 - 作为一条事件写入事件日志（ADR 0005）。
 
+Observation 不是 Action：它记录的是"发生了什么"，直接写入事件日志，不经过策略检查。根据 Observation 形成或修改 Claim，才是 Action。在 MVP 阶段，这个 Action 由运行时以确定性的方式执行。
+
 这套做法参考了 Palantir Foundry：对象默认只能通过 Action 修改，每个 Action 是一次事务，权限分为"能看到这个 Action""能编辑这个 Action""能用某组参数执行这个 Action"，并且可以设定提交条件。
 
 ## 为什么现在就需要

@@ -9,6 +9,9 @@
 
 ## 已提议、等待确认
 
+注意：下面的里程碑划分（M0/M1/M2）已经被 ADR 0010、0012、0013 和 docs/dependencies.md 引用，实际上已经在使用，需要正式确认。
+
+
 - MVP 内部分成三个里程碑：M0 全部用 Fake 组件 → M1 接入 B0 和 B1 的真实基线 → M2 接入 B2 和 B3。MVP 阶段的 T5 只用来证明测试框架能跑通。
 - M0 只建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。
 - M0 的通过标准：

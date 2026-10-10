@@ -14,7 +14,7 @@ Memex 将来要部署到大多数平台：Linux 服务器、云主机、Mac、Wi
   - 模型：不打进镜像，由 Model 资源写明来源和 sha256，在用户自己的机器上下载并校验。
   - 数据：本地数据卷中的事件日志和快照。
 - **运行时核心不依赖原生扩展：** 只用纯 TypeScript 和 WASM，例如 Oxigraph 的 WASM 版，这样在任何能运行 Node 的平台上表现都一致。重计算（模型推理）一律放在 HTTP 服务后面。
-- **模型服务可以插拔，不硬依赖任何推理后端：** 推理后端只是一个 Model Provider，例如本机的 llama.cpp（在 Mac 上走 Metal，因为 Docker 在 Mac 上用不了 GPU）、容器里的推理服务（在 Linux 和 WSL2 上走 CUDA）、vLLM 等兼容 OpenAI 接口的服务、远程端点，或者云端 Provider。对 Memex 来说，换后端只是改 Model 资源的 `type` 和 `baseURL`（ADR 0008）。
+- **模型服务可以插拔，不硬依赖任何推理后端：** 推理后端只是一个 Model Backend，例如本机的 llama.cpp（在 Mac 上走 Metal，因为 Docker 在 Mac 上用不了 GPU）、容器里的推理服务（在 Linux 和 WSL2 上走 CUDA）、vLLM 等兼容 OpenAI 接口的服务、远程端点，或者云端模型服务。对 Memex 来说，换后端只是改 Model 资源的 `type` 和 `baseURL`（ADR 0008）。
 - **一个 `memex` 命令行工具：** 提供 `init`（检测硬件、选择档位、生成配置）、`doctor`、`up`/`down`、`models pull`、`upgrade`、`backup`/`restore`。
 - **升级流程：** 先做快照，再换镜像，然后按 `apiVersion` 转换配置，再从事件日志重新生成投影，最后运行 `doctor`；不通过就回滚。升级本身会记录为一条事件，所以 Memex 会知道自己升级了（ADR 0011）。
 - **对外的安全默认值：** 只监听 localhost；对外开放时必须开启认证；真实的 Capability 只在沙箱中运行；数据留在本地；任何遥测都必须由用户主动开启。

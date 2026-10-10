@@ -1,6 +1,6 @@
 # Memex
 
-Memex 是一个运行在本地的认知运行时。接入某个领域的数据后，Agent 在该领域中建立并不断修正自己的世界观，再结合本地模型的推理能力完成任务，并从经过验证的经验中持续学习。
+Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Agent 会在该领域中建立并不断修正自己的 Worldview，结合模型的推理能力完成任务，并从经过验证的经验中持续学习。Framework 在某台机器上装配起来运行，就是一个 Instance。
 
 ## 世界与信念
 
@@ -17,7 +17,7 @@ _Avoid_: input, message, event
 _Avoid_: proof, fact
 
 **Claim**:
-Agent 认为可能为真的一条结构化命题，带有溯源、时间范围、认知状态和置信度。Claim 不等于事实。
+Agent 认为可能为真的一条结构化命题，带有 Provenance、时间范围（Valid Time）、Epistemic Status 和 Confidence。Claim 不等于事实。
 _Avoid_: fact, triple, memory item, knowledge entry
 
 **Proposition**:
@@ -29,8 +29,20 @@ _Avoid_: statement, triple
 _Avoid_: source（source 只指 Provenance 中的具体来源对象）
 
 **Epistemic Status**:
-Agent 对一条 Claim 的把握程度：已知、相信、怀疑、未知或已被反驳。
-_Avoid_: truth value, validity
+Agent 对一条 Claim 所处的确信状态，分为已知、相信、怀疑、未知、已被反驳、有争议几类。中文统一称"确信状态"，不要写成"认知状态"（容易和 Cognitive State 混淆）。
+_Avoid_: truth value, validity, 认知状态
+
+**Confidence**:
+一条 Claim 的置信度，是一个由证据、来源可信度和时间相关性推导出的数值。它只用于 Claim。
+_Avoid_: certainty（Certainty 专指 Intuition 给出的把握度）
+
+**Valid Time**:
+一条 Claim 在 World 中为真的时间范围（validFrom、validUntil）。在 Micro World 中，它使用模拟器时间。
+_Avoid_: timestamp
+
+**Recorded Time**:
+Agent 得知或记录某件事的时间。它和 Valid Time 是两条独立的时间轴：世界变了，改的是 Valid Time；Agent 改变看法，产生的是新的 Recorded Time。这两条时间轴合起来，就是数据库领域所说的"双时态"。
+_Avoid_: created time, update time
 
 **Hypothesis**:
 为解释 Observation 而提出、尚待验证的候选 Claim 或因果解释。
@@ -42,8 +54,16 @@ _Avoid_: world model, knowledge base, memory
 
 ## 经验与学习
 
+**Event Log**:
+只追加写入的事件记录，是 Instance 唯一的事实来源。Worldview、Experience 和 Trace 都是从它推导出来的 Projection。
+_Avoid_: database, history, memory
+
+**Projection**:
+从 Event Log 推导出来、随时可以丢弃并重建的视图，例如图存储中的 Worldview。这是 Event Sourcing 的标准术语。
+_Avoid_: cache, copy
+
 **Experience**:
-一次完整的经历记录：目标、Observation、做出的决定、采取的 Action 和结果。Experience 是学习的原材料，本身不是知识。
+一次完整的经历：目标、Observation、做出的决定、采取的 Action 和结果，是从 Event Log 推导出来的 Projection。Experience 是学习的原材料，本身不是知识。
 _Avoid_: memory, log, trajectory
 
 **Pattern**:
@@ -77,7 +97,7 @@ _Avoid_: context window
 _Avoid_: retrieval, search
 
 **Intuition**:
-快速、低成本、基于概率的判断，即 System 1。负责判断熟悉度、新颖性、不确定性，以及是否需要深入推理。
+快速、低成本、基于概率的判断，即 System 1。负责判断熟悉度、新颖性、不确定性，以及是否需要深入推理。它的每一个判断都附带一个 Certainty。
 _Avoid_: classifier, router, heuristic（这些可以是 Intuition 的实现方式，但不是它的名字）
 
 **Reasoning**:
@@ -92,8 +112,12 @@ _Avoid_: shortcut, cache hit
 调用 Reasoning 完成一次决策的路径。
 _Avoid_: full path
 
+**Certainty**:
+Intuition 对单个判断给出的把握度，由模型的输出经过 Calibration 得到。
+_Avoid_: confidence（Confidence 专指 Claim 的置信度）
+
 **Calibration**:
-调整 Intuition 输出的置信度与实际正确率之间对应关系的配置参数，例如阈值或温度系数。它不修改模型本身，因此不属于训练。
+调整 Certainty 与实际正确率之间对应关系的配置参数，例如阈值或温度系数。它不修改模型本身，因此不属于训练。
 _Avoid_: training, fine-tuning
 
 **Escalation**:
@@ -105,7 +129,7 @@ _Avoid_: fallback, retry
 _Avoid_: validation（validation 专指 Pattern 的验证）
 
 **Action**:
-一次有名字、有参数结构、记录执行者，并经过策略检查的改动，可以改动 World（通过 Capability 执行），也可以改动 Worldview 或本体。所有改动都必须以 Action 的形式进行。
+一次有名字、有参数结构、记录执行者，并经过策略检查的改动，可以改动 World（通过 Capability 执行），也可以改动 Worldview 或本体。所有改动都必须以 Action 的形式进行。Observation 不是 Action：Observation 是"发生了什么"的记录，直接写入 Event Log；而根据 Observation 形成或修改 Claim，则是一个 Action。
 _Avoid_: step, tool call, direct write, mutation
 
 **Capability**:
@@ -117,6 +141,10 @@ Memex 逐步积累关于自身构成、能力、限制、运行原理和升级�
 _Avoid_: self-modification, self-improvement
 
 ## 语义结构
+
+**Domain**:
+一个有边界的主题领域，Agent 要在其中建立 Worldview，例如保险、AWS 运维，或者 Memex 本身（World 0）。
+_Avoid_: world（World 指 Agent 所处、可以观察和操作的环境）
 
 **Ontology**:
 Agent 用来描述 World 和自身认知的概念与关系的集合。
@@ -131,7 +159,7 @@ _Avoid_: upper ontology, base schema
 _Avoid_: domain schema
 
 **Domain Pack**:
-接入一个新领域时需要提供的一整套内容：Domain Ontology、数据接入方式、该领域的 Capability 和评测集。
+接入一个新 Domain 时需要提供的一整套内容：Domain Ontology、数据接入方式、该 Domain 的 Capability、Environment 和评测集。
 _Avoid_: plugin, adapter, dataset
 
 ## 架构
@@ -149,8 +177,20 @@ _Avoid_: deployment, server, system
 _Avoid_: API, interface spec
 
 **Provider**:
-按 Cognitive Contract 实现某一种认知功能的可替换组件，例如 Intuition Provider、Reasoning Provider。
-_Avoid_: plugin, module, adapter
+按 Cognitive Contract 实现某一种功能的可替换组件，例如 Intuition Provider、Reasoning Provider、Policy Provider。在端口与适配器架构（Ports and Adapters）里，Cognitive Contract 是端口，Provider 是适配器。
+_Avoid_: plugin, module；也不要用来指模型服务商（应写作"模型服务商"或 Model Backend）
+
+**Model Backend**:
+真正运行模型推理的服务，例如 llama.cpp、vLLM、某个云端 API。Provider 通过 Model 资源连接到 Model Backend；更换 Backend 只需要改配置。
+_Avoid_: model provider, engine
+
+**Environment**:
+Agent 通过 Observation 和 Action 与之交互的 World 的接口，例如 Micro World 的模拟器，或 World 0 的仓库与运行时。它是 Memex 自定义的三个标准之一。
+_Avoid_: simulator, sandbox
+
+**Composition Root**:
+唯一知道具体实现的地方：读取配置，按 `type` 找到 Provider，把它们装配起来。核心代码从不直接引用具体的 Provider。
+_Avoid_: container, bootstrap
 
 **Cognitive Strategy**:
 决定整个认知循环如何运转的可替换策略：先看什么、何时 Escalation、何时 Verification。
@@ -191,7 +231,7 @@ _Avoid_: judge, grader
 _Avoid_: judge, scorer
 
 **Baseline**:
-用来对照的简化架构，与 Memex 使用同一个本地模型：B0 只用推理，B1 传统 RAG，B2 直觉加推理，B-sym 掌握完整规则的符号求解器。
+用来对照的简化架构，在同一组对比中与 Memex 使用同一个模型。B0：只用 Reasoning。B1：传统 RAG 加 Reasoning。B2：Intuition 加 Reasoning，没有 Worldview。B3：完整的 Memex。B3-noI：去掉 Intuition 的 B3，全部走 Slow Path。B-sym：掌握完整规则的符号求解器，只用来检查题目难度，不参与对比。MVP 阶段只使用 B0、B1、B3 和 B3-noI（ADR 0010）。
 _Avoid_: control group
 
 **Task Class**:
@@ -207,8 +247,8 @@ _Avoid_: task set, template
 _Avoid_: trick question, adversarial example
 
 **Trace**:
-一次 Experiment 中每一个认知步骤的完整记录：输入、输出、耗时、所用 Provider、做出的决定和结果。
-_Avoid_: log, transcript
+一次 Experiment 中每一个认知步骤的完整记录：输入、输出、耗时、所用 Provider、做出的决定和结果。它是从 Event Log 推导出来的 Projection，是学习和评测用的数据。系统运行状况的日志和指标叫"运维遥测"，不叫 Trace（ADR 0015）。
+_Avoid_: log, transcript, telemetry
 
 **Learning Curve**:
 随着 Experience 增加，准确率、推理调用率、上下文大小和延迟的变化曲线。它是证明 Agent 在学习的主要证据。

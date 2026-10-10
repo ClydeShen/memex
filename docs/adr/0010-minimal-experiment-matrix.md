@@ -13,10 +13,10 @@ Memex 是研究性质的开发。实验的目的是用几组快速对比，引�
 | 知识存储 | Oxigraph | 无 |
 | 向量模型 | 一个嵌入模型，B1 和距离判断共用 | 无 |
 | Cognitive Strategy | 快慢双系统 | 无 |
-| Baseline | B0、B1、B3 | B3 去掉 Intuition（全部走 Reasoning） |
+| Baseline | B0、B1、B3 | B3-noI（B3 去掉 Intuition，全部走 Reasoning） |
 
 MVP 阶段只回答三个问题：
-- **Q1**：Intuition 能不能在不降低准确率的前提下减少推理调用？用 T2 测，比较 B3 和"B3 去掉 Intuition"。
+- **Q1**：Intuition 能不能在不降低准确率的前提下减少推理调用？用 T2 测，比较 B3 和 B3-noI。
 - **Q2**：Claim 加溯源，是否比 RAG 更能抵抗错误或过时的信息？用 T4 测，比较 B3 和 B1。
 - **Q3**：积累经验后，推理调用会不会持续下降？用 T5 测，看 B3 的学习曲线。
 
@@ -30,7 +30,7 @@ B-sym 只用来检查题目难度。T0、T1、T3 以及跨领域迁移，等上�
 
 ## Consequences
 
-- 模型由哪种推理后端提供，只是 Model Provider 的选择，不是硬依赖（ADR 0008）。作者目前在本机使用 llama.cpp，换成 vLLM、其他兼容 OpenAI 接口的服务或远程端点，都只需要改配置。Ollama 的 `/v1/systemone` 不作为前提，因此需要写一个很薄的 IntuitionProvider 适配器：
+- 模型运行在哪个 Model Backend 上，只是配置选择，不是硬依赖（ADR 0008）。作者目前在本机使用 llama.cpp，换成 vLLM、其他兼容 OpenAI 接口的服务或远程端点，都只需要改配置。Ollama 的 `/v1/systemone` 不作为前提，因此需要写一个很薄的 IntuitionProvider 适配器：
   - 对外沿用 Jev 的"状态 + 带类型问题"格式。
   - 对内把每道题转成 Tev1 的格式：系统提示、带字母编号的选项，关闭思考模式，temperature 设为 0。
   - 通过后端返回的 token 概率（logprobs），读出每个选项字母的概率。noul 题当作两个选项处理；score 题取各级概率的加权期望。

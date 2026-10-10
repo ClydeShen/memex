@@ -13,7 +13,8 @@
 | TypeScript / Node.js | 运行时、契约和实验平台都用这门语言（ADR 0013 要求核心不使用原生扩展） |
 | Cognitive Contract | 唯一稳定的边界 |
 | 统一资源配置格式（apiVersion / kind / metadata / spec） | ADR 0009 |
-| 只追加的事件日志，以 CloudEvents 作为信封 | ADR 0005、0007 |
+| 只追加的事件日志（Event Sourcing），以 CloudEvents 作为信封，以 JSONL 存储 | ADR 0005、0007、0015 |
+| Action 模型：所有改动都经过 Action，并记录执行者 | ADR 0014 |
 | 标准数据词汇（JSON-LD、PROV-O 等） | ADR 0007 |
 | Claim 模型 | ADR 0002 |
 | 每个 Experiment 一个独立进程 | ADR 0004 |
@@ -23,7 +24,7 @@
 
 | 接口（Provider 类别） | 默认实现 | 可替换为 | 何时需要确定默认值 |
 |---|---|---|---|
-| 模型后端 | 作者本机的 llama.cpp | vLLM、其他兼容 OpenAI 接口的服务、远程端点、云端 Provider | M1 |
+| Model Backend | 作者本机的 llama.cpp | vLLM、其他兼容 OpenAI 接口的服务、远程端点、云端模型服务 | M1 |
 | Reasoning | Qwen3.5-9B | 任意模型 | M1 |
 | Intuition | Tev1 4B | 启发式规则、读取 Qwen 的选项概率、Kev、Laya 等 | M2 |
 | Embedding | 一个本地嵌入模型 | 任意嵌入模型 | M1（B1 需要） |
@@ -55,4 +56,4 @@
 
 ## 决策时机
 
-原则：**在最后负责任的时刻做决定。** 只有在某个里程碑确实需要一个具体值时，才定下默认值。默认值不是承诺，以后更换默认值只是改配置。能做成配置项的选择，就不当成"决策"。
+原则：**在最后负责任的时刻做决定**（last responsible moment，出自 Lean 软件开发：拖过这个时刻还不决定，就会失去一个重要的选项）。 只有在某个里程碑确实需要一个具体值时，才定下默认值。默认值不是承诺，以后更换默认值只是改配置。能做成配置项的选择，就不当成"决策"。

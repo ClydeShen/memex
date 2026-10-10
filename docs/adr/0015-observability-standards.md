@@ -11,7 +11,7 @@ status: accepted
   - **运维遥测**：系统本身的运行状况。它用于排错和监控。
   
   需要时，认知 Trace 可以导出为 OpenTelemetry span，但两者的存储和用途不同。
-- **运维日志**：以 JSONL 格式（每行一个完整的 JSON 对象，也称 NDJSON）输出到 stdout，字段命名遵循 OpenTelemetry 的日志数据模型（时间戳、严重级别、正文、属性、`trace_id`、`span_id`）。几乎所有日志收集器都能直接读取这种格式。用哪个日志库属于实现细节。
+- **运维日志**：以 JSONL 格式（每行一个完整的 JSON 对象，也称 NDJSON）输出到 stdout，字段遵循 OpenTelemetry 日志数据模型：`Timestamp`、`ObservedTimestamp`、`SeverityText`、`SeverityNumber`、`Body`、`Attributes`、`Resource`、`TraceId`、`SpanId`。几乎所有日志收集器都能直接读取这种格式。用哪个日志库属于实现细节。
 - **Trace 和指标**：使用 OpenTelemetry。与模型和工具相关的属性，使用 GenAI 语义约定（目前仍处于 Development 状态）。
 - **导出**：默认写入本地文件。OTLP 导出是可配置项，可以接入 Grafana、Jaeger、Prometheus 等任何兼容 OTLP 的后端。
 - **监控面板**：可选依赖，不自行开发通用监控面板。实验结果面板属于 Lab 的范畴，需要单独规划。

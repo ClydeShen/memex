@@ -26,11 +26,11 @@ Memex 是一个可扩展、比较通用的 Agent 框架。接入某个领域的�
 
 5. **本体是共同的语言。** 只看文字的相似程度，Agent 认不出"同一类问题"，也看不出"这里其实不一样"；按类型和关系来组织经验，才能泛化。本体从最小的规模开始，只在 Agent 分不清两件事时才扩展。
 
-6. **契约稳定，其余一切可替换。** 高层模块只依赖抽象接口。换模型、换 Provider（包括云端）、换存储、换策略，都只需要改配置。每个依赖都必须明确归入硬依赖、可配依赖或可选依赖三类之一（docs/dependencies.md）；能替换的不写死；能做成配置项的选择，就不当成一次性决策。
+6. **契约稳定，其余一切可替换。** 高层模块只依赖抽象接口。换模型、换 Model Backend（包括云端模型服务）、换 Provider、换存储、换策略，都只需要改配置。每个依赖都必须明确归入硬依赖、可配依赖或可选依赖三类之一（docs/dependencies.md）；能替换的不写死；能做成配置项的选择，就不当成一次性决策。
 
 7. **一种配置格式，一套通用数据标准。** 所有可配置的内容都使用同一种资源格式。数据使用 JSON-LD、PROV-O 等通用词汇表达，不建立孤立的系统。能用现有标准的地方，绝不自己发明。
 
-8. **技术和本体都由实验结果驱动。** 引入任何东西之前，先回答两个问题：它解决了哪个已经测出来的问题？改进能否测量？不能测量就先不加。
+8. **认知组件和本体都由实验结果驱动。** 引入新的认知组件（检索、记忆、推理方式等）或扩展本体之前，先回答两个问题：它解决了哪个已经测出来的问题？改进能否测量？不能测量就先不加。工程基础设施（部署、权限、可观测性、配置）不属于这条原则，按工程需求决定，见 ADR 0013–0015。
 
 9. **实验服务于搭建。** 实验的目的是通过几组快速对比，引导架构尽快成形、成为可用的系统，而不是做全面的对比研究。每个维度只保留一个主选，事先定好收敛规则（ADR 0010）。
 
@@ -44,11 +44,11 @@ Memex 是一个可扩展、比较通用的 Agent 框架。接入某个领域的�
 
 | 层次 | 模块 | 说明 |
 |---|---|---|
-| 稳定核心 | Cognitive Contract、Environment 接口、Domain Pack 格式、统一配置格式、标准数据词汇 | 几乎不变 |
+| 稳定核心 | Cognitive Contract、Environment 接口、Domain Pack 格式、统一配置格式、标准数据词汇、Action 模型 | 几乎不变 |
 | 认知循环 | Cognitive Strategy、Attention、Intuition、Reasoning、Verification、Cognitive State 和 Cognitive Budget | 每一步都在运转 |
-| 知识与学习 | Ontology、Worldview（Claim、溯源、时间、Pattern）、Experience 日志、Consolidation 和 Decay | 进步的来源 |
+| 知识与学习 | Ontology、Worldview（Claim、溯源、时间、Pattern）、Event Log（Experience 和 Trace 都是它的 Projection）、Consolidation 和 Decay | 进步的来源 |
 | 与外界交互 | Capability（MCP）、Communication（CLI、Web、A2A） | 可插拔 |
-| 支撑设施 | 组合根、Trace、Lab（世界生成器、Oracle、Evaluator、实验运行器） | 证明一切 |
+| 支撑设施 | Composition Root、Policy、运维遥测、Lab（World Generator、Oracle、Evaluator、实验运行器） | 证明一切、保障运行 |
 
 最核心的四个模块：**Cognitive Contract、Worldview、Cognitive Strategy、Lab。** 直觉模型和推理模型都是可以替换的组件，不属于核心。
 
