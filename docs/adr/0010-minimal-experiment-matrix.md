@@ -8,8 +8,8 @@ Memex 是研究性质的开发。实验的目的是用几组快速对比，引�
 
 | 维度 | 主选 | 对照 |
 |---|---|---|
-| Intuition | Tev1 4B（GGUF，跑在 llama.cpp 上） | 启发式规则（底线） |
-| Reasoning | Qwen3.5-9B（llama.cpp），固定 | 无 |
+| Intuition | Tev1 4B | 启发式规则（底线） |
+| Reasoning | Qwen3.5-9B，固定 | 无 |
 | 知识存储 | Oxigraph | 无 |
 | 向量模型 | 一个嵌入模型，B1 和距离判断共用 | 无 |
 | Cognitive Strategy | 快慢双系统 | 无 |
@@ -30,9 +30,10 @@ B-sym 只用来检查题目难度。T0、T1、T3 以及跨领域迁移，等上�
 
 ## Consequences
 
-- 本地只用 llama.cpp，不用 Ollama。Ollama 的 `/v1/systemone` 端点不可用，所以需要自己写一个很薄的 IntuitionProvider 适配器：
+- 模型由哪种推理后端提供，只是 Model Provider 的选择，不是硬依赖（ADR 0008）。作者目前在本机使用 llama.cpp，换成 vLLM、其他兼容 OpenAI 接口的服务或远程端点，都只需要改配置。Ollama 的 `/v1/systemone` 不作为前提，因此需要写一个很薄的 IntuitionProvider 适配器：
   - 对外沿用 Jev 的"状态 + 带类型问题"格式。
   - 对内把每道题转成 Tev1 的格式：系统提示、带字母编号的选项，关闭思考模式，temperature 设为 0。
-  - 通过 llama.cpp 返回的 token 概率，读出每个选项字母的概率。noul 题当作两个选项处理；score 题取各级概率的加权期望。
+  - 通过后端返回的 token 概率（logprobs），读出每个选项字母的概率。noul 题当作两个选项处理；score 题取各级概率的加权期望。
+- 这个适配器要求后端能返回 token 概率，这是它对后端唯一的能力要求；不提供 token 概率的后端（例如部分云端 API），无法通过它来提供 Intuition。
 - 同一个适配器换成 Qwen 模型，就是收敛规则中的那个备选方案，不需要另写代码。
 - 被暂缓的 Kev、Nimble、Laya、jevos 都兼容同样的接口格式，以后需要时可以低成本加回来。
