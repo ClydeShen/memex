@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 模块之间依赖倒置；组件由配置在唯一的组合根中装配

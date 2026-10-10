@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 数据模型建立在通用标准词汇之上，避免成为孤立系统

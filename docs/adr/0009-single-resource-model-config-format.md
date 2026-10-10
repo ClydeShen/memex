@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 所有配置使用同一种资源格式（apiVersion / kind / metadata / spec）
