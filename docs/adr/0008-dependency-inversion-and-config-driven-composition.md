@@ -20,4 +20,4 @@ status: proposed
 
 ## Consequences
 
-配置的写法见 docs/research/standards-and-config.md：`{type, config}` 组件模式、命名实例、带版本号的配置格式、按层次合并的覆盖规则，以及每次运行都保存最终生效的配置。
+配置格式统一采用 ADR 0009 的资源格式。配置的写法见 docs/research/standards-and-config.md：`{type, config}` 组件模式、命名实例、带版本号的配置、overlay 覆盖，以及每次运行都保存最终生效的配置。

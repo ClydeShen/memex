@@ -54,10 +54,7 @@ OpenTelemetry Collector 先在各自的分区声明 receivers、processors、exp
 
 一个常见的项目惯例是：根配置只负责组合；把值得保留的完整实验配置，作为有名字的基线放在 `experiment/` 目录下。[二手]
 
-**对 Memex 的建议**：TypeScript 生态里没有成熟的 Hydra 对应物 [推断]。可以自己实现一个精简版：
-
-- YAML 文件按"基础配置 → 配置组 → 实验文件 → 命令行覆盖"的顺序深度合并。
-- 每次运行把最终生效的配置和它的哈希值写进 Experiment 快照。
+**对 Memex 的建议**：已被第五部分取代。组合机制改用 Kustomize 式的 overlay 补丁。仍然保留 Hydra 的一个做法：每次运行都把最终生效的配置和它的哈希值写进 Experiment 快照。
 
 ### 5. 配置带版本号
 Kubernetes 的做法是：每份配置都显式声明 `apiVersion` 和 `kind`，不写就可能随着版本升级被套上不同的默认值。版本分为 alpha、beta、stable 三个成熟度。不同版本只是同一份数据的不同视图，靠转换函数相互迁移。[官方]
@@ -100,6 +97,57 @@ Haystack 明确警告：反序列化时可以执行回调，所以只应加载�
 | Experiment（实验平台） | 世界生成器的版本、种子、Task Class、Baseline 矩阵、重复次数、扫描参数 | Hydra 的组合、覆盖、multirun |
 | Domain Pack | 本体扩展、数据接入、Capability、评测集 | `kind: DomainPack` |
 
+## 五、统一的配置格式（补充调研）
+
+问题：能不能像 AWS 用 YAML 配置基础设施那样，所有模块都用同一种配置格式？
+
+**结论：可以。现成的通用解法是 Kubernetes Resource Model（KRM）这种资源格式，它在 Kubernetes 之外也被广泛使用。**
+
+| 系统 | 做法 | 可信度 |
+|---|---|---|
+| **Kubernetes / KRM** | 每个资源都有 `apiVersion`、`kind`、`metadata`、`spec`；可以通过自定义资源类型（CRD）扩展。kpt 的 KRM 函数规范定义了"输入一组资源、输出一组资源"的通用变换方式 | [二手] |
+| **Dapr** | 各类可替换组件（状态存储、消息、绑定、密钥等）全部使用同一个 `kind: Component`；`spec.type` 写成"类别.实现"，例如 `state.redis`；`spec.metadata` 是键值列表，可以用 `secretKeyRef` 引用密钥；`scopes` 限制哪些应用可以使用该组件 | [官方] |
+| **Backstage** | 软件目录同样采用 `apiVersion: backstage.io/v1alpha1` 加 `kind`、`metadata`、`spec`；`spec` 的结构由 apiVersion 和 kind 决定；可以用 `$text`、`$json`、`$yaml` 引用外部文件 | [官方] |
+| **AWS CloudFormation** | 一个模板里的 `Resources` 映射，每项有 `Type` 和 `Properties`；`Ref` 和 `Fn::GetAtt` 用来引用其他资源，并据此自动推断创建顺序；`Parameters` 带校验约束 | [官方] |
+| **Kustomize** | 不用模板：base 加 overlay，用 strategic merge 或 JSON 6902 补丁修改资源，补丁本身也是同一种 YAML | [二手] |
+| **CUE / Pkl / KCL** | 带类型、约束和抽象能力的配置语言，表达力强，但都需要另外学习，生态较小；都能输出 YAML | [二手] |
+
+**对 Memex 的建议（ADR 0009）**：采用 KRM 格式，示例如下：
+
+```yaml
+apiVersion: memex.dev/v0alpha1
+kind: Model
+metadata: { name: local-qwen }
+spec:
+  type: openai-compatible          # 换成某个云端 Provider 只改这里
+  config: { baseURL: http://localhost:8080/v1, model: qwen3.5-9b }
+---
+apiVersion: memex.dev/v0alpha1
+kind: Provider
+metadata: { name: reasoning-main }
+spec:
+  type: reasoning.llm              # 类别.实现，与 Dapr 的写法相同
+  modelRef: local-qwen             # 按名字引用，相当于 CloudFormation 的 Ref
+  config: { strategy: hypothesis-evidence }
+---
+apiVersion: memex.dev/v0alpha1
+kind: Provider
+metadata: { name: intuition-main }
+spec:
+  type: intuition.laya
+  config: { calibration: dev-v1 }
+---
+apiVersion: memex.dev/v0alpha1
+kind: Experiment
+metadata: { name: poisoning-001 }
+spec:
+  strategy: { type: fast-slow, providers: [reasoning-main, intuition-main] }
+  world: { generator: microworld/v1, seeds: { from: 1, count: 500 } }
+  budget: { maxActiveClaims: 20, maxContextTokens: 4000 }
+```
+
+做实验变体时，只需要写一个 overlay，比如把 `intuition-main` 的 `spec.type` 改成 `intuition.jevos`，其余配置原样复用。
+
 ## 四、尚未查证的事项
 - Zod 4 的 JSON Schema 导出能力。
 - llama.cpp 服务端的 OpenAI 兼容接口具体支持哪些参数。
@@ -107,6 +155,12 @@ Haystack 明确警告：反序列化时可以执行回调，所以只应加载�
 - OWL-Time 2022 修订版是否已经成为正式推荐标准。
 
 ## 来源
+- [Dapr component secrets](https://docs.dapr.io/operations/components/component-secrets/) · [Dapr component spec format](https://oneuptime.com/blog/post/2026-03-31-dapr-understand-component-specification-format/markdown)
+- [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format) · [Backstage ADR-002](https://backstage.io/docs/architecture-decisions/adrs-adr002)
+- [CloudFormation Resources syntax](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/resources-section-structure.html) · [CloudFormation templates overview](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/gettingstarted.templatebasics.html)
+- [KRM functions and Kustomize](https://innoq.com/en/blog/kustomize-enhancement-with-krm-functions) · [kpt-kcl](https://github.com/kcl-lang/kpt-kcl)
+- [Kustomize guide (Plural)](https://www.plural.sh/blog/what-is-kustomize-guide/) · [Kustomize patterns](https://docs.opencenter.cloud/docs/reference/ref-kustomize)
+- [Pkl comparison](https://pkl-lang.org/main/0.26.3/introduction/comparison.html) · [GOV.UK: use Pkl](https://docs.publishing.service.gov.uk/repos/govuk-infrastructure/architecture/decisions/0022-use-pkl-for-configuration.html) · [VSHN: KCL vs CUE](https://kb.vshn.ch/app-catalog/adr/0044-configuration-language-kcl-vs-cue.html)
 - [Wikidata 数据模型（UMBC 课程讲义）](https://courses.cs.umbc.edu/graduate/691/fall22/kg/notes/24_wikidata/wikibase.pdf) · [Discovering Implicational Knowledge in Wikidata](https://arxiv.org/pdf/1902.00916) · [qwikidata.claim](https://qwikidata.readthedocs.io/en/stable/qwikidata.claim.html)
 - [Nanopublication（Dublin Core）](https://msi.dublincore.org/standards/nanopublication) · [Nanopublications: provenance-centric linked data](https://ar5iv.labs.arxiv.org/html/1809.06532) · [Knowledge provenance 扩展](https://link.springer.com/article/10.1007/s00799-025-00431-x)
 - [W3C PROV-O](https://w3.org/TR/prov-o/) · [OWL-Time（Dublin Core）](https://msi.dublincore.org/standards/w3c-time) · [OWL-Time 区间讨论](https://lists.w3.org/Archives/Public/public-sdwig/2018Jan/0010.html)
