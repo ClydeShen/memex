@@ -112,6 +112,10 @@ _Avoid_: step, tool call
 Agent 能够执行的一种操作，带有输入输出说明。
 _Avoid_: tool, function, skill（Skill 指外部的 Agent Skills 格式）
 
+**Self-Evolution**:
+Memex 逐步积累关于自身构成、能力、限制、运行原理和升级历史的 Claim，并据此给出有依据的改进计划。它不包括未经授权修改自身。
+_Avoid_: self-modification, self-improvement
+
 ## 语义结构
 
 **Ontology**:
