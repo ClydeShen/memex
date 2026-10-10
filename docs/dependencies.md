@@ -35,6 +35,8 @@
 | Capability | Micro World 的模拟器动作 | 本地沙箱能力、MCP | M1 |
 | Communication | CLI | HTTP / SSE、A2A | M1 |
 | Trace 导出 | 写入本地文件 | OTLP | M0 |
+| Policy（策略检查） | 全部允许 | 角色和权限、多用户、对象级访问控制（ADR 0014） | M0 |
+| 运维遥测导出 | 结构化 JSON 输出到 stdout，并写入本地文件 | OTLP（Grafana、Jaeger、Prometheus 等）（ADR 0015） | M0 |
 | 组合层 | 一个很薄的工厂函数 | Cordis、iii | M0 |
 | Environment | Micro World 生成器 | World 0、其他 Domain Pack | M0 用最简单的世界 |
 
@@ -44,7 +46,7 @@
 |---|---|
 | GPU | 用更小的模型，或者连接远程的模型后端 |
 | Docker / Compose | 直接在本机运行 Node 和模型后端 |
-| Web 界面、实验面板 | 只用 CLI |
+| Web 界面、实验面板、监控面板 | 只用 CLI 和日志 |
 | MCP 服务器、A2A | 只用本地的 Capability |
 
 ## 后端能力要按声明来匹配，不能默认假设

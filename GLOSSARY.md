@@ -105,8 +105,8 @@ _Avoid_: fallback, retry
 _Avoid_: validation（validation 专指 Pattern 的验证）
 
 **Action**:
-Agent 通过某个 Capability 对 World 施加的一次操作。
-_Avoid_: step, tool call
+一次有名字、有参数结构、记录执行者，并经过策略检查的改动，可以改动 World（通过 Capability 执行），也可以改动 Worldview 或本体。所有改动都必须以 Action 的形式进行。
+_Avoid_: step, tool call, direct write, mutation
 
 **Capability**:
 Agent 能够执行的一种操作，带有输入输出说明。
@@ -135,6 +135,14 @@ _Avoid_: domain schema
 _Avoid_: plugin, adapter, dataset
 
 ## 架构
+
+**Framework**:
+Memex 的代码、契约和实验平台本身，不绑定任何具体的模型、服务或运行环境。
+_Avoid_: platform, product
+
+**Instance**:
+Framework 加上一套配置、本机可用的模型和服务、以及数据，在某台机器上实际运行起来的 Memex。默认情况下，每个用户运行自己的 Instance。
+_Avoid_: deployment, server, system
 
 **Cognitive Contract**:
 各组件之间唯一稳定的接口约定。除它以外，一切都可以替换。
