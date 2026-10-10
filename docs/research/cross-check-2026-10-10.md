@@ -43,11 +43,22 @@
 
 ## 三、对设计的影响
 
-1. **System 1 必须训练，这是本次核对中最重要的发现。** 证据来自三个方向：Laya 的官方定位（一个要专门化的底座）、SwiftSage 的快模块（微调过）、RACER（自我路由无效）。"MVP 只用现成模型、不训练"这个前提很可能站不住。好在 Micro World 的生成器可以自动产生带 oracle 标签的训练数据，代价不高。但训练用的任务族必须与评测用的严格分开。
+1. **（已撤回，见下方更正）System 1 必须训练，这是本次核对中最重要的发现。** 证据来自三个方向：Laya 的官方定位（一个要专门化的底座）、SwiftSage 的快模块（微调过）、RACER（自我路由无效）。"MVP 只用现成模型、不训练"这个前提很可能站不住。好在 Micro World 的生成器可以自动产生带 oracle 标签的训练数据，代价不高。但训练用的任务族必须与评测用的严格分开。
 2. **Micro World 中的名称要打乱。** 参照 Mystery Blocksworld，实体和关系使用无意义的名字，避免模型靠预训练里的常识作答。这也解决了"小模型本来就知道"的问题。
 3. **溯源的用法改为"占用比例"而不是"加权"。** 不对低溯源的内容做加权惩罚，而是在 Cognitive Budget 中限制每个信任等级最多能占多少位置。投毒基准中必须包含"能回答问题的证据恰好来自低可信来源"的情况，否则溯源的好处会被高估。
 4. **重新定位本项目的新意。** 双系统（SwiftSage、NeSyFS）、信念式记忆（Nous）、经验学习（ExpeL）都已经有人做过。本项目的价值在于**把它们放进同一个可替换、可复现的实验平台里，在 Micro World 中做受控的对照和消融实验**，以及在一个领域里长期积累 Worldview。
 5. **Oxigraph 的性能需要尽早验证。** 在 M2 之前，先用 10 万条 Claim 做一次压力测试。
+
+## 更正（同日）
+
+上面第三部分第 1 点的结论已撤回。用户的原则是不训练模型、直接使用（VISION.md 原则 3）。进一步调研后，找到了无需自己训练的可用方案：
+
+- **已经训练好的开源决策模型。** 在 Respan 的评测中，Tev1 4B 得 0.901，Jev 得 0.932。在 Ollama 页面列出的 Bespoke Labs 评测（13 个数据集，共 3,880 个判断）中，Tev1 4B 为 73.3%，Nimble 9B 为 75.7%，Jev 为 76.0%。Ollama 0.35 起原生提供与 Jev 接口一致的 `/v1/systemone`。Respan 的评测用的是自家产品当评判，存在利益冲突；不过两份评测给出的排名一致。
+- **从普通模型直接读取选项概率**（OpenJev、AnyJev），无需任何标注。
+
+这些模型都是在商业分类任务上训练的，在 Micro World 这类认知判断任务上效果如何，目前没有证据，需要通过实验来回答。
+
+来源：[Respan](https://www.respan.ai/articles/jev-alternatives) · [Ollama tev1](https://ollama.com/library/tev1) · [AnyJev](https://pypi.org/project/anyjev/) · [OpenJev](https://huggingface.co/AlexWortega/openjev)
 
 ## 来源
 - Laya：[HF 模型卡](https://huggingface.co/convaiinnovations/laya) · [systemonemodels.org](https://systemonemodels.org/models/laya/) · [Flowtivity 评测](https://flowtivity.ai/blog/laya-open-source-jev-alternative/) · [eesel](https://www.eesel.ai/blog/laya-ai)
