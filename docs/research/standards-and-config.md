@@ -54,7 +54,7 @@ OpenTelemetry Collector 先在各自的分区声明 receivers、processors、exp
 
 一个常见的项目惯例是：根配置只负责组合；把值得保留的完整实验配置，作为有名字的基线放在 `experiment/` 目录下。[二手]
 
-**对 Memex 的建议**：已被第五部分取代。组合机制改用 Kustomize 式的 overlay 补丁。仍然保留 Hydra 的一个做法：每次运行都把最终生效的配置和它的哈希值写进 Experiment 快照。
+**对 Memex 的建议**：已被第四部分取代。组合机制改用 Kustomize 式的 overlay 补丁。仍然保留 Hydra 的一个做法：每次运行都把最终生效的配置和它的哈希值写进 Experiment 快照。
 
 ### 5. 配置带版本号
 Kubernetes 的做法是：每份配置都显式声明 `apiVersion` 和 `kind`，不写就可能随着版本升级被套上不同的默认值。版本分为 alpha、beta、stable 三个成熟度。不同版本只是同一份数据的不同视图，靠转换函数相互迁移。[官方]
@@ -97,7 +97,7 @@ Haystack 明确警告：反序列化时可以执行回调，所以只应加载�
 | Experiment（实验平台） | 世界生成器的版本、种子、Task Class、Baseline 矩阵、重复次数、扫描参数 | Hydra 的组合、覆盖、multirun |
 | Domain Pack | 本体扩展、数据接入、Capability、评测集 | `kind: DomainPack` |
 
-## 五、统一的配置格式（补充调研）
+## 四、统一的配置格式（补充调研）
 
 问题：能不能像 AWS 用 YAML 配置基础设施那样，所有模块都用同一种配置格式？
 
@@ -148,7 +148,7 @@ spec:
 
 做实验变体时，只需要写一个 overlay，比如把 `intuition-main` 的 `spec.type` 改成 `intuition.jevos`，其余配置原样复用。
 
-## 四、尚未查证的事项
+## 五、尚未查证的事项
 - Zod 4 的 JSON Schema 导出能力。
 - llama.cpp 服务端的 OpenAI 兼容接口具体支持哪些参数。
 - SKOS、SHACL 规范本身（本次没有单独检索）。
