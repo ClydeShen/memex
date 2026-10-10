@@ -158,6 +158,10 @@ _Avoid_: run, test, trial
 由生成器按配置和随机种子确定性生成的合成 World，用于在已知真实答案的条件下评测 Agent。
 _Avoid_: simulation, sandbox, toy environment
 
+**World 0**:
+第一个真实领域：Memex 本身及其相关知识，包括开发知识和运行数据。目的是让 Memex 认识自己、从自己的经历中学习。
+_Avoid_: self domain, meta world
+
 **World Generator**:
 根据版本化配置和随机种子生成 Micro World 的组件。相同版本、配置和种子必定生成相同的 Micro World。
 _Avoid_: dataset, fixture
