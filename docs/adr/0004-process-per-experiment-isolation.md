@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 每个 Experiment 运行在独立进程里，Cordis 不作为隔离手段

@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 用录制和回放实现复现，以追加写入的事件日志作为持久化基础

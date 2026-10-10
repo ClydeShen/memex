@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # 对外扩展优先采用现有开放标准，不自创协议

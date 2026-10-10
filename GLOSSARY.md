@@ -92,6 +92,10 @@ _Avoid_: shortcut, cache hit
 调用 Reasoning 完成一次决策的路径。
 _Avoid_: full path
 
+**Calibration**:
+调整 Intuition 输出的置信度与实际正确率之间对应关系的配置参数，例如阈值或温度系数。它不修改模型本身，因此不属于训练。
+_Avoid_: training, fine-tuning
+
 **Escalation**:
 Intuition 判断当前情况不适合走 Fast Path，转交给 Reasoning。
 _Avoid_: fallback, retry
