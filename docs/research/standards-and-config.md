@@ -149,10 +149,10 @@ spec:
 做实验变体时，只需要写一个 overlay，比如把 `intuition-main` 的 `spec.type` 改成 `intuition.jevos`，其余配置原样复用。
 
 ## 五、尚未查证的事项
-- Zod 4 的 JSON Schema 导出能力。
+- ~~Zod 4 的 JSON Schema 导出能力~~：已确认，见 cross-check-2026-10-10.md。
 - llama.cpp 服务端的 OpenAI 兼容接口具体支持哪些参数。
 - SKOS、SHACL 规范本身（本次没有单独检索）。
-- OWL-Time 2022 修订版是否已经成为正式推荐标准。
+- ~~OWL-Time 的标准状态~~：2017 年版是正式推荐标准，2022 年版是候选推荐草案，见 cross-check-2026-10-10.md。
 
 ## 来源
 - [Dapr component secrets](https://docs.dapr.io/operations/components/component-secrets/) · [Dapr component spec format](https://oneuptime.com/blog/post/2026-03-31-dapr-understand-component-specification-format/markdown)
