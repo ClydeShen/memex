@@ -42,5 +42,5 @@ ADR 0010 的模型选择是在云端会话中做的，当时无法检测实际�
 - **输出很长会拖慢实验。** Qwen3.8-27B 默认开启思考模式，输出很长。Lab 在需要时应该关闭思考模式（`chat_template_kwargs.enable_thinking: false`）或限制思考长度，并在 Experiment 快照中记录用了哪种设置。
 - **Tev1 默认也会开启思考模式。** Intuition 适配器调用 Tev1 时必须显式关闭（实测结果见 docs/research/llama-cpp-backend.md）。
 - **ADR 0010 的收敛规则不变**：如果 Tev1 不如启发式规则，就改为"读取 Reasoning 模型的选项概率"，这一条对 Qwen3.8 同样适用。
-- **Tev1 的模型卡没有写明许可证。** 因为模型不随 Memex 分发（ADR 0013），自己使用不受影响；如果以后要分发任何包含它的内容，需要先确认许可证。
+- **Tev1 微调权重的许可证尚未确定。** 模型卡写明：基础模型 Qwen3.5-4B 是 Apache-2.0，但微调权重的发布许可证"正在确定中"。因为模型不随 Memex 分发（ADR 0013），自己使用不受影响；不能分发我们自己转换的 GGUF，以后要分发任何包含它的内容，需要先确认许可证。
 - **需要同步修改的文档**：ADR 0010（加上"Reasoning 主选已由 ADR 0017 修订"的说明）、docs/dependencies.md（Reasoning 和 Embedding 的默认值）、HANDOFF.md 第 4 节 L8、docs/research/llama-cpp-backend.md（补充 b11552 的实测结果）。

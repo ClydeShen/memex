@@ -111,5 +111,5 @@ M0 需要的 `kind` 有：`Model`、`Provider`、`Strategy`、`Environment`、`E
 ## 六、尚未确定、将在 M0 中验证的内容
 
 - `StepContext.services` 的具体形状：要让 Provider 之间只能通过 Strategy 授权的接口互相调用，又不至于太繁琐。
-- 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 的上下文只有约 2,000 个 token。
+- 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 模型本身支持很长的上下文（262,144），但 Intuition 是单次、低延迟的判断，状态应保持精简；具体上限作为配置项。
 - 录制和回放的边界放在哪一层：是在每个 Provider 内部，还是在 Model Backend 的连接层统一处理。目前倾向后者，因为最省事。
