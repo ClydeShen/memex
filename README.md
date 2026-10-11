@@ -1,5 +1,7 @@
 # Memex
 
+> **给它一个目标，让它自己去完成。**
+
 Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Agent 会在该领域中建立并不断修正自己的 Worldview（由带溯源和时间的 Claim 组成），用快慢两种思考（Intuition 和 Reasoning）配合现成的模型解决问题，并从经过验证的经验中持续学习。
 
 这是一个个人研究和学习项目，不用于商业目的。
