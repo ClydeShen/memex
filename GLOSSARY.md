@@ -85,7 +85,7 @@ _Avoid_: deletion, cleanup
 ## 认知过程
 
 **Goal**:
-Agent 要让 World 达到的目标状态，或要回答的问题。
+Agent 要让 World 达到的目标状态，或要回答的问题。"给它一个目标，让它自己去完成"是 Memex 的产品定义；验证阶段的任务也一律以 Goal 的形式给出，目标完成率是共同主指标（ADR 0021）。
 _Avoid_: task, prompt
 
 **Cognitive State**:

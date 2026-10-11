@@ -13,7 +13,7 @@ Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Age
 ## 现状
 
 - **设计阶段已完成，还没有代码。** 下一个里程碑是 V0：产品核心（契约、Event Log、Action、运行时）加上验证工具（Lab、Fake Provider、最简单的 Micro World）。
-- 路线：验证阶段 V0 骨架 → V1 基线 → V2 双系统 → **决策关卡** → 产品阶段 P1 第一个可用版本 → P2 学习闭环 → P3 对外扩展 → P4 分发。详见 [docs/roadmap.md](docs/roadmap.md)。
+- 路线：验证阶段 V0 骨架 → V1 基线 → V2 双系统 → **决策关卡** → 产品阶段 P1 第一个可用版本 → P2 学习闭环 → P3 对外扩展 → P4 分发，以及 P5 跨领域迁移。详见 [docs/roadmap.md](docs/roadmap.md)。
 
 ## 文档
 
