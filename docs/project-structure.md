@@ -6,7 +6,7 @@
 - **原则**：
   - 目录结构要直接体现依赖方向：只看目录，就能知道谁可以依赖谁。
   - 目录名要说明系统里有什么，与"代码自解释"（code-style.md 第十节）是同一个思路。
-- **检查方式**：依赖方向和"只能通过公开入口 import"由 dependency-cruiser 自动检查；文件名大小写由 Biome 的 `useFilenamingConvention` 检查。配置在 M0.1 落地。
+- **检查方式**：依赖方向和"只能通过公开入口 import"由 dependency-cruiser 自动检查；文件名大小写由 Biome 的 `useFilenamingConvention` 检查。配置在 V0.1 落地。
 
 ---
 
@@ -18,10 +18,10 @@ memex/
 │  ├─ contracts/             @memex/contracts：契约、schema、Result、pipe
 │  ├─ runtime/               @memex/runtime：Event Log、Composition Root、认知循环、Projector
 │  ├─ fakes/                 @memex/fakes：Fake Provider、最小 Micro World、污染 Provider
-│  └─ lab/                   @memex/lab：Runner、Worker、录制与回放、`memex lab run`
-├─ providers/                真实的 Provider，每个都是独立的包（M1 起）
+│  └─ lab/                   @memex/lab：Runner、Worker、`pnpm lab`（验证工具，不随产品发布，ADR 0020）
+├─ providers/                真实的 Provider，每个都是独立的包（V1 起）
 │  └─ intuition-tev1/        例：type 为 intuition.tev1 的 Provider
-├─ apps/                     可执行程序：`memex` 命令行、以后的 Web 界面（M1 起）
+├─ apps/                     产品的可执行程序：`memex` 命令行、以后的 Web 界面（P1 起）
 ├─ examples/                 示例资源 YAML（Experiment、Model、Provider），只包含合成数据
 ├─ docs/                     文档：adr/、architecture/、research/ 和各份规范
 ├─ package.json              根配置：统一的脚本入口，`packageManager` 固定 pnpm 版本
@@ -41,14 +41,14 @@ memex/
 |---|---|---|---|
 | `packages/contracts` | 唯一稳定的边界（Cognitive Contract） | 只有 Zod 等少量登记过的库 | 其他所有包 |
 | `packages/runtime` | Framework 的核心组件，包括 Composition Root 的注册表和装配逻辑 | `contracts` | `lab`、`fakes`、`providers/*`、`apps/*` |
-| `packages/lab` | 实验平台（Runner、Worker） | `contracts`、`runtime`；**只有 Worker 的启动文件**（M0 的装配入口）可以 import `fakes` | `providers/*`、`apps/*` |
+| `packages/lab` | 验证工具（Runner、Worker），不随产品发布 | `contracts`、`runtime`；**只有 Worker 的启动文件**（验证阶段的装配入口）可以 import `fakes` 和 `providers/*` | `apps/*` |
 | `packages/fakes`、`providers/*` | Provider 实现（端口与适配器中的"适配器"） | `contracts` | 其他 Provider、`runtime`、`lab`、`apps/*` |
-| `apps/*` | 装配入口（M1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | 全部 | — |
+| `apps/*` | 产品的装配入口（P1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | 除 `lab`、`fakes` 以外的全部 | `lab`、`fakes` |
 
 说明：
 - **每个真实的 Provider 单独成包。** 它自己声明需要的依赖，这些依赖不会进入核心。替换一个 Provider，就是换掉一个包（ADR 0008）。
-- **`fakes` 放在 `packages/`**，因为 M0 按 HANDOFF 的约定只有这四个包，而且 Fake 主要用于测试。
-- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。M0 中，Lab Worker 的启动文件就是装配入口，由它 import Fake Provider 并登记；M1 起，装配入口移到 `apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
+- **`fakes` 放在 `packages/`**，因为 V0 按 HANDOFF 的约定只有这四个包，而且 Fake 主要用于测试。
+- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。V0 中，Lab Worker 的启动文件就是装配入口，由它 import Fake Provider 并登记；V1 起，装配入口移到 `apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
 
 ## 二、包的内部结构
 
@@ -98,16 +98,16 @@ packages/runtime/
 运行时产生的数据属于 Instance，不属于仓库内容：
 
 - **默认目录 `.memex/`**，可以通过配置修改。它被 `.gitignore` 忽略。
-- **每次 Experiment 的输出**放在 `.memex/runs/<experiment 名称>/<运行 id>/`，包括 Event Log、录制、快照和报告。具体的文件格式在 M0.5 时确定。
+- **每次 Experiment 的输出**放在 `.memex/runs/<experiment 名称>/<运行 id>/`，包括 Event Log、录制、快照和报告。具体的文件格式在 V0.5 时确定。
 - 真实领域的数据只能放在这里，不能放进仓库（ADR 0016）。
 
 ## 五、什么时候建什么
 
 | 目录 | 何时建立 |
 |---|---|
-| `packages/contracts`、`runtime`、`fakes`、`lab`，以及根目录的配置文件 | M0.1 |
-| `examples/` | M0.5（第一个示例 Experiment） |
-| `providers/` | M1（第一个真实 Provider） |
-| `apps/` | M1（`memex` 命令行，提供 `up`、`doctor`、`models pull`） |
+| `packages/contracts`、`runtime`、`fakes`、`lab`，以及根目录的配置文件 | V0.1 |
+| `examples/` | V0.5（第一个示例 Experiment） |
+| `providers/` | V1（第一个真实 Provider） |
+| `apps/` | P1（产品命令在决策关卡后设计） |
 
 不要为了"以后可能会用"提前建立空目录。

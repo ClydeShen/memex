@@ -193,7 +193,7 @@ Agent 通过 Observation 和 Action 与之交互的 World 的接口，例如 Mic
 _Avoid_: simulator, sandbox
 
 **Composition Root**:
-把组件装配起来的地方，分两部分：一是 `@memex/runtime` 中的注册表和装配逻辑（读取配置、校验、按 `type` 查注册表、实例化、能力检查），它本身不引用任何具体实现；二是**装配入口**（M0 是 Lab Worker 的启动文件，M1 起是 `apps/*`），只有它 import 具体的 Provider 并登记到注册表。核心代码从不直接引用具体的 Provider。
+把组件装配起来的地方，分两部分：一是 `@memex/runtime` 中的注册表和装配逻辑（读取配置、校验、按 `type` 查注册表、实例化、能力检查），它本身不引用任何具体实现；二是**装配入口**（V0 是 Lab Worker 的启动文件，V1 起是 `apps/*`），只有它 import 具体的 Provider 并登记到注册表。核心代码从不直接引用具体的 Provider。
 _Avoid_: container, bootstrap
 
 **Cognitive Strategy**:
@@ -215,7 +215,7 @@ _Avoid_: run, test, trial
 _Avoid_: snapshot（单独使用时容易和 Event Log 的加速快照混淆）
 
 **Lab**:
-运行和评测 Experiment 的平台：Runner 为每个 Experiment 启动一个独立的 Worker 进程，负责录制和回放，汇总 Evaluator 的结果并输出报告。Worker 和 Runtime 运行同一套代码。
+验证阶段运行和评测 Experiment 的工具：Runner 为每个 Experiment 启动一个独立的 Worker 进程，借助 Runtime 的录制与回放复现结果，汇总 Evaluator 的结果并输出报告。Worker 和 Runtime 运行同一套代码，所以被验证的就是产品组件本身。Lab 不属于产品，不随产品发布，通过 `pnpm lab ...` 在仓库中使用（ADR 0020）。
 _Avoid_: test harness, benchmark runner
 
 **Fake Provider**:
@@ -255,11 +255,11 @@ _Avoid_: judge, grader
 _Avoid_: judge, scorer
 
 **Baseline**:
-用来对照的简化架构，在同一组对比中与 Memex 使用同一个 Reasoning 模型（ADR 0018）。B0：只用 Reasoning。B1：传统 RAG 加 Reasoning。B2：Intuition 加 Reasoning，没有 Worldview。B3：完整的 Memex。B3-noI：去掉 Intuition 的 B3，全部走 Slow Path。B-sym：掌握完整规则的符号求解器，只用来检查题目难度，不参与对比。MVP 阶段只使用 B0、B1、B3 和 B3-noI（ADR 0010）。
+用来对照的简化架构，在同一组对比中与 Memex 使用同一个 Reasoning 模型（ADR 0018）。B0：只用 Reasoning。B1：传统 RAG 加 Reasoning。B2：Intuition 加 Reasoning，没有 Worldview。B3：完整的 Memex。B3-noI：去掉 Intuition 的 B3，全部走 Slow Path。B-sym：掌握完整规则的符号求解器，只用来检查题目难度，不参与对比。验证阶段只使用 B0、B1、B3 和 B3-noI（ADR 0010）。
 _Avoid_: control group
 
 **Task Class**:
-按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移、T6 长序列学习（同一 Task Family 的任务按顺序给出，测量随 Experience 增加的变化；ADR 0018）。MVP 只用 T2（Q1）、T4（Q2）、T6（Q3）。
+按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移、T6 长序列学习（同一 Task Family 的任务按顺序给出，测量随 Experience 增加的变化；ADR 0018）。验证阶段只用 T2（Q1）、T4（Q2）、T6（Q3）。
 _Avoid_: domain, category
 
 **Task Family**:

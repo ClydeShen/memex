@@ -12,7 +12,7 @@ Memex 是一个可扩展、比较通用的 Agent 框架。接入某个领域的�
 
 > 一个长期运行的 Agent，变得更有效的主要途径，是改进它关注什么、相信什么、归纳出什么，以及什么时候选择深入推理；而不是不断往推理上下文里塞更多信息。
 
-这是一个**待验证的假设**，不是既定事实。MVP 的意义在于让它可以用数据来回答。
+这是一个**待验证的假设**，不是既定事实。验证阶段的意义在于让它可以用数据来回答，并据此确定产品的方向和核心能力（ADR 0020）。
 
 ## 第一性原则
 
@@ -48,11 +48,12 @@ Memex 是一个可扩展、比较通用的 Agent 框架。接入某个领域的�
 | 认知循环 | Cognitive Strategy、Attention、Intuition、Reasoning、Verification、Cognitive State 和 Cognitive Budget | 每一步都在运转 |
 | 知识与学习 | Ontology、Worldview（Claim、溯源、时间、Pattern）、Event Log（Experience 和 Trace 都是它的 Projection）、Consolidation 和 Decay | 进步的来源 |
 | 与外界交互 | Capability（MCP）、Communication（CLI、Web、A2A） | 可插拔 |
-| 支撑设施 | Composition Root、Policy、运维遥测、Lab（World Generator、Oracle、Evaluator、实验运行器） | 证明一切、保障运行 |
+| 支撑设施 | Composition Root、Policy、运维遥测 | 保障运行 |
+| 验证工具（不属于产品，ADR 0020） | Lab（World Generator、Micro World、Oracle、Evaluator、实验运行器） | 在验证阶段证明想法；不随产品发布 |
 
-最核心的四个模块：**Cognitive Contract、Worldview、Cognitive Strategy、Lab。** 直觉模型和推理模型都是可以替换的组件，不属于核心。
+最核心的三个模块：**Cognitive Contract、Worldview、Cognitive Strategy。** 直觉模型和推理模型都是可以替换的组件，不属于核心。Lab 是验证阶段的工具，用来证明这些模块有效，本身不是产品（ADR 0020）。
 
-## MVP 之后的方向
+## 验证之后：产品的方向
 
 1. **让学习真正发生**：完整的记忆生命周期、Pattern 学习、由 Agent 提议并经过验证的本体扩展、长期运行下的学习曲线。
 2. **进入真实领域**：第一个领域是 World 0，即 Memex 本身及相关知识，目的是自我学习和进化（ADR 0011）。之后再进入一个与 Memex 无关的外部领域，用来检验方法能否推广。每个领域都打包成一个 Domain Pack。

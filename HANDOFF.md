@@ -2,7 +2,7 @@
 
 - **交出方**：云端 Claude Code 会话 `session_01GJk4Nwe8prPJFJPdCJps3a`（2026-10-07 至 2026-10-11）
 - **接收方**：用户本机（Windows）上的 Claude Code，工作目录为本地 memex 仓库
-- **当前位置**：设计阶段已完成，**还没有写任何代码**。下一步是进入 M0。
+- **当前位置**：设计阶段已完成，**还没有写任何代码**。下一步是进入 V0。
 
 本文件不重复已经写进其他文档的内容，只告诉你**读什么、做什么、验证什么、注意什么**。
 
@@ -13,8 +13,8 @@
 1. `git pull origin main`，确认 HEAD 至少包含本文件所在的提交。
 2. 按第 1 节的顺序读完文档，大约需要 20 分钟。不读完不要动手。
 3. 完成第 4 节的**本地环境核查**，把结果写入本机的 `.env`（**不提交**，见第 4 节开头）。
-4. 向用户确认第 6 节中的"待用户决定"事项。用户可以边做边答，这些事项都不阻塞 M0。
-5. 按第 5 节开始做 M0。
+4. 向用户确认第 6 节中的"待用户决定"事项。用户可以边做边答，这些事项都不阻塞 V0。
+5. 按第 5 节开始做 V0。
 
 ---
 
@@ -22,13 +22,13 @@
 
 | 顺序 | 文件 | 读它要得到什么 |
 |---|---|---|
-| 1 | `VISION.md` | 项目目的、中心假设、12 条第一性原则、核心模块、MVP 之后的方向、跨领域迁移的设想 |
-| 2 | `docs/roadmap.md` | **执行计划**：22 条全局约束（S/A/E/P）、里程碑 M0–M6 的进入和退出条件、M0 的任务分解 |
+| 1 | `VISION.md` | 项目目的、中心假设、12 条第一性原则、核心模块、验证之后的产品方向、跨领域迁移的设想 |
+| 2 | `docs/roadmap.md` | **执行计划**：26 条全局约束（S/A/E/P）、验证阶段 V0–V2 和产品阶段 P1–P4 的进入和退出条件、V0 的任务分解 |
 | 3 | `GLOSSARY.md` | 领域术语。**写代码、写文档时一律使用这里的术语**，`_Avoid_` 列出的词不要用 |
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
-| 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**M0.2 按它实现** |
+| 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**V0.2 按它实现** |
 | 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `docs/adr/0001`–`0019` | 19 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 7 | `docs/adr/0001`–`0020` | 20 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
 | 8 | `docs/open-questions.md` | 还剩 3 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 
@@ -54,12 +54,12 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。这是习惯，没有 hook 强制，也没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：19 份 ADR 已确认，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：20 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `docs/research/`。
 
 ### 还没开始的
-- M0 的任何代码。
+- V0 的任何代码。
 - 无其他未开始的准备工作。
 
 ---
@@ -77,22 +77,22 @@
 
 ---
 
-## 4. 本地环境核查（M0 之前完成）
+## 4. 本地环境核查（V0 之前完成）
 
 **约定（2026-10-11，用户确认）**：某台机器的环境信息（硬件、路径、本机有哪些模型等）属于 Instance，不属于 Framework，**只写在本机的 `.env` 里，不提交**。仓库只记录要求和检查方法；与机器无关的软件行为发现（例如 llama.cpp 的返回格式）写在 `docs/research/` 中。`.env.example` 列出需要填写的键。
 
-云端会话从未验证过下面任何一项。M0 只需要 Node.js。其余各项是为 M1 和 M2 提前排查风险，但最好现在一起核查。
+云端会话从未验证过下面任何一项。V0 只需要 Node.js。其余各项是为 V1 和 V2 提前排查风险，但最好现在一起核查。
 
 | # | 核查项 | 方法 | 为什么需要 |
 |---|---|---|---|
 | L1 | 操作系统和硬件 | 记录操作系统版本、是否使用 WSL2、CPU、内存、GPU 型号和显存 | ADR 0013 的硬件档位 |
-| L2 | Node.js 版本 | `node -v`，应使用当时的 Active LTS 版本 | E1、M0.1 |
+| L2 | Node.js 版本 | `node -v`，应使用当时的 Active LTS 版本 | E1、V0.1 |
 | L3 | git 版本 | `git --version` | 通用 |
-| L4 | llama.cpp 是否已安装，版本是多少 | 找到 `llama-server` 的路径和版本号。用户说已安装，Ollama 已卸载 | M1 的 Model Backend |
+| L4 | llama.cpp 是否已安装，版本是多少 | 找到 `llama-server` 的路径和版本号。用户说已安装，Ollama 已卸载 | V1 的 Model Backend |
 | L5 | llama-server 能否返回 token 概率 | 启动任意一个小模型，调用 `/v1/chat/completions` 并带上 `logprobs: true, top_logprobs: 5, max_tokens: 1`，记录返回格式 | **Intuition 适配器的硬性要求**（ADR 0010，contracts.md） |
 | L6 | 能否关闭思考模式 | 对 Reasoning 和 Intuition 模型，验证 `chat_template_kwargs: {"enable_thinking": false}` 是否生效 | Tev1 和 Qwen 的调用方式 |
 | L7 | GPU 是否可用 | 查看 `nvidia-smi`；确认 llama-server 实际使用的是 CUDA | 性能 |
-| L8 | 本地已有哪些模型文件 | 列出 GGUF 文件。需要的模型和获取方式见 ADR 0017（只从官方来源获取） | M1、M2 |
+| L8 | 本地已有哪些模型文件 | 列出 GGUF 文件。需要的模型和获取方式见 ADR 0017（只从官方来源获取） | V1、V2 |
 | L9 | Docker 和 WSL2 下的 GPU | 可选，`docker run --gpus all ...` | 只有走容器化路线时才需要（ADR 0013） |
 | L10 | 全局 skill | 确认 `~/.claude/skills/plan-delivery` 可以使用 | 用户希望使用这个 skill |
 
@@ -104,28 +104,28 @@
 
 ---
 
-## 5. 下一步：M0（已确认，可以开始）
+## 5. 下一步：V0（已确认，可以开始）
 
 完整的任务表和验证方式见 `docs/roadmap.md` 第四部分。这里只补充执行上的注意事项。
 
-**分支**：从 `main` 开一个实验分支，例如 `exp/m0-skeleton`。通过 M0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
+**分支**：从 `main` 开一个实验分支，例如 `exp/v0-skeleton`。通过 V0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
 
 **顺序和产出**：
-1. **M0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
-2. **M0.2 契约**：按 `docs/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
-3. **M0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志。
-4. **M0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。
-5. **M0.5 Lab**：每个 Experiment 一个子进程，Runner 和 Worker 之间用 JSONL 通信；支持录制和回放；提供 `memex lab run <experiment.yaml>`。
-6. **M0.6 关卡**：把三条通过标准写成自动化测试，即可复现、不泄漏、可替换。全部通过之后再合并。
+1. **V0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
+2. **V0.2 契约**：按 `docs/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
+3. **V0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志、录制与回放（在 Model Backend 连接层统一处理）。
+4. **V0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。
+5. **V0.5 Lab**（验证工具，不属于产品，ADR 0020）：每个 Experiment 一个子进程，Runner 和 Worker 之间用 JSONL 通信；提供 `pnpm lab run <experiment.yaml>` 和 `pnpm lab replay <快照>`。
+6. **V0.6 关卡**：把三条通过标准写成自动化测试，即可复现、不泄漏、可替换。全部通过之后再合并。
 
-**M0 中需要靠实现来确定的设计细节**（`contracts.md` 第六节）：
+**V0 中需要靠实现来确定的设计细节**（`contracts.md` 第六节）：
 - `StepContext.services` 的形状。
 - 交给 Intuition 的精简状态如何序列化。
 - 录制和回放放在哪一层。倾向于放在 Model Backend 连接层统一处理。
 
-如果实现中发现契约需要改动，就直接修改 `contracts.md` 并说明原因。契约要到正式阶段关卡才冻结。
+如果实现中发现契约需要改动，就直接修改 `contracts.md` 并说明原因。契约要到决策关卡才冻结。
 
-**M0 中不要做的事**：
+**V0 中不要做的事**：
 - 不接真实模型。
 - 不引入 Oxigraph，也不写 Docker 和 Compose。
 - 不实现 Web 界面和 MCP。
@@ -138,11 +138,11 @@
 
 | # | 事项 | 当前状态 |
 |---|---|---|
-| D1 | M3–M6 的顺序和退出条件 | `roadmap.md` 中标为**草案**，等待确认 |
+| D1 | 产品阶段 P1–P4 的范围和退出条件 | `roadmap.md` 中标为**草案**，在决策关卡确定（ADR 0020） |
 | D2 | 计划是否同步到 GitHub 的 Milestone 和 Issue | 已提过两次，用户还没有回答 |
 | D3 | 是否用 `/plan-delivery` skill 把 roadmap 转成交付计划 | 用户主动问起过这个 skill，云端会话无法访问它。本地可以使用后，**建议先向用户确认，再按它处理 roadmap** |
-| D4 | Micro World 对 Agent 隐藏哪些信息 | 在 M2 之前决定；会做成配置项（`open-questions.md` #1） |
-| D5 | 是否精简流程 | 进入正式阶段时再决定（`open-questions.md` #2） |
+| D4 | Micro World 对 Agent 隐藏哪些信息 | 在 V2 之前决定；会做成配置项（`open-questions.md` #1） |
+| D5 | 是否精简流程 | 到决策关卡时再决定（`open-questions.md` #2） |
 
 ---
 
@@ -167,8 +167,8 @@
 | `domain-modeling` | 新增或修改术语、写 ADR 时，用来维护 GLOSSARY 和 `docs/adr/` |
 | `research` / `deep-research` | 需要核实技术事实，或在提问之前先调研时 |
 | `fuller` | 用户要深入讨论某个设计问题时 |
-| `code-review`、`simplify` | 每个 M0 子任务完成之后、合并之前 |
-| `run` | 需要实际运行 `memex lab run` 来验证时 |
+| `code-review`、`simplify` | 每个 V0 子任务完成之后、合并之前 |
+| `run` | 需要实际运行 `pnpm lab run` 来验证时 |
 
 ---
 

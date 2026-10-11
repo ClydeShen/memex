@@ -2,7 +2,7 @@
 
 本文件定义 Memex 各模块之间的集成契约。图示见 [c4.md](./c4.md)。
 
-- **状态**：草案 v0。M0.2 会把它实现为 `@memex/contracts`，M0 的测试会验证它。到正式阶段关卡时冻结为 v1（ADR 0012）。冻结之后，破坏性修改必须提升 `apiVersion` 并提供转换函数。
+- **状态**：草案 v0。V0.2 会把它实现为 `@memex/contracts`，V0 的测试会验证它。到决策关卡时冻结为 v1（ADR 0012）。冻结之后，破坏性修改必须提升 `apiVersion` 并提供转换函数。
 - **写法**：下面用 TypeScript 风格的签名来表达设计意图，只说明形状，不是最终代码。所有数据类型都可以序列化为 JSON，并且能通过 JSON-LD `@context` 映射到标准词汇（ADR 0007）。
 
 ---
@@ -87,7 +87,7 @@ Event {                                                          // CloudEvents 
 
 ### 资源配置（ADR 0009）
 
-`apiVersion` 统一为 `memex.dev/v0alpha1`（冻结为 v1 之前）。M0 需要的 `kind` 有：`Model`、`Provider`、`Strategy`、`Environment`、`Experiment`、`Runtime`。每种 `kind` 都附带一份 JSON Schema。示例见 docs/research/standards-and-config.md 第四部分。
+`apiVersion` 统一为 `memex.dev/v0alpha1`（冻结为 v1 之前）。V0 需要的 `kind` 有：`Model`、`Provider`、`Strategy`、`Environment`、`Experiment`、`Runtime`。每种 `kind` 都附带一份 JSON Schema。示例见 docs/research/standards-and-config.md 第四部分。
 
 ### Experiment 快照（JSON）
 
@@ -102,13 +102,13 @@ Event {                                                          // CloudEvents 
 | Lab Runner ↔ Experiment Worker | 子进程 IPC，消息按 JSONL 格式逐行传输 | Runner 发出 `start { experiment, snapshotPath }`；Worker 依次返回事件流和 `result { reportPath, status }`。Worker 退出后，它的全部状态随之销毁（ADR 0004） |
 | Runtime ↔ Model Backend | OpenAI 兼容的 HTTP 接口 | Reasoning 需要文本生成。Intuition 适配器还需要 `logprobs`（ADR 0010），并且必须能关闭思考模式。这些都在 Model 资源中声明为能力 |
 | Runtime ↔ 用户 | CLI、HTTP/SSE | 默认只监听 localhost；对外开放时必须认证（ADR 0013） |
-| Runtime ↔ 外部工具 | MCP | 每个 MCP 工具会被映射成一个 Capability，并在沙箱中执行（M5） |
+| Runtime ↔ 外部工具 | MCP | 每个 MCP 工具会被映射成一个 Capability，并在沙箱中执行（P3） |
 | Runtime ↔ 其他 Agent | A2A | 对方说的话记为一条 Claim，`sourceType` 为 `agent`（尚未排期） |
 | Runtime → 可观测性后端 | OTLP，可选 | 运维遥测（ADR 0015） |
 
 ---
 
-## 六、尚未确定、将在 M0 中验证的内容
+## 六、尚未确定、将在 V0 中验证的内容
 
 - `StepContext.services` 的具体形状：要让 Provider 之间只能通过 Strategy 授权的接口互相调用，又不至于太繁琐。
 - 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 模型本身支持很长的上下文（262,144），但 Intuition 是单次、低延迟的判断，状态应保持精简；具体上限作为配置项。
