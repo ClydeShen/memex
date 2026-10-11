@@ -28,7 +28,7 @@
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**M0.2 按它实现** |
 | 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `docs/adr/0001`–`0018` | 18 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 7 | `docs/adr/0001`–`0019` | 19 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
 | 8 | `docs/open-questions.md` | 还剩 3 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 
@@ -54,7 +54,7 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。这是习惯，没有 hook 强制，也没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：18 份 ADR 已确认，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：19 份 ADR 已确认，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `docs/research/`。
 

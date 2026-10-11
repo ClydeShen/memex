@@ -23,7 +23,7 @@
 interface Provider {
   readonly kind: ProviderKind;           // 例如 "intuition"、"reasoning"、"policy" 等
   readonly type: string;                 // 例如 "intuition.tev1"、"intuition.fake"
-  readonly capabilities: Capabilities;   // 能力声明，例如 { supportsLogprobs: true }
+  readonly capabilities: Capabilities;   // 能力声明，例如 { supportsLogprobs, supportsGrammar, supportsJsonSchema }（ADR 0019）
   init(config: unknown, ctx: InitContext): Promise<void>;  // config 由该类型自己的 schema 校验
   dispose(): Promise<void>;
 }
@@ -43,8 +43,8 @@ interface Provider {
 | **Environment** | Capability、Lab | `reset(seed) → Observation[]`；`step(action) → StepResult { observations, valid, cost }`；`describe() → EnvironmentInfo` | 统一的环境接口。Micro World 和 World 0 都实现这个端口。这是 Memex 自己定义的三个标准之一 |
 | **CognitiveStrategy** | Runtime 循环 | `step(ctx: StepContext) → StepDecision` | `StepContext` 包含 Cognitive State、预算，以及可以调用的 `services`（其他端口）。返回值是这一步的决定：提交哪些 Action、要不要继续、要不要等待 |
 | **Attention** | Strategy | `select(state, budget) → AttentionResult { focus, ignored, reason }` | 只能通过 `services` 调用 Knowledge 和 Retrieval |
-| **Intuition** | Strategy | `judge(compactState, questions: Record<id, Question>) → Record<id, Judgement>` | Question 只有选择题一种（ADR 0018）：`{ state, question, options: 2–24 个带字母编号的选项 }`，与 Tev1 模型卡的输入格式一致；是非题是两个选项的选择题，打分题是选项有顺序的选择题。`Judgement = { answer, distribution, certainty }`，其中 `certainty` 是经过 Calibration 之后的值 |
-| **Reasoning** | Strategy | `reason(ctx: ReasoningContext) → ReasoningResult { conclusion, proposedActions, hypotheses, usage }` | 具体用哪种 Reasoning Strategy 由配置决定。`usage` 记录实际使用的 token 数，用来计算预算 |
+| **Intuition** | Strategy | `judge(compactState, questions: Record<id, Question>) → Record<id, Judgement>` | Question 只有选择题一种（ADR 0018）：`{ state, question, options: 2–24 个带字母编号的选项 }`，与 Tev1 模型卡的输入格式一致；是非题是两个选项的选择题，打分题是选项有顺序的选择题。`Judgement = { answer, distribution, certainty, offOptionMass }`：输出用 grammar 约束为选项字母；`distribution` 是在选项字母范围内重新归一化后的分布；`offOptionMass` 是不属于任何选项的原始概率；`certainty` 是经过 Calibration 之后的值（ADR 0019） |
+| **Reasoning** | Strategy | `reason(ctx: ReasoningContext) → ReasoningResult { conclusion, proposedActions, hypotheses, usage }` | 具体用哪种 Reasoning Strategy 由配置决定。最终输出用 `json_schema` 约束，schema 由契约中的 Zod schema 导出（ADR 0019）。`usage` 记录实际使用的 token 数（输入、输出和思考部分分开，ADR 0018），用来计算预算 |
 | **Verification** | Strategy | `verify(candidate) → Verdict { ok, reasons }` | 能用确定性规则检查的，就不交给模型 |
 | **Knowledge** | Attention、Strategy | `query(q: ClaimQuery) → Claim[]` | 只读。写入一律走 Action 和 Event Log，再由 Projector 更新 |
 | **Retrieval** | Attention | `retrieve(query, budget) → RetrievedItem[]` | BM25 加向量检索；每一条结果都带上来源和观测时间（B1 和 B3 信息对等） |

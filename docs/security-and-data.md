@@ -31,7 +31,7 @@
 |---|---|---|---|---|---|
 | X1 | **所有改动都经过 Action**，记录执行者，并先经过 Policy 检查 | [已定] ADR 0014 | LLM03 过度授权；ASI02 工具滥用；ASI03 身份与权限滥用 | M0 起 | [自动]（测试 + dependency-cruiser 禁止绕过 Action Executor 直接写入） |
 | X2 | **Agent 只能提议，用户批准。** 修改本体、配置、代码，以及部署，都需要用户批准 | [已定] ADR 0011、S3 | ASI01；ASI10 失控 Agent | M3 起涉及 | [自动]（Policy 测试） |
-| X3 | **模型输出不能直接执行。** 模型的输出必须先通过 schema 解析，再经过 Verification，才能成为 Action；任何情况下都不对模型输出使用 `eval`、`new Function` 或动态 import | [新增] | LLM10 输出处理不当；ASI05 意外的代码执行 | M1 起 | [自动]（Biome `noGlobalEval`）[审查] |
+| X3 | **模型输出不能直接执行。** 模型的输出用约束解码限定格式（ADR 0019），再通过 schema 校验和 Verification，才能成为 Action；约束只保证格式、不保证内容；任何情况下都不对模型输出使用 `eval`、`new Function` 或动态 import | [新增] | LLM10 输出处理不当；ASI05 意外的代码执行 | M1 起 | [自动]（Biome `noGlobalEval`）[审查] |
 | X4 | **资源设上限**：每个 Experiment 的最大步数、每次模型调用的超时、token 预算（Cognitive Budget）、Worker 进程的资源上限 | [新增]，部分属于 [已定] 的 Cognitive Budget | LLM06 无限制消耗；ASI08 级联失败 | M0.5 起 | [自动]（测试） |
 | X5 | **每个 Experiment 一个进程**，崩溃不会扩散 | [已定] ADR 0004 | ASI08 | M0.5 | [自动]（不泄漏测试） |
 | X6 | **启动时立即失败**：配置错误、能力不匹配时立即报错，不拖到运行时 | [已定] 契约 v0、A4 | — | M0.3 | [自动] |
