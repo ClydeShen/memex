@@ -1,6 +1,6 @@
 # 技术栈推荐
 
-本文件列出 Memex 的工程技术栈：每样东西的作用、依赖分类，以及在哪个里程碑引入。依赖分类的定义见 [dependencies.md](./dependencies.md)，里程碑见 [roadmap.md](./roadmap.md)。
+本文件列出 Memex 的工程技术栈：每样东西的作用、依赖分类，以及在哪个里程碑引入。依赖分类的定义见 [dependencies.md](./dependencies.md)，里程碑见 [roadmap.md](./roadmap.md)，这些工具要检查的代码风格见 [code-style.md](./code-style.md)。
 
 - **状态**：推荐（2026-10-11 用户确认）。版本号是当天 `npm view <包名> version` 的结果，引入时再取当时的最新版。
 - **都可以替换**：这里的选择都是工程选择，不是架构决定（roadmap 第四部分："测试框架和 lint 工具按当时的主流选择"）。更换某个工具只需要修改本文件，不需要写 ADR。
