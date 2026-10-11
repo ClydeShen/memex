@@ -111,7 +111,7 @@ Memex 有三层天然的隔离边界，由内到外：
 ## 八、命名
 
 1. **使用 GLOSSARY.md 中的术语**，避开它在 `_Avoid_` 中列出的词。例如写 `Claim`，不写 `fact`；写 `Capability`，不写 `tool`；写 `Observation`，不写 `input`。**[审查]**
-2. **大小写**：变量和函数用 camelCase，类型用 PascalCase，文件名用 kebab-case。**[自动]**（`useNamingConvention`、`useFilenamingConvention`）
+2. **大小写**：变量和函数用 camelCase，类型用 PascalCase，文件名用 kebab-case。**[自动]**（`useNamingConvention`、`useFilenamingConvention`）目录和包的命名见 [project-structure.md](./project-structure.md)。
 3. **工厂函数以 `create` 开头**，例如 `createEventLog`；返回布尔值的函数以 `is`、`has`、`can` 开头。**[审查]**
 
 ## 九、测试：少而准

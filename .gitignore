@@ -18,11 +18,9 @@ coverage/
 *.gguf
 *.safetensors
 
-# Instance-local runtime data: event logs, snapshots, recordings, reports.
-# Placeholder paths; finalize when M0.3/M0.5 fix the on-disk layout.
-# Recordings meant as test fixtures live under the package's test dir and are committed.
+# Instance data: event logs, snapshots, recordings, reports (docs/project-structure.md section 4).
+# Synthetic test fixtures live in each package's fixtures/ and are committed.
 .memex/
-runs/
 
 # Logs
 *.log

@@ -27,7 +27,7 @@
 | 3 | `GLOSSARY.md` | 领域术语。**写代码、写文档时一律使用这里的术语**，`_Avoid_` 列出的词不要用 |
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**M0.2 按它实现** |
-| 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束，以及安全与数据要求 |
+| 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
 | 7 | `docs/adr/0001`–`0016` | 16 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
 | 8 | `docs/open-questions.md` | 还剩 2 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
