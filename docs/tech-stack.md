@@ -2,7 +2,7 @@
 
 本文件列出 Memex 的工程技术栈：每样东西的作用、依赖分类，以及在哪个里程碑引入。依赖分类的定义见 [dependencies.md](./dependencies.md)，里程碑见 [roadmap.md](./roadmap.md)，这些工具要检查的代码风格见 [code-style.md](./code-style.md)。
 
-- **状态**：推荐（2026-10-11 用户确认）。版本号是当天 `npm view <包名> version` 的结果，引入时再取当时的最新版。
+- **状态**：推荐（2026-10-11 用户确认；Git hooks 和 TUI 两部分于同日补充，hook 的分工 2026-10-12 用户确认）。版本号是当天 `npm view <包名> version` 的结果，引入时再取当时的最新版。
 - **都可以替换**：这里的选择都是工程选择，不是架构决定（roadmap 第四部分："测试框架和 lint 工具按当时的主流选择"）。更换某个工具只需要修改本文件，不需要写 ADR。
 - **硬依赖除外**：已经在 ADR 中定下的硬依赖（Node.js / TypeScript、Zod、JSONL + CloudEvents 等）照旧，要换需要先写 ADR。
 
@@ -24,7 +24,7 @@
 
 | 工具 | 版本 | 分类 | 作用 | 何时引入 |
 |---|---|---|---|---|
-| Node.js | 26.x（`.nvmrc`） | 硬依赖 | 运行时；直接运行 `.ts`，不需要构建 | 已就绪 |
+| Node.js | 26.x（`.nvmrc`） | 硬依赖 | 运行时；直接运行 `.ts`，不需要构建。按官方发布计划，Node 26 在 2026-10-28 进入 Active LTS，此前是 Current；它也是旧的单双数发布模式下的最后一个版本，从 Node 27 起每年只发一个大版本 | 已就绪 |
 | TypeScript | 7.0.x | 硬依赖 | 只做类型检查（`tsc --noEmit`），不负责产出代码。开启 `strict` 和 `erasableSyntaxOnly` | V0.1 |
 | pnpm | 12.x（`packageManager` 字段固定） | 开发工具 | 包管理和 monorepo（pnpm workspaces）。选它而不是 npm 的理由是安全（用户决定，2026-10-11）：默认阻止依赖包的安装脚本，只放行 `allowBuilds` 中列出的包；`minimumReleaseAge` 默认推迟安装刚发布的版本；`trustPolicy` 可以拒绝发布可信度下降的版本；`node_modules` 结构严格，代码无法使用没有声明的依赖。另外安装更快，也更省磁盘空间 | V0.1 |
 
@@ -42,6 +42,27 @@
 - ESLint 10 加 typescript-eslint 8：规则更全，但需要把 TypeScript 降到 6.0。等 TS 7.1 发布、typescript-eslint 支持 TS 7 之后，可以重新评估。
 - oxlint 1.x 加 oxfmt：速度最快，但 oxfmt 还在 0.x 版本。
 - SonarQube Cloud：公开仓库可以免费使用，但它是云服务，而且和上面几个工具的功能重复，暂不引入。
+
+### Git hooks
+
+用途：提交之前在本机先跑一遍快速检查，把明显的问题挡在提交之前。hook 可以用 `git commit --no-verify` 跳过，所以它只是本机的便利，不是关卡：完整检查靠 `pnpm check`，决策关卡之后再由 CI 兜底（ADR 0012、0020）。
+
+| 做法 | 版本 | 分类 | 作用 | 何时引入 |
+|---|---|---|---|---|
+| git 自带的 `core.hooksPath`（主选） | git 自带 | — | hook 脚本放在仓库的 `.githooks/` 目录里一起提交；根 `package.json` 的 `prepare` 脚本执行 `git config core.hooksPath .githooks`，`pnpm install` 时自动生效。不装任何包（选型原则 1、security-and-data.md S3）。pnpm 的 `allowBuilds` 只管依赖包的安装脚本，根项目自己的 `prepare` 照常运行 | V0.1 |
+| Biome 的 `--staged` | Biome 自带 | — | pre-commit 中执行 `biome check --staged`，只检查已暂存的文件，不需要 lint-staged | V0.1 |
+
+三个 hook 分工如下（用户确认，2026-10-12）：
+
+| hook | 做什么 | 理由 |
+|---|---|---|
+| pre-commit | 只执行 `biome check --staged` | 要轻：Agent 在本地开发时频繁提交，不能拖慢速度 |
+| commit-msg | 强制 Conventional Commits 格式（`type(scope): 描述`），用一个很短的 `.ts` 脚本检查，Node 26 直接运行 | 提交信息是重要的历史追溯依据；World 0 也会把 git 历史当作数据来源（ADR 0011） |
+| pre-push | 执行完整的 `pnpm check`（类型检查、lint、架构检查、测试） | 推上去的代码必须是通过检查的代码 |
+
+备选：
+- lefthook 2.2.x：Go 写的单个程序，用一个 YAML 文件配置，可以并行运行多项检查。npm 包按平台带预编译的二进制；它自己的 postinstall 会被 pnpm 默认拦下，要在 `prepare` 里执行 `lefthook install`（specimens 中 iii 的 console 就是这样用的）。等 hook 里的检查变多、需要并行时再换。
+- husky 9.1.x：零依赖，hook 是 `.husky/` 下的 shell 脚本。它做的事和 `core.hooksPath` 基本相同，只是多一个包。
 
 ## 三、测试
 
@@ -88,6 +109,20 @@ V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 | tsdown | 0.23.x | 开发工具 | 打包发布 npm 命令行工具。实验阶段直接运行 `.ts`，不需要它 | P4 |
 | changesets | 3.x | 开发工具 | 版本号和更新日志 | P4 |
 
+### 终端交互界面（TUI）
+
+产品命令（`memex ...`）在决策关卡之后设计（ADR 0020），TUI 到 P1 才需要。验证阶段的 `pnpm lab` 只输出文本和 JSON 报告，不需要 TUI。
+
+| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+|---|---|---|---|---|
+| `node:util` 的 `styleText`、`node:readline` | Node 自带 | — | 终端颜色和简单的行输入，不需要 chalk | 用到时 |
+| Ink | 8.0.x | 可替换的实现细节 | 用 React 组件写终端界面，例如对话、查看目标进度、审批。纯 JavaScript，布局引擎 yoga-layout 是 WASM，不违反 E1。Claude Code、GitHub Copilot CLI，以及 Hermes 的新 TUI（specimens/hermes-agent/ui-tui）都用它；生态最大，有 ink-testing-library 可以测试界面 | P1 |
+| @clack/prompts | 1.8.x | 可替换的实现细节 | 向导式问答，例如 `memex init` 这类首次配置流程。OpenClaw 的向导流程也用 Clack | P1 |
+
+备选：
+- pi-tui（`@earendil-works/pi-tui` 1.1.x）：命令式组件，差分渲染加同步输出（CSI 2026），专为流式输出的 Agent 界面设计，只有 2 个依赖。OpenClaw 的 `openclaw tui` 基于它。比较年轻：包名在 2026 年从 `@mariozechner/pi-tui` 改成现在的名字，旧包停在 0.73.1。如果 Ink 在长时间流式输出时卡顿（Ink 有帧率上限），换它。
+- 不选 OpenTUI（0.6.x）：渲染核心是 Zig，按平台带预编译的原生库，与 E1 和 ADR 0013"各平台行为一致"的取向相反；而且还在 0.x。
+
 ## 明确不引入
 
 | 工具 | 原因 |
@@ -98,6 +133,10 @@ V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 | uuid | Node 26 自带 `crypto.randomUUIDv7()` |
 | execa | `node:child_process` 够用 |
 | Prettier | Biome 已包含格式化 |
+| lint-staged | Biome 自带 `--staged` |
+| commitlint | 只为检查一行提交信息格式，引入一套解析器和配置包太重；需要时写一个很短的脚本 |
+| simple-git-hooks | 靠自身的 postinstall 安装 hook，pnpm 默认会拦下；`core.hooksPath` 不需要安装脚本 |
+| chalk | Node 26 自带 `util.styleText` |
 | CloudEvents SDK | 见第四节 |
 | tsup | tsdown 是它的后继，而且实验阶段不需要打包 |
 
@@ -107,6 +146,9 @@ V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 2. **Vitest 5 相比 4 有哪些变化。** 版本号是从 npm 查到的，更新说明还没有看过。
 3. **Biome 的类型相关规则比 typescript-eslint 少多少。** 尚未逐条比对。
 4. **pnpm 12 的安全设置名称。** `allowBuilds`、`minimumReleaseAge`、`trustPolicy` 是按 pnpm 11 的文档核实的；pnpm 12 是用 Rust 重写的版本（2026-08 发布），这些设置在 12 中是否完全相同，要在 V0.1 写 `pnpm-workspace.yaml` 时对照 12 的文档确认。
+
+5. **Ink 8 相比 7 有哪些变化。** Ink 8.0.0 于 2026-10-03 发布，要求 React 19.3 以上，更新说明还没有看过；P1 引入时再核对。
+6. **`core.hooksPath` 下的 hook 在 Windows 上的表现。** git for Windows 用自带的 sh 运行 hook，按理和其他平台一致，V0.1 落地时在本机实测一次。
 
 ## 来源
 
@@ -120,5 +162,8 @@ V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 - 工具函数：[es-toolkit vs lodash](https://blog.logrocket.com/es-toolkit-lodash-alternative)
 - 日志：[Pino vs Winston](https://betterstack.com/community/comparisons/pino-vs-winston) · [Pino 与 OpenTelemetry](https://1xapi.com/blog/structured-logging-nodejs-pino-opentelemetry-2026)
 - CLI：[2026 Node CLI 框架](https://www.pkgpulse.com/guides/best-cli-frameworks-nodejs-2026)
+- Git hooks：[git-config：core.hooksPath](https://git-scm.com/docs/git-config#Documentation/git-config.txt-corehooksPath) · [Biome CLI（`--staged`）](https://biomejs.dev/reference/cli/) · [pnpm 构建设置（allowBuilds 只管依赖）](https://pnpm.io/settings/build) · [husky](https://typicode.github.io/husky/get-started.html) · [Husky vs Lefthook vs lint-staged 2026](https://www.pkgpulse.com/guides/husky-vs-lefthook-vs-lint-staged-git-hooks-nodejs-2026) · [用 Lefthook 代替 Husky](https://recca0120.github.io/en/2026/03/08/lefthook-git-hooks/)
+- TUI：[OpenTUI（Better Stack）](https://betterstack.com/community/guides/scaling-nodejs/opentui-react/) · [OpenTUI 与 Ink 对比](https://blog.openreplay.com/opentui-alternative-ink/) · [Node 终端界面](https://blog.openreplay.com/building-terminal-interfaces-nodejs/) · [OpenClaw TUI 文档](https://docs.openclaw.ai/de/cli/tui.md) · [pi-tui（depscope）](https://mcp.depscope.dev/pkg/npm/@mariozechner/pi-tui)；版本号和依赖来自 2026-10-11 的 `npm view`
+- Node 发布计划：[nodejs/Release schedule.json](https://github.com/nodejs/Release/blob/main/schedule.json)
 - 规范化 JSON 与 UUID：[canonicalize](https://npmjs.com/package/canonicalize) · [Node 原生 UUID](https://dev.to/pierre/you-should-ditch-uuid-node-has-you-covered-10i3)
 - Oxigraph：[DepScope：oxigraph](https://mcp.depscope.dev/pkg/npm/oxigraph)

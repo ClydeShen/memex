@@ -11,7 +11,7 @@ Memex 的所有可配置内容都用同一种 YAML 资源格式声明，没有�
 其他规则：
 
 - **资源引用**：资源之间按 `metadata.name` 互相引用，相当于 CloudFormation 的 `Ref`。
-- **密钥**：用 `secretKeyRef` 从环境变量取值。
+- **密钥**：从环境变量取值。（ADR 0016 统一写法为 `${env:NAME}`，不使用 Dapr 的 `secretKeyRef`。）
 - **实验变体**：采用 Kustomize 式的 base + overlay 补丁。补丁本身也是同一种格式，因此不需要类似 Hydra 的第二种组合机制。
 - **校验**：每种 `kind` 都附带一份 JSON Schema。加载时据此校验，编辑器也能据此自动补全。
 

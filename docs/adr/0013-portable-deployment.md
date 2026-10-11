@@ -22,7 +22,7 @@ Memex 将来要部署到大多数平台：Linux 服务器、云主机、Mac、Wi
 ## 分阶段
 
 - **M0**：一条命令就能跑通测试和实验。
-- **M1–M2**：加入 Compose，以及 `up`、`doctor`、`models pull`。
+- **M1–M2**：加入 Compose，以及 `up`、`doctor`、`models pull`。（**ADR 0020 修订**：这些属于产品阶段，不在 V1–V2；命令名称在决策关卡后重新确定。）
 - **正式阶段**：发布多架构镜像，补上 `upgrade`、`backup`、回滚和档位检测。
 
 不引入 Kubernetes。

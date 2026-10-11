@@ -29,6 +29,7 @@ memex/
 ├─ pnpm-lock.yaml            锁定依赖版本，必须提交
 ├─ tsconfig.base.json        共用的 TypeScript 设置，各包继承
 ├─ biome.json                lint 和格式化
+├─ .githooks/                git hooks 脚本，由 `prepare` 设置 `core.hooksPath` 生效（tech-stack.md）
 ├─ .dependency-cruiser.cjs   架构边界规则
 ├─ knip.json                 未使用代码检查
 ├─ vitest.config.ts          测试
@@ -48,7 +49,7 @@ memex/
 说明：
 - **每个真实的 Provider 单独成包。** 它自己声明需要的依赖，这些依赖不会进入核心。替换一个 Provider，就是换掉一个包（ADR 0008）。
 - **`fakes` 放在 `packages/`**，因为 V0 按 HANDOFF 的约定只有这四个包，而且 Fake 主要用于测试。
-- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。V0 中，Lab Worker 的启动文件就是装配入口，由它 import Fake Provider 并登记；V1 起，装配入口移到 `apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
+- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。整个验证阶段（V0–V2），Lab Worker 的启动文件都是装配入口：V0 中由它 import Fake Provider 并登记，V1 起再加上 `providers/*` 中的真实 Provider。P1 起，产品的装配入口在 `apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
 
 ## 二、包的内部结构
 

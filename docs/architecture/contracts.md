@@ -91,7 +91,7 @@ Event {                                                          // CloudEvents 
 
 ### Experiment 快照（JSON）
 
-快照记录一次 Experiment 的全部输入：最终生效的配置及其哈希、每个 Provider 的 `type` 和版本、模型的 sha256、World Generator 的版本和种子、本体版本、硬件信息，以及录制文件的位置。只要有这份快照，就能回放这次 Experiment。
+快照记录一次 Experiment 的全部输入：最终生效的配置及其哈希、每个 Provider 的 `type` 和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本（ADR 0017）、思考模式设置（ADR 0018）、硬件信息，以及录制文件的位置。只要有这份快照，就能回放这次 Experiment。快照属于 Instance 数据，来自真实 Domain 的快照不提交（ADR 0016）。
 
 ---
 
@@ -100,7 +100,7 @@ Event {                                                          // CloudEvents 
 | 边界 | 协议 | 契约要点 |
 |---|---|---|
 | Lab Runner ↔ Experiment Worker | 子进程 IPC，消息按 JSONL 格式逐行传输 | Runner 发出 `start { experiment, snapshotPath }`；Worker 依次返回事件流和 `result { reportPath, status }`。Worker 退出后，它的全部状态随之销毁（ADR 0004） |
-| Runtime ↔ Model Backend | OpenAI 兼容的 HTTP 接口 | Reasoning 需要文本生成。Intuition 适配器还需要 `logprobs`（ADR 0010），并且必须能关闭思考模式。这些都在 Model 资源中声明为能力 |
+| Runtime ↔ Model Backend | OpenAI 兼容的 HTTP 接口 | Reasoning 需要文本生成。Intuition 适配器还需要 `logprobs`（ADR 0010）和 grammar 约束解码（ADR 0019），并且必须能关闭思考模式；Reasoning 需要 `json_schema` 约束解码。这些都由 Provider 在 `capabilities` 中声明（第二节） |
 | Runtime ↔ 用户 | CLI、HTTP/SSE | 默认只监听 localhost；对外开放时必须认证（ADR 0013） |
 | Runtime ↔ 外部工具 | MCP | 每个 MCP 工具会被映射成一个 Capability，并在沙箱中执行（P3） |
 | Runtime ↔ 其他 Agent | A2A | 对方说的话记为一条 Claim，`sourceType` 为 `agent`（尚未排期） |
@@ -112,4 +112,5 @@ Event {                                                          // CloudEvents 
 
 - `StepContext.services` 的具体形状：要让 Provider 之间只能通过 Strategy 授权的接口互相调用，又不至于太繁琐。
 - 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 模型本身支持很长的上下文（262,144），但 Intuition 是单次、低延迟的判断，状态应保持精简；具体上限作为配置项。
+- Provider 的配置怎样传入：通过注册表中工厂函数的参数（code-style.md 第一节的示例），还是通过 `init(config, ctx)`。两者只保留一种。
 - 录制和回放的边界放在哪一层：是在每个 Provider 内部，还是在 Model Backend 的连接层统一处理。目前倾向后者，因为最省事。

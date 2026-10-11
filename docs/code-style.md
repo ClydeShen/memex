@@ -34,6 +34,8 @@ export const createFakeIntuition = (config: FakeIntuitionConfig): IntuitionProvi
 });
 ```
 
+示例中配置通过工厂参数传入；它和契约 v0 中 `init(config, ctx)` 只保留一种，在 V0 实现时确定（contracts.md 第六节）。
+
 ## 二、函数写法
 
 1. **默认使用箭头函数**，写成 `const name = (...) => ...`。**[自动]**（`useArrowFunction`，只覆盖函数表达式）**[审查]**（函数声明）

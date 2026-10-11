@@ -56,7 +56,7 @@
 
 ## 后端能力要按声明来匹配，不能默认假设
 
-不同的后端，能力并不一样。例如，Intuition 适配器要求后端能返回 token 概率（ADR 0010）。所以每个 Provider 都要**声明自己支持哪些能力**，比如 `supportsLogprobs`、`supportsGrammar`、`supportsJsonSchema`（约束解码，ADR 0019）。组合根和 `memex doctor` 在启动时检查这些能力是否与配置匹配；不匹配时，要立即给出明确的错误。不能等到运行时才失败，也不能在代码里假设"后端一定支持某项能力"。
+不同的后端，能力并不一样。例如，Intuition 适配器要求后端能返回 token 概率（ADR 0010）。所以每个 Provider 都要**声明自己支持哪些能力**，比如 `supportsLogprobs`、`supportsGrammar`、`supportsJsonSchema`（约束解码，ADR 0019）。组合根和产品的自检命令（例如 `memex doctor`，名称在决策关卡后确定，ADR 0020）在启动时检查这些能力是否与配置匹配；不匹配时，要立即给出明确的错误。不能等到运行时才失败，也不能在代码里假设"后端一定支持某项能力"。
 
 ## 决策时机
 

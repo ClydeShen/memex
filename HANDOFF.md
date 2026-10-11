@@ -32,7 +32,7 @@
 | 8 | `docs/open-questions.md` | 还剩 4 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 
-注意：`docs/research/cross-check-2026-10-10.md` 第三部分第 1 点（"System 1 必须训练"）**已经撤回**，文件末尾有更正说明。现行原则是**不训练模型**（VISION 原则 3）。
+注意：`docs/research/cross-check-2026-10-10.md` 第三部分第 1 点（"System 1 必须训练"）**已经撤回**，文件末尾有更正说明。现行原则是**不训练模型**（VISION 原则 3）。`docs/research/core-algorithms-2026-10-11.md` 中"经 Oracle 确认的成功才能形成 Pattern"和"T5 的学习曲线"已被 ADR 0018 修订，文件开头有更正说明。
 
 ---
 
@@ -51,7 +51,7 @@
 | `exp/*`、`feat/*`、`eval/*` | 旧系统遗留的分支 | 不要动 |
 
 - **仓库里目前只有文档和工程配置文件**：README、VISION、GLOSSARY、HANDOFF、`docs/`，以及 `.gitignore`、`.gitattributes`、`.editorconfig`、`.nvmrc`、`.env.example`。没有 `package.json`，没有任何代码。
-- 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。这是习惯，没有 hook 强制，也没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
+- 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（docs/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
 - 设计讨论和决策：21 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
@@ -86,10 +86,10 @@
 | # | 核查项 | 方法 | 为什么需要 |
 |---|---|---|---|
 | L1 | 操作系统和硬件 | 记录操作系统版本、是否使用 WSL2、CPU、内存、GPU 型号和显存 | ADR 0013 的硬件档位 |
-| L2 | Node.js 版本 | `node -v`，应使用当时的 Active LTS 版本 | E1、V0.1 |
+| L2 | Node.js 版本 | `node -v`，应与 `.nvmrc` 一致（Node 26，2026-10-28 进入 Active LTS） | E1、V0.1 |
 | L3 | git 版本 | `git --version` | 通用 |
 | L4 | llama.cpp 是否已安装，版本是多少 | 找到 `llama-server` 的路径和版本号。用户说已安装，Ollama 已卸载 | V1 的 Model Backend |
-| L5 | llama-server 能否返回 token 概率 | 启动任意一个小模型，调用 `/v1/chat/completions` 并带上 `logprobs: true, top_logprobs: 5, max_tokens: 1`，记录返回格式 | **Intuition 适配器的硬性要求**（ADR 0010，contracts.md） |
+| L5 | llama-server 能否返回 token 概率 | 启动任意一个小模型，调用 `/v1/chat/completions` 并带上 `logprobs: true, top_logprobs: 5, max_tokens: 1`，记录返回格式（这是当时的核查方法；实际使用时 `top_logprobs` 至少为 20，见 ADR 0019） | **Intuition 适配器的硬性要求**（ADR 0010，contracts.md） |
 | L6 | 能否关闭思考模式 | 对 Reasoning 和 Intuition 模型，验证 `chat_template_kwargs: {"enable_thinking": false}` 是否生效 | Tev1 和 Qwen 的调用方式 |
 | L7 | GPU 是否可用 | 查看 `nvidia-smi`；确认 llama-server 实际使用的是 CUDA | 性能 |
 | L8 | 本地已有哪些模型文件 | 列出 GGUF 文件。需要的模型和获取方式见 ADR 0017（只从官方来源获取） | V1、V2 |

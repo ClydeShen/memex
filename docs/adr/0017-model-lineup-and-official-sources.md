@@ -15,7 +15,7 @@ ADR 0010 的模型选择是在云端会话中做的，当时无法检测实际�
 | 角色 | 主选 | 备选 | 理由 |
 |---|---|---|---|
 | Reasoning | **Qwen3.8-27B**（2026-08，Apache-2.0），Q4_K_M | **Qwen3.6-35B-A3B**（MoE，2026-04，Apache-2.0），Q4_K_M | Qwen3.8-27B 是能放进单块 32 GB 级消费显卡的模型中，能力评测分最高的（Artificial Analysis Intelligence Index v4.3.2：34；Qwen3.6-27B 为 21，Gemma 4 31B 为 15）。它的缺点是输出很长、速度较慢；Qwen3.6-35B-A3B 实测生成速度约为它的 3.5 倍，作为速度备选 |
-| Intuition | **Tev1-4B-experimental**（不变），Q8_0 | 启发式规则（不变，ADR 0010） | 仍然是唯一专门为快速选项判断训练的开源模型（2026-09 发布，基于 Qwen3.5-4B） |
+| Intuition | **Tev1-4B-experimental**（不变），Q8_0 | 读取 Reasoning 模型的选项概率（收敛规则不变，ADR 0010）。启发式规则是同时运行的**对照**，不是备选（ADR 0018） | 仍然是唯一专门为快速选项判断训练的开源模型（2026-09 发布，基于 Qwen3.5-4B） |
 | Embedding | **EmbeddingGemma-2**（2026-09，Apache-2.0），Q8_0 | — | 当前最新的开源嵌入模型；M1 的 B1 用它，到 M1 再确认 |
 
 三者可以同时加载：Q4_K_M、Q8_0、Q8_0 三个模型合计约 24 GB。

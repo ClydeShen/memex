@@ -63,7 +63,7 @@ _Avoid_: database, history, memory
 _Avoid_: cache, copy
 
 **Projector**:
-读取 Event Log、生成和更新 Projection 的核心组件。对同一段日志，重建得到的结果必须完全相同。Claim 的 Confidence 和 Epistemic Status 也由它确定性地算出（ADR 0018 引用的调研结论）。
+读取 Event Log、生成和更新 Projection 的核心组件。对同一段日志，重建得到的结果必须完全相同。按调研建议（docs/research/core-algorithms-2026-10-11.md 第 2 节），Claim 的 Confidence 和 Epistemic Status 也由它确定性地算出；具体算法是可以做实验比较的变量（ADR 0002）。
 _Avoid_: indexer, materializer
 
 **Experience**:
@@ -130,7 +130,7 @@ _Avoid_: fallback, retry
 
 **Verification**:
 在采取行动或接受结论之前，对候选结论做的检查。能用确定性方法检查的，就不用模型检查。
-_Avoid_: validation（validation 专指 Pattern 的验证）
+_Avoid_: validation（英文 validation 指验证阶段，见 ADR 0020）。中文单独说"验证"容易和验证阶段混淆，指本术语时写 Verification
 
 **Action**:
 一次有名字、有参数结构、记录执行者，并经过策略检查的改动，可以改动 World（通过 Capability 执行），也可以改动 Worldview 或本体。所有改动都必须以 Action 的形式进行。Observation 不是 Action：Observation 是"发生了什么"的记录，直接写入 Event Log；而根据 Observation 形成或修改 Claim，则是一个 Action。
@@ -169,7 +169,7 @@ _Avoid_: plugin, adapter, dataset
 ## 架构
 
 **Framework**:
-Memex 的代码、契约和实验平台本身，不绑定任何具体的模型、服务或运行环境。
+Memex 的代码和契约本身，不绑定任何具体的模型、服务或运行环境。验证阶段的 Lab 放在同一个仓库里，但不属于 Framework，不随产品发布（ADR 0020）。
 _Avoid_: platform, product
 
 **Instance**:
@@ -193,7 +193,7 @@ Agent 通过 Observation 和 Action 与之交互的 World 的接口，例如 Mic
 _Avoid_: simulator, sandbox
 
 **Composition Root**:
-把组件装配起来的地方，分两部分：一是 `@memex/runtime` 中的注册表和装配逻辑（读取配置、校验、按 `type` 查注册表、实例化、能力检查），它本身不引用任何具体实现；二是**装配入口**（V0 是 Lab Worker 的启动文件，V1 起是 `apps/*`），只有它 import 具体的 Provider 并登记到注册表。核心代码从不直接引用具体的 Provider。
+把组件装配起来的地方，分两部分：一是 `@memex/runtime` 中的注册表和装配逻辑（读取配置、校验、按 `type` 查注册表、实例化、能力检查），它本身不引用任何具体实现；二是**装配入口**（验证阶段 V0–V2 是 Lab Worker 的启动文件，P1 起是 `apps/*`），只有它 import 具体的 Provider 并登记到注册表。核心代码从不直接引用具体的 Provider。
 _Avoid_: container, bootstrap
 
 **Cognitive Strategy**:
@@ -211,7 +211,7 @@ _Avoid_: prompting technique
 _Avoid_: run, test, trial
 
 **Experiment 快照**:
-记录一次 Experiment 全部输入的 JSON 文件：最终生效的配置及其哈希、各 Provider 的类型和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本、思考模式设置，以及录制文件的位置。有了它就能回放这次 Experiment。
+记录一次 Experiment 全部输入的 JSON 文件：最终生效的配置及其哈希、各 Provider 的类型和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本、思考模式设置、硬件信息，以及录制文件的位置。有了它就能回放这次 Experiment。
 _Avoid_: snapshot（单独使用时容易和 Event Log 的加速快照混淆）
 
 **Lab**:
@@ -259,7 +259,7 @@ _Avoid_: judge, scorer
 _Avoid_: control group
 
 **Task Class**:
-按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移、T6 长序列学习（同一 Task Family 的任务按顺序给出，测量随 Experience 增加的变化；ADR 0018）。验证阶段只用 T2（Q1）、T4（Q2）、T6（Q3）。
+按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移、T6 长序列学习（同一 Task Family 的任务按顺序给出，测量随 Experience 增加的变化；ADR 0018）。验证阶段只用 T2（Q1）、T4（Q2）、T6（Q3）。ADR 0021 之后，T2、T4、T6 也都以 Goal 的形式给出；Task Class 按考查的认知能力区分，不按任务形式区分，T3 考查的是多步规划和执行本身。
 _Avoid_: domain, category
 
 **Task Family**:
