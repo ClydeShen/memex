@@ -98,7 +98,7 @@
 
 | # | 任务 | 产出 | 验证方式 |
 |---|---|---|---|
-| M0.1 | Monorepo 骨架 | npm workspaces、TypeScript、测试框架、lint；建立四个包 `@memex/contracts`、`runtime`、`fakes`、`lab` | 一条命令就能跑完所有包的构建和测试，结果为通过 |
+| M0.1 | Monorepo 骨架 | pnpm workspaces、TypeScript、测试框架、lint；建立四个包 `@memex/contracts`、`runtime`、`fakes`、`lab` | 一条命令就能跑完所有包的构建和测试，结果为通过 |
 | M0.2 | 契约包（按 architecture/contracts.md 实现） | 资源格式（apiVersion / kind / metadata / spec）的 schema，并能导出为 JSON Schema；核心类型 Observation、Claim（含溯源、双时态、确信状态、置信度）、Action、Event（CloudEvents 字段，加上执行者、Instance 标识、前一条事件的标识）；各 Provider 接口（Environment、Intuition、Reasoning、Knowledge、Policy、Cognitive Strategy），以及能力声明 | schema 的单元测试；生成的 JSON Schema 能校验示例配置 |
 | M0.3 | 运行时 | JSONL Event Log，支持追加和重放；Composition Root，负责注册表、配置加载、overlay 合并和能力检查；认知循环，执行 Strategy，并让每个 Action 都经过 Policy 并写入日志；从日志生成 Trace Projection；输出 JSONL 运维日志 | 单元测试；把日志重放后，得到的 Projection 必须与原来完全一致 |
 | M0.4 | Fake Provider | 可以设定准确率的 FakeIntuition、FakeReasoning、FakeKnowledge、全部放行的 Policy、按种子确定性生成的最小 Micro World，以及一个"污染 Provider" | 同一个种子必须产生同样的结果 |

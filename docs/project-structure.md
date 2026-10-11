@@ -24,7 +24,9 @@ memex/
 ├─ apps/                     可执行程序：`memex` 命令行、以后的 Web 界面（M1 起）
 ├─ examples/                 示例资源 YAML（Experiment、Model、Provider），只包含合成数据
 ├─ docs/                     文档：adr/、architecture/、research/ 和各份规范
-├─ package.json              npm workspaces 根配置，统一的脚本入口
+├─ package.json              根配置：统一的脚本入口，`packageManager` 固定 pnpm 版本
+├─ pnpm-workspace.yaml       pnpm workspaces 与依赖安全设置（docs/security-and-data.md 第五节）
+├─ pnpm-lock.yaml            锁定依赖版本，必须提交
 ├─ tsconfig.base.json        共用的 TypeScript 设置，各包继承
 ├─ biome.json                lint 和格式化
 ├─ .dependency-cruiser.cjs   架构边界规则
@@ -82,7 +84,7 @@ packages/runtime/
 | 目录、源文件 | kebab-case | `composition-root/`、`append-event.ts` |
 | 表示一个概念的目录 | 单数 | `event-log/`、`composition-root/`、`claim/` |
 | 装同类东西的目录 | 复数 | `projectors/`、`fixtures/`、`examples/` |
-| npm 包名 | `@memex/` 加 kebab-case | `@memex/contracts`、`@memex/intuition-tev1` |
+| npm 包名 | `@memex/` 加 kebab-case；包之间互相引用时用 `workspace:*` | `@memex/contracts`、`@memex/intuition-tev1` |
 | Provider 包的目录 | 把 `type` 中的点换成连字符 | `intuition.tev1` → `providers/intuition-tev1/` |
 | 测试文件 | `*.test.ts` | `append-event.test.ts` |
 | 资源 YAML | kebab-case 名字加 `kind` 后缀 | `local-qwen.model.yaml`、`smoke.experiment.yaml` |

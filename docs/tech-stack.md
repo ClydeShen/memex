@@ -26,7 +26,7 @@
 |---|---|---|---|---|
 | Node.js | 26.x（`.nvmrc`） | 硬依赖 | 运行时；直接运行 `.ts`，不需要构建 | 已就绪 |
 | TypeScript | 7.0.x | 硬依赖 | 只做类型检查（`tsc --noEmit`），不负责产出代码。开启 `strict` 和 `erasableSyntaxOnly` | M0.1 |
-| npm workspaces | 随 npm 提供 | 硬依赖 | monorepo 的包管理 | M0.1 |
+| pnpm | 12.x（`packageManager` 字段固定） | 开发工具 | 包管理和 monorepo（pnpm workspaces）。选它而不是 npm 的理由是安全（用户决定，2026-10-11）：默认阻止依赖包的安装脚本，只放行 `allowBuilds` 中列出的包；`minimumReleaseAge` 默认推迟安装刚发布的版本；`trustPolicy` 可以拒绝发布可信度下降的版本；`node_modules` 结构严格，代码无法使用没有声明的依赖。另外安装更快，也更省磁盘空间 | M0.1 |
 
 ## 二、代码质量
 
@@ -36,7 +36,7 @@
 | dependency-cruiser | 18.5.x | 开发工具 | 把架构约束写成自动检查：核心只依赖 `@memex/contracts`；Provider 之间不能互相 import；只有 Composition Root 能引用具体实现（A2，ADR 0008）。违反时检查失败 | M0.1 |
 | knip | 6.41.x | 开发工具 | 找出没用到的文件、导出和依赖，原生支持 monorepo | M0.1 |
 | CodeQL | GitHub 提供 | 开发工具 | 安全扫描，公开仓库免费，支持 JS 和 TS | 正式阶段建立 CI 时（ADR 0012） |
-| Dependabot、`npm audit` | GitHub 和 npm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | 正式阶段，或更早手动运行 |
+| Dependabot、`pnpm audit` | GitHub 和 pnpm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | 正式阶段，或更早手动运行 |
 
 备选：
 - ESLint 10 加 typescript-eslint 8：规则更全，但需要把 TypeScript 降到 6.0。等 TS 7.1 发布、typescript-eslint 支持 TS 7 之后，可以重新评估。
@@ -92,7 +92,8 @@ M0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 
 | 工具 | 原因 |
 |---|---|
-| turbo、nx | npm workspaces 就够了，不需要额外的任务编排 |
+| turbo、nx | pnpm workspaces 加 `pnpm -r` 就够了，不需要额外的任务编排 |
+| npm、yarn（作为包管理器） | 选 pnpm，理由见第一节 |
 | lodash | 选 es-toolkit |
 | uuid | Node 26 自带 `crypto.randomUUIDv7()` |
 | execa | `node:child_process` 够用 |
@@ -105,6 +106,7 @@ M0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 1. **dependency-cruiser 和 knip 在 TypeScript 7 下能否正常工作。** 它们可能用到 TypeScript 的接口。如果不能，退路是在开发依赖里另装一份 TypeScript 6 给它们用，类型检查仍然用 TS 7。
 2. **Vitest 5 相比 4 有哪些变化。** 版本号是从 npm 查到的，更新说明还没有看过。
 3. **Biome 的类型相关规则比 typescript-eslint 少多少。** 尚未逐条比对。
+4. **pnpm 12 的安全设置名称。** `allowBuilds`、`minimumReleaseAge`、`trustPolicy` 是按 pnpm 11 的文档核实的；pnpm 12 是用 Rust 重写的版本（2026-08 发布），这些设置在 12 中是否完全相同，要在 M0.1 写 `pnpm-workspace.yaml` 时对照 12 的文档确认。
 
 ## 来源
 

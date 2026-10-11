@@ -110,7 +110,7 @@
 **分支**：从 `main` 开一个实验分支，例如 `exp/m0-skeleton`。通过 M0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
 
 **顺序和产出**：
-1. **M0.1 Monorepo 骨架**：npm workspaces、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令就能构建并测试全部包。
+1. **M0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令就能构建并测试全部包。
 2. **M0.2 契约**：按 `docs/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
 3. **M0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志。
 4. **M0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。

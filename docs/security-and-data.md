@@ -56,10 +56,10 @@
 
 | # | 要求 | 来源 | 对应风险 | 何时 | 检查 |
 |---|---|---|---|---|---|
-| S1 | **提交 lockfile，安装一律用 `npm ci`**；审查时把 lockfile 的变化当作代码变化看待 | [新增] | LLM04 供应链；ASI04 | M0.1 | [审查] |
-| S2 | **保持 npm 默认不运行安装脚本的设置**，只对确实需要的包单独放行 | [新增] | LLM04 | M0.1 | [自动]（npm 默认行为） |
+| S1 | **提交 `pnpm-lock.yaml`，CI 中安装一律用 `pnpm install --frozen-lockfile`**；审查时把 lockfile 的变化当作代码变化看待 | [新增] | LLM04 供应链；ASI04 | M0.1 | [审查] |
+| S2 | **依赖包的安装脚本默认不运行**，只在 `pnpm-workspace.yaml` 的 `allowBuilds` 中逐个放行；**推迟安装刚发布的版本**（`minimumReleaseAge`，pnpm 默认 1 天）；**拒绝发布可信度下降的版本**（`trustPolicy: no-downgrade`） | [新增] | LLM04；ASI04 | M0.1 | [自动]（pnpm 设置） |
 | S3 | **依赖尽量少**：Node 自带的功能够用就不装包；新增依赖先登记 | [已定] A3、tech-stack.md | LLM04 | 已生效 | [审查] |
-| S4 | **开启 Dependabot**，定期运行 `npm audit` 和 `npm audit signatures` | [新增] | LLM04 | M0.1 起 | [自动] |
+| S4 | **开启 Dependabot**，定期运行 `pnpm audit` | [新增] | LLM04 | M0.1 起 | [自动] |
 | S5 | **模型不打包**，按来源下载，并校验 sha256 | [已定] ADR 0013 | LLM04；LLM05 | M1 | [自动]（`memex models pull`） |
 | S6 | **开启 GitHub 密钥扫描和推送保护**，阻止带密钥的提交被推送（公开仓库免费） | [新增] | LLM02 | 尽快 | [自动]（GitHub） |
 
@@ -80,6 +80,7 @@
 
 - [OWASP GenAI LLM Top 10 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/) · [2026 版的变化](https://aembit.io/blog/the-owasp-top-10-for-llm-applications-2026-what-changed-and-why-it-matters/)
 - [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications/) · [Cycode 解读](https://cycode.com/blog/owasp-top-10-agentic-applications/)
+- pnpm 安全设置：[pnpm settings](https://pnpm.io/settings) · [构建脚本设置](https://pnpm.io/settings/build)
 - npm 供应链：[Mondoo 2026](https://mondoo.com/blog/npm-supply-chain-security-package-manager-defenses-2026) · [OpenReplay：npm 安全最佳实践](https://blog.openreplay.com/npm-security-best-practices/)
 - Event Sourcing 与数据删除：[Verraes：Crypto-Shredding](https://verraes.net/2019/05/eventsourcing-patterns-throw-away-the-key/) · [AxonIQ：事件溯源中的敏感数据](https://www.axoniq.io/blog/protect-sensitive-data-in-an-event-sourced-application)
 - MCP：[CSA：MCP 安全白皮书（2026-05）](https://labs.cloudsecurityalliance.org/research-rb/csa-whitepaper-mcp-security-agentic-attack-surface-20260516/) · [Corgea：MCP 安全清单](https://corgea.com/learn/mcp-security-best-practices)
