@@ -1,0 +1,13 @@
+# Normalize every text file to LF in the repo and the working tree.
+# Trace hashes must match across platforms (M0 pass criterion "reproducible"),
+# so line endings must not depend on the checkout OS.
+* text=auto eol=lf
+
+# Binary formats
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.gguf binary
+*.wasm binary
+*.zip binary
