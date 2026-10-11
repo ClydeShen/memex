@@ -32,6 +32,7 @@
 | Retrieval | BM25 加向量检索 | 只用图检索、加 reranker 等 | M1（B1 需要） |
 | Attention | 基础实现 | 基于图的实现、基于 Intuition 的实现 | M2 |
 | Cognitive Strategy | 快慢双系统 | LLM-only、RAG、SwiftSage 式、NeSyFS 式 | M0 用 Fake，M2 用真实实现 |
+| Verification | 确定性规则：动作是否合法、目标是否达成、结论是否与证据冲突 | 加入模型复核、跨来源核对、SHACL 约束 | M0 用规则检查 |
 | Reasoning Strategy | 单次推理 | 先计划后执行、假设与证据交替 | M2 |
 | Capability | Micro World 的模拟器动作 | 本地沙箱能力、MCP | M1 |
 | Communication | CLI | HTTP / SSE、A2A | M1 |
