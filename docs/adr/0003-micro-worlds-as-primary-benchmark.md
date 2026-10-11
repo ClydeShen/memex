@@ -4,7 +4,7 @@ status: accepted
 
 # 主要评测环境是由生成器确定性生成的 Micro World
 
-MVP 不在开放的真实世界里评测认知能力，而是在 World Generator 按配置和随机种子生成的合成 Micro World 里评测。生成器掌握 Ground Truth，所以评分是客观、可复现的，不依赖用 LLM 来判卷，样本量也不受限制。Agent 只能通过 Observation 了解世界，看不到 Ground Truth。评测按认知能力划分 Task Class（T0–T5），不按业务领域划分。
+MVP 不在开放的真实世界里评测认知能力，而是在 World Generator 按配置和随机种子生成的合成 Micro World 里评测。生成器掌握 Ground Truth，所以评分是客观、可复现的，不依赖用 LLM 来判卷，样本量也不受限制。Agent 只能通过 Observation 了解世界，看不到 Ground Truth。Oracle 的结果只用于 Evaluator 打分，不能以任何形式回流给 Agent；Agent 的学习信号只来自 Environment 和 Verification（ADR 0018）。评测按认知能力划分 Task Class（T0–T5），不按业务领域划分。
 
 ## Considered Options
 

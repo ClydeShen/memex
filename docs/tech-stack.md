@@ -36,7 +36,7 @@
 | dependency-cruiser | 18.5.x | 开发工具 | 把架构约束写成自动检查：核心只依赖 `@memex/contracts`；Provider 之间不能互相 import；只有 Composition Root 能引用具体实现（A2，ADR 0008）。违反时检查失败 | M0.1 |
 | knip | 6.41.x | 开发工具 | 找出没用到的文件、导出和依赖，原生支持 monorepo | M0.1 |
 | CodeQL | GitHub 提供 | 开发工具 | 安全扫描，公开仓库免费，支持 JS 和 TS | 正式阶段建立 CI 时（ADR 0012） |
-| Dependabot、`pnpm audit` | GitHub 和 pnpm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | 正式阶段，或更早手动运行 |
+| Dependabot、`pnpm audit` | GitHub 和 pnpm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | M0.1 起（不需要 CI，与 security-and-data.md S4 一致） |
 
 备选：
 - ESLint 10 加 typescript-eslint 8：规则更全，但需要把 TypeScript 降到 6.0。等 TS 7.1 发布、typescript-eslint 支持 TS 7 之后，可以重新评估。

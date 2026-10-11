@@ -43,7 +43,7 @@ interface Provider {
 | **Environment** | Capability、Lab | `reset(seed) → Observation[]`；`step(action) → StepResult { observations, valid, cost }`；`describe() → EnvironmentInfo` | 统一的环境接口。Micro World 和 World 0 都实现这个端口。这是 Memex 自己定义的三个标准之一 |
 | **CognitiveStrategy** | Runtime 循环 | `step(ctx: StepContext) → StepDecision` | `StepContext` 包含 Cognitive State、预算，以及可以调用的 `services`（其他端口）。返回值是这一步的决定：提交哪些 Action、要不要继续、要不要等待 |
 | **Attention** | Strategy | `select(state, budget) → AttentionResult { focus, ignored, reason }` | 只能通过 `services` 调用 Knowledge 和 Retrieval |
-| **Intuition** | Strategy | `judge(compactState, questions: Record<id, Question>) → Record<id, Judgement>` | Question 的类型是 `choice`、`noul` 或 `score`，沿用 Jev 的格式。`Judgement = { answer, distribution, certainty }`，其中 `certainty` 是经过 Calibration 之后的值 |
+| **Intuition** | Strategy | `judge(compactState, questions: Record<id, Question>) → Record<id, Judgement>` | Question 只有选择题一种（ADR 0018）：`{ state, question, options: 2–24 个带字母编号的选项 }`，与 Tev1 模型卡的输入格式一致；是非题是两个选项的选择题，打分题是选项有顺序的选择题。`Judgement = { answer, distribution, certainty }`，其中 `certainty` 是经过 Calibration 之后的值 |
 | **Reasoning** | Strategy | `reason(ctx: ReasoningContext) → ReasoningResult { conclusion, proposedActions, hypotheses, usage }` | 具体用哪种 Reasoning Strategy 由配置决定。`usage` 记录实际使用的 token 数，用来计算预算 |
 | **Verification** | Strategy | `verify(candidate) → Verdict { ok, reasons }` | 能用确定性规则检查的，就不交给模型 |
 | **Knowledge** | Attention、Strategy | `query(q: ClaimQuery) → Claim[]` | 只读。写入一律走 Action 和 Event Log，再由 Projector 更新 |
@@ -87,7 +87,7 @@ Event {                                                          // CloudEvents 
 
 ### 资源配置（ADR 0009）
 
-M0 需要的 `kind` 有：`Model`、`Provider`、`Strategy`、`Environment`、`Experiment`、`Runtime`。每种 `kind` 都附带一份 JSON Schema。示例见 docs/research/standards-and-config.md 第四部分。
+`apiVersion` 统一为 `memex.dev/v0alpha1`（冻结为 v1 之前）。M0 需要的 `kind` 有：`Model`、`Provider`、`Strategy`、`Environment`、`Experiment`、`Runtime`。每种 `kind` 都附带一份 JSON Schema。示例见 docs/research/standards-and-config.md 第四部分。
 
 ### Experiment 快照（JSON）
 

@@ -28,8 +28,8 @@
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**M0.2 按它实现** |
 | 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `docs/adr/0001`–`0017` | 17 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
-| 8 | `docs/open-questions.md` | 还剩 4 个待决问题，每个都已标明在什么时候决定 |
+| 7 | `docs/adr/0001`–`0018` | 18 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 8 | `docs/open-questions.md` | 还剩 3 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 
 注意：`docs/research/cross-check-2026-10-10.md` 第三部分第 1 点（"System 1 必须训练"）**已经撤回**，文件末尾有更正说明。现行原则是**不训练模型**（VISION 原则 3）。
@@ -54,7 +54,7 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。这是习惯，没有 hook 强制，也没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：17 份 ADR 已确认，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：18 份 ADR 已确认，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `docs/research/`。
 
@@ -111,7 +111,7 @@
 **分支**：从 `main` 开一个实验分支，例如 `exp/m0-skeleton`。通过 M0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
 
 **顺序和产出**：
-1. **M0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令就能构建并测试全部包。
+1. **M0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
 2. **M0.2 契约**：按 `docs/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
 3. **M0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志。
 4. **M0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。

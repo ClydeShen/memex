@@ -59,7 +59,7 @@ OpenTelemetry Collector 先在各自的分区声明 receivers、processors、exp
 ### 5. 配置带版本号
 Kubernetes 的做法是：每份配置都显式声明 `apiVersion` 和 `kind`，不写就可能随着版本升级被套上不同的默认值。版本分为 alpha、beta、stable 三个成熟度。不同版本只是同一份数据的不同视图，靠转换函数相互迁移。[官方]
 
-**对 Memex 的建议**：每份配置文件以 `apiVersion: memex/v0alpha1` 和 `kind: Experiment | Runtime | DomainPack` 开头，加载时如有需要就把旧版本转换成新版本。
+**对 Memex 的建议**：每份配置文件以 `apiVersion: memex.dev/v0alpha1` 和 `kind: Experiment | Runtime | DomainPack` 开头，加载时如有需要就把旧版本转换成新版本。
 
 ### 6. 加载时校验，出错立即停止
 - **Standard Schema** 是 Zod、Valibot、ArkType 的作者共同制定的一个约 60 行的 TypeScript 接口，让各种校验库可以互相替换使用。它不负责生成 JSON Schema。[二手]

@@ -15,7 +15,7 @@
 
 依赖倒置（DIP）是最重要的一条，它就是 ADR 0008 和约束 A2 在代码层面的体现。
 
-1. **只依赖契约。** 核心代码和 Provider 只能 import `@memex/contracts`；具体实现只能出现在 Composition Root 中。Provider 之间不能互相 import。**[自动]**（dependency-cruiser）
+1. **只依赖契约。** Provider 只能 import `@memex/contracts`；核心代码不 import 任何具体的 Provider。具体实现只在**装配入口**被 import 并登记到注册表（GLOSSARY：Composition Root；依赖方向见 project-structure.md）。Provider 之间不能互相 import。**[自动]**（dependency-cruiser）
 2. **依赖从外面传进来。** 函数和 Provider 需要的东西都通过参数或 `init` 时的上下文传入，不在内部 import 具体实现，也不读取全局状态。**[审查]**
 3. **只有 Composition Root 可以读取环境变量。** 其他地方需要的配置，由 Composition Root 读取后传进来。**[自动]**（`noProcessEnv`，Composition Root 除外）
 4. **用工厂函数代替 class。** Provider 和其他组件写成"接收依赖、返回对象"的工厂函数。这样没有 `this`，也就不会出现 `this` 指向错误；还和第二节的箭头函数风格一致。**[审查]**

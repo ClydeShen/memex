@@ -62,12 +62,16 @@ _Avoid_: database, history, memory
 从 Event Log 推导出来、随时可以丢弃并重建的视图，例如图存储中的 Worldview。这是 Event Sourcing 的标准术语。
 _Avoid_: cache, copy
 
+**Projector**:
+读取 Event Log、生成和更新 Projection 的核心组件。对同一段日志，重建得到的结果必须完全相同。Claim 的 Confidence 和 Epistemic Status 也由它确定性地算出（ADR 0018 引用的调研结论）。
+_Avoid_: indexer, materializer
+
 **Experience**:
 一次完整的经历：目标、Observation、做出的决定、采取的 Action 和结果，是从 Event Log 推导出来的 Projection。Experience 是学习的原材料，本身不是知识。
 _Avoid_: memory, log, trajectory
 
 **Pattern**:
-从多个 Experience 中归纳出的、经过验证的可复用结构，说明在某类情境下什么做法往往有效。
+从多个 Experience 中归纳出的、经过验证的**可直接执行的计划模板**：按 Ontology 类型描述的适用条件、带参数的 Action 序列，以及证据记录。由 Intuition 判断是否适用，经 Verification 检查后直接执行，不调用 Reasoning（ADR 0018）。
 _Avoid_: rule, workflow, template
 
 **Consolidation**:
@@ -189,7 +193,7 @@ Agent 通过 Observation 和 Action 与之交互的 World 的接口，例如 Mic
 _Avoid_: simulator, sandbox
 
 **Composition Root**:
-唯一知道具体实现的地方：读取配置，按 `type` 找到 Provider，把它们装配起来。核心代码从不直接引用具体的 Provider。
+把组件装配起来的地方，分两部分：一是 `@memex/runtime` 中的注册表和装配逻辑（读取配置、校验、按 `type` 查注册表、实例化、能力检查），它本身不引用任何具体实现；二是**装配入口**（M0 是 Lab Worker 的启动文件，M1 起是 `apps/*`），只有它 import 具体的 Provider 并登记到注册表。核心代码从不直接引用具体的 Provider。
 _Avoid_: container, bootstrap
 
 **Cognitive Strategy**:
@@ -205,6 +209,26 @@ _Avoid_: prompting technique
 **Experiment**:
 一次完整、互相隔离的评测运行，由配置唯一确定。一个 Experiment 内部可以积累经验，Experiment 之间不能有任何状态泄漏。
 _Avoid_: run, test, trial
+
+**Experiment 快照**:
+记录一次 Experiment 全部输入的 JSON 文件：最终生效的配置及其哈希、各 Provider 的类型和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本、思考模式设置，以及录制文件的位置。有了它就能回放这次 Experiment。
+_Avoid_: snapshot（单独使用时容易和 Event Log 的加速快照混淆）
+
+**Lab**:
+运行和评测 Experiment 的平台：Runner 为每个 Experiment 启动一个独立的 Worker 进程，负责录制和回放，汇总 Evaluator 的结果并输出报告。Worker 和 Runtime 运行同一套代码。
+_Avoid_: test harness, benchmark runner
+
+**Fake Provider**:
+按 Cognitive Contract 实现、行为由种子和配置确定的假组件，例如可以设定准确率的 FakeIntuition。用于在不接真实模型的情况下验证运行时和 Lab。
+_Avoid_: mock, stub
+
+**对照**（Control）:
+与主选在同一组实验中**同时运行**、用来比较的变体，例如 Intuition 的启发式规则、B3-noI（ADR 0018）。
+_Avoid_: 备选
+
+**备选**（Alternate）:
+主选未通过收敛规则时**才换上**的组件，不与主选同时运行，例如 Reasoning 的 Qwen3.6-35B-A3B（ADR 0017、0018）。
+_Avoid_: 对照、fallback
 
 **Micro World**:
 由生成器按配置和随机种子确定性生成的合成 World，用于在已知真实答案的条件下评测 Agent。
@@ -231,11 +255,11 @@ _Avoid_: judge, grader
 _Avoid_: judge, scorer
 
 **Baseline**:
-用来对照的简化架构，在同一组对比中与 Memex 使用同一个模型。B0：只用 Reasoning。B1：传统 RAG 加 Reasoning。B2：Intuition 加 Reasoning，没有 Worldview。B3：完整的 Memex。B3-noI：去掉 Intuition 的 B3，全部走 Slow Path。B-sym：掌握完整规则的符号求解器，只用来检查题目难度，不参与对比。MVP 阶段只使用 B0、B1、B3 和 B3-noI（ADR 0010）。
+用来对照的简化架构，在同一组对比中与 Memex 使用同一个 Reasoning 模型（ADR 0018）。B0：只用 Reasoning。B1：传统 RAG 加 Reasoning。B2：Intuition 加 Reasoning，没有 Worldview。B3：完整的 Memex。B3-noI：去掉 Intuition 的 B3，全部走 Slow Path。B-sym：掌握完整规则的符号求解器，只用来检查题目难度，不参与对比。MVP 阶段只使用 B0、B1、B3 和 B3-noI（ADR 0010）。
 _Avoid_: control group
 
 **Task Class**:
-按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移。
+按认知能力划分的任务类别：T0 世界观构建、T1 状态发现、T2 诊断、T3 目标导向行动、T4 信念修正、T5 经验迁移、T6 长序列学习（同一 Task Family 的任务按顺序给出，测量随 Experience 增加的变化；ADR 0018）。MVP 只用 T2（Q1）、T4（Q2）、T6（Q3）。
 _Avoid_: domain, category
 
 **Task Family**:

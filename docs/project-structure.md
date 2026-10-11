@@ -40,14 +40,15 @@ memex/
 | 目录 | 是什么 | 可以依赖 | 不能依赖 |
 |---|---|---|---|
 | `packages/contracts` | 唯一稳定的边界（Cognitive Contract） | 只有 Zod 等少量登记过的库 | 其他所有包 |
-| `packages/runtime`、`packages/lab` | Framework 的核心组件 | `contracts` | `providers/*`、`apps/*`、`fakes` |
+| `packages/runtime` | Framework 的核心组件，包括 Composition Root 的注册表和装配逻辑 | `contracts` | `lab`、`fakes`、`providers/*`、`apps/*` |
+| `packages/lab` | 实验平台（Runner、Worker） | `contracts`、`runtime`；**只有 Worker 的启动文件**（M0 的装配入口）可以 import `fakes` | `providers/*`、`apps/*` |
 | `packages/fakes`、`providers/*` | Provider 实现（端口与适配器中的"适配器"） | `contracts` | 其他 Provider、`runtime`、`lab`、`apps/*` |
-| `apps/*` | 装配和入口：在 Composition Root 中注册具体的 Provider | 全部 | — |
+| `apps/*` | 装配入口（M1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | 全部 | — |
 
 说明：
 - **每个真实的 Provider 单独成包。** 它自己声明需要的依赖，这些依赖不会进入核心。替换一个 Provider，就是换掉一个包（ADR 0008）。
 - **`fakes` 放在 `packages/`**，因为 M0 按 HANDOFF 的约定只有这四个包，而且 Fake 主要用于测试。
-- **Lab 怎样拿到具体的 Provider**：Lab 不直接 import Provider。它和 `apps/` 一样，通过 Composition Root 的注册表拿到 Provider。M0 中注册 Fake Provider 的位置在 M0.5 实现时确定，原则是"只有装配的地方知道具体实现"。
+- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。M0 中，Lab Worker 的启动文件就是装配入口，由它 import Fake Provider 并登记；M1 起，装配入口移到 `apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
 
 ## 二、包的内部结构
 

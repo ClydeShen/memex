@@ -15,7 +15,7 @@
 ### 范围
 | # | 约束 | 出处 |
 |---|---|---|
-| S1 | 这是个人研究和学习项目，不以追上云端大模型为目标；同一组对比中，所有方案使用同一个模型 | ADR 0001 |
+| S1 | 这是个人研究和学习项目，不以追上云端大模型为目标；同一组对比中，所有方案使用同一个 Reasoning 模型 | ADR 0001、0018 |
 | S2 | 不训练模型：不做微调、不用 LoRA、不更新任何权重；只允许调整配置参数，例如 Calibration | VISION 原则 3 |
 | S3 | 自我进化不等于自我修改：Memex 可以提出改进，是否采纳由用户决定，并要经过实验验证 | ADR 0011 |
 | S4 | 要能分发给他人使用：随 Memex 一起分发的组件必须允许再分发；第三方模型不打包进 Memex | ADR 0013 |
@@ -65,10 +65,10 @@
 |---|---|---|---|---|
 | **M0 骨架** | 契约、运行时、Fake Provider、Lab，以及最简单的 Micro World | 无 | 满足下文列出的 M0 三条通过标准 | 已确认 |
 | **M1 基线** | 用真实模型跑通 B0 和 B1 | M0 已合并 | B0 和 B1 在 Micro World 上跑完一组任务，产出可复现的报告；同时有 Compose、`memex up`、`memex doctor`、`memex models pull` | 已确认 |
-| **M2 双系统** | 实现 B3 和 B3-noI，并完成真实的 World Generator | M1 已合并 | Q1–Q3 都能被测量，并给出答案（不论答案好坏）；用 10 万条 Claim 完成 Oxigraph 的压测 | 已确认 |
+| **M2 双系统** | 实现 B3 和 B3-noI、最小的 Pattern 形成与使用（ADR 0018），并完成真实的 World Generator | M1 已合并 | Q1–Q3 都能被测量，并给出答案（不论答案好坏）；用 10 万条 Claim 完成 Oxigraph 的压测 | 已确认 |
 | **正式阶段关卡** | 从实验阶段转入正式阶段 | M2 已完成 | Cognitive Contract 冻结为 v1；建立 PR 和 CI 流程 | 已确认（ADR 0012） |
 | **M3 World 0** | Memex 开始认识自己：接入开发知识，包括 ADR、文档和 git 历史 | 正式阶段关卡已通过 | 定义 Domain Pack 格式 v0；T0（从资料中抽取 Claim 的准确率）和 T4（真实的信念修正）可以测量；能自动回答"截至某次提交，X 是什么"这类问题 | 草案 |
-| **M4 学习闭环** | 让学习真正发生 | M3 已完成 | 实现 Consolidation 和 Decay；Pattern 学习有效，B3 在长序列任务上出现学习曲线；接入运行数据，作为 World 0 的第二个数据来源；Agent 能提出本体扩展，并经过 Action 和 Policy 的审批流程 | 草案 |
+| **M4 学习闭环** | 让学习真正发生 | M3 已完成 | 实现完整的 Consolidation 和 Decay 生命周期；Pattern 学习在更长的序列和更多 Task Family 上有效；接入运行数据，作为 World 0 的第二个数据来源；Agent 能提出本体扩展，并经过 Action 和 Policy 的审批流程 | 草案 |
 | **M5 对外扩展** | 连接外部世界 | M4 已完成 | MCP 能力在沙箱中运行；可以导入和导出 Agent Skills；提供 HTTP/SSE 接口和一个最小的 Web 界面 | 草案 |
 | **M6 分发** | 让别人也能用起来 | M5 已完成（可与 M5 并行） | 发布多架构镜像；`memex upgrade`、`backup` 和回滚可用；检测硬件并选择配置档位；Mac、Linux、Windows 三个平台都能一键启动 | 草案 |
 
@@ -84,11 +84,12 @@
 3. **可替换**：只修改配置就能替换 Provider，不需要改代码。
 
 ### 实验约定
-- 上下文预算统一按"实际送入推理模型的 token 数"计算。
+- 上下文预算统一按"实际送入推理模型的 token 数"计算。成本指标分开记录：Reasoning 调用次数、Reasoning 输入 token、Reasoning 输出 token（含思考）、Intuition token、延迟。Reasoning 是否开启思考模式是 Experiment 的配置项，同一组对比使用相同设置（ADR 0018）。
+- 学习信号只来自 Environment 和 Verification；Oracle 只用于 Evaluator 打分（ADR 0018）。
 - B1 和 B3 获得的信息内容相同，只是组织方式不同：B1 的文本块里也写明来源和观测时间。
 - MVP 阶段，从 Observation 形成 Claim 由运行时以确定性方式完成。
 - 统计判定规则在 World Generator 完成之后、评测候选版本之前确定。
-- 在 MVP 阶段，T5 只用来证明测试框架能跑通。
+- Q1 用 T2，Q2 用 T4，Q3 用 T6（长序列学习）。T5（经验迁移）在 MVP 阶段不测（ADR 0018）。
 
 ---
 
@@ -98,7 +99,7 @@
 
 | # | 任务 | 产出 | 验证方式 |
 |---|---|---|---|
-| M0.1 | Monorepo 骨架 | pnpm workspaces、TypeScript、测试框架、lint；建立四个包 `@memex/contracts`、`runtime`、`fakes`、`lab` | 一条命令就能跑完所有包的构建和测试，结果为通过 |
+| M0.1 | Monorepo 骨架 | pnpm workspaces、TypeScript、测试框架、lint；建立四个包 `@memex/contracts`、`runtime`、`fakes`、`lab` | 一条命令跑完所有包的类型检查、lint、架构检查和测试，结果为通过（实验阶段直接运行 `.ts`，没有构建步骤，见 tech-stack.md） |
 | M0.2 | 契约包（按 architecture/contracts.md 实现） | 资源格式（apiVersion / kind / metadata / spec）的 schema，并能导出为 JSON Schema；核心类型 Observation、Claim（含溯源、双时态、确信状态、置信度）、Action、Event（CloudEvents 字段，加上执行者、Instance 标识、前一条事件的标识）；各 Provider 接口（Environment、Intuition、Reasoning、Knowledge、Policy、Cognitive Strategy），以及能力声明 | schema 的单元测试；生成的 JSON Schema 能校验示例配置 |
 | M0.3 | 运行时 | JSONL Event Log，支持追加和重放；Composition Root，负责注册表、配置加载、overlay 合并和能力检查；认知循环，执行 Strategy，并让每个 Action 都经过 Policy 并写入日志；从日志生成 Trace Projection；输出 JSONL 运维日志 | 单元测试；把日志重放后，得到的 Projection 必须与原来完全一致 |
 | M0.4 | Fake Provider | 可以设定准确率的 FakeIntuition、FakeReasoning、FakeKnowledge、全部放行的 Policy、按种子确定性生成的最小 Micro World，以及一个"污染 Provider" | 同一个种子必须产生同样的结果 |
