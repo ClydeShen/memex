@@ -9,9 +9,9 @@ Memex 是研究性质的开发。实验的目的是用几组快速对比，引�
 | 维度 | 主选 | 对照 |
 |---|---|---|
 | Intuition | Tev1 4B | 启发式规则（底线） |
-| Reasoning | Qwen3.5-9B，固定 | 无 |
+| Reasoning | Qwen3.5-9B，固定（**已由 ADR 0017 修订**：主选 Qwen3.8-27B，备选 Qwen3.6-35B-A3B） | 无 |
 | 知识存储 | Oxigraph | 无 |
-| 向量模型 | 一个嵌入模型，B1 和距离判断共用 | 无 |
+| 向量模型 | 一个嵌入模型，B1 和距离判断共用（ADR 0017：EmbeddingGemma-2） | 无 |
 | Cognitive Strategy | 快慢双系统 | 无 |
 | Baseline | B0、B1、B3 | B3-noI（B3 去掉 Intuition，全部走 Reasoning） |
 

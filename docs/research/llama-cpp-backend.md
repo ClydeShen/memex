@@ -40,3 +40,24 @@ Tev1 的系统提示原文，加一道三选一的题；`temperature: 0`、`max_
 ## 与 ADR 0005 相关
 
 llama-server 默认开 **4 个并行槽位**。Issue #7052 报告的"多槽位下同一个提示词输出不同"正是这种配置。复现靠录制和回放，不影响设计；做实测对比时最好用 `--parallel 1`。
+
+---
+
+## 补充：llama.cpp b11552 的实测（2026-10-11）
+
+版本：llama.cpp `b11552`（`23b0202a1`，CUDA 13.4 构建）。模型都来自官方来源（ADR 0017）：Qwen3.8-27B 和 Qwen3.6-35B-A3B 用 `ggml-org` 的 Q4_K_M；Tev1-4B 从官方原始权重自行转换为 Q8_0；EmbeddingGemma-2 用 `ggml-org` 的 Q8_0。请求和上文相同。
+
+| 模型 | L5：选项概率 | L6：关闭思考 | 默认行为 |
+|---|---|---|---|
+| Qwen3.8-27B | 通过：`B` 0.998，`C` 0.0014 | 通过：第一个 token 就是 `B` | 默认开启思考，思考内容放在 `reasoning_content` |
+| Qwen3.6-35B-A3B | 通过：`B` 0.986，` B`（带前导空格）0.014 | 通过 | 默认开启思考 |
+| Tev1-4B | 通过：`B` 0.989，`C` 0.008，`A` 0.003 | 通过 | **默认也会开启思考**，`<think>` 也出现在候选 token 中 |
+
+结论：
+1. 返回格式与 b9354 相同（`choices[0].logprobs.content[].top_logprobs[]`，每项带 `token`、`bytes`、`logprob`）。
+2. **Tev1 也必须显式传 `enable_thinking: false`**，否则第一个 token 是思考内容，而不是选项字母。
+3. 同一字母的 token 变体（`B` / ` B`）是否出现取决于模型，Intuition 适配器始终要合并它们。
+
+EmbeddingGemma-2：`/v1/embeddings` 返回 768 维向量。两句意思相近的话，余弦相似度是 0.887；两句不相关的话是 0.668，能区分开。
+
+生成速度（单次请求、关闭思考、约 400 个 token，只作参考，不是基准测试）：Qwen3.8-27B 约 70 token/s；Qwen3.6-35B-A3B 约 243 token/s。

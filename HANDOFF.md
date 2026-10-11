@@ -89,9 +89,9 @@
 | L3 | git 版本 | `git --version` | 通用 |
 | L4 | llama.cpp 是否已安装，版本是多少 | 找到 `llama-server` 的路径和版本号。用户说已安装，Ollama 已卸载 | M1 的 Model Backend |
 | L5 | llama-server 能否返回 token 概率 | 启动任意一个小模型，调用 `/v1/chat/completions` 并带上 `logprobs: true, top_logprobs: 5, max_tokens: 1`，记录返回格式 | **Intuition 适配器的硬性要求**（ADR 0010，contracts.md） |
-| L6 | 能否关闭思考模式 | 对 Qwen3.5 系列模型，验证 `chat_template_kwargs: {"enable_thinking": false}` 是否生效 | Tev1 和 Qwen 的调用方式 |
+| L6 | 能否关闭思考模式 | 对 Reasoning 和 Intuition 模型，验证 `chat_template_kwargs: {"enable_thinking": false}` 是否生效 | Tev1 和 Qwen 的调用方式 |
 | L7 | GPU 是否可用 | 查看 `nvidia-smi`；确认 llama-server 实际使用的是 CUDA | 性能 |
-| L8 | 本地已有哪些模型文件 | 列出 GGUF 文件。需要的模型：Qwen3.5-9B（Reasoning）；Tev1 4B（社区 GGUF，例如 bartowski 的 `togethercomputer_Tev1-4B-experimental-GGUF`） | M1、M2 |
+| L8 | 本地已有哪些模型文件 | 列出 GGUF 文件。需要的模型和获取方式见 ADR 0017（只从官方来源获取） | M1、M2 |
 | L9 | Docker 和 WSL2 下的 GPU | 可选，`docker run --gpus all ...` | 只有走容器化路线时才需要（ADR 0013） |
 | L10 | 全局 skill | 确认 `~/.claude/skills/plan-delivery` 可以使用 | 用户希望使用这个 skill |
 

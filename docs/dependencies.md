@@ -27,9 +27,9 @@
 | 接口（Provider 类别） | 默认实现 | 可替换为 | 何时需要确定默认值 |
 |---|---|---|---|
 | Model Backend | 作者本机的 llama.cpp | vLLM、其他兼容 OpenAI 接口的服务、远程端点、云端模型服务 | M1 |
-| Reasoning | Qwen3.5-9B | 任意模型 | M1 |
-| Intuition | Tev1 4B | 启发式规则、读取 Qwen 的选项概率、Kev、Laya 等 | M2 |
-| Embedding | 一个本地嵌入模型 | 任意嵌入模型 | M1（B1 需要） |
+| Reasoning | Qwen3.8-27B（ADR 0017） | Qwen3.6-35B-A3B（速度备选）、任意模型 | M1 |
+| Intuition | Tev1 4B（ADR 0017：从官方权重自行转换） | 启发式规则、读取 Reasoning 模型的选项概率、Kev、Laya 等 | M2 |
+| Embedding | EmbeddingGemma-2（ADR 0017） | 任意嵌入模型 | M1（B1 需要） |
 | Knowledge 存储 | Oxigraph WASM（进程内） | Oxigraph 服务器模式、其他图存储 | M2 |
 | Retrieval | BM25 加向量检索 | 只用图检索、加 reranker 等 | M1（B1 需要） |
 | Attention | 基础实现 | 基于图的实现、基于 Intuition 的实现 | M2 |
