@@ -105,4 +105,4 @@
 | M0.5 | Lab | 每个 Experiment 启动一个独立进程来运行；录制和回放；输出 JSON 格式的 Experiment 快照和报告；提供命令 `memex lab run <experiment.yaml>` | 用一份示例 Experiment 端到端跑通 |
 | M0.6 | 关卡 | 把 M0 的三条通过标准写成自动化测试 | 三条标准全部通过之后，合并进 `main` |
 
-M0 开工时需要确定的默认值：Node.js 使用开工时的 Active LTS 版本；测试框架和 lint 工具按当时的主流选择。这些都是可以随时更换的工程选择。
+M0 开工时需要确定的默认值：Node.js 使用开工时的 Active LTS 版本；测试框架和 lint 工具按当时的主流选择。这些都是可以随时更换的工程选择，已确定的推荐见 [tech-stack.md](./tech-stack.md)（Node 26、TypeScript 7、Biome、Vitest、dependency-cruiser、knip）。
