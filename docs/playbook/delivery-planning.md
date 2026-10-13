@@ -51,7 +51,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 3.3 Use the standard practice of the industry. Solve the problem with code logic and code structure.
 
-3.4 Add a new table, column, automated check, tool, or system only if the problem needs it. Write the reason in the issue.
+3.4 Add a new table, column, automated check, tool, or system only if the problem needs it. Write the reason in the issue. A rule that implementers must follow is such a need: prefer an automated check (a linter rule, a structural test, a hook, a CI job) to an instruction in the issue or in AGENTS.md. An instruction can be skipped; a check cannot (core idea 3 in [framework.md](./framework.md)).
 
 3.5 Add an abstraction layer only if you can name the failure or the change that it isolates. Write that name in the issue.
 
@@ -67,6 +67,12 @@ This standard gives the content and the rules for planning delivery through an i
 3.8 Record each decision of the owner in the issue that it affects. Write the date of the decision.
 
 3.9 If the owner corrects a rule, apply the correction to all open issues. If the planner keeps persistent notes, write the rule there.
+
+3.10 Give each judgment that you put in a plan a confidence level and the dimensions that support it (four-dimension confidence in [practices.md](./practices.md)). At "low", ask the owner before you act. At "very low", do not act: look for something similar in the project history, research what others say, or ask the owner again from a different angle.
+
+3.11 Before you ask the owner, look the answer up: the project history, official sources, a measurement. Ask only what cannot be looked up or what is a matter of preference.
+
+3.12 Put the limits before the work. Each issue states what the implementer may change (Scope, Files), what it must not change (Out of scope), and how each limit is checked. If no tool checks a limit, write it as an acceptance condition.
 
 > **CAUTION:** Do not send a direct message to an implementer if it did not send a message first. A direct message bypasses the plan. If you must reply to unblock it, write the same decision in the issue.
 
@@ -87,16 +93,20 @@ This standard gives the content and the rules for planning delivery through an i
 | Scope | What the implementer must do. Use a list. One item gives one change. |
 | Acceptance | Conditions that a person can examine and mark as done or not done. Each condition has a command, a visible result, or a value. |
 | Out of scope | What the implementer must not change in this issue, and the issue that owns it, if one exists. |
-| Files | The files and modules that the issue changes. Use this list to find the conflict group. |
+| Files | The files and modules that the issue changes, and the existing patterns and files to follow. Use this list to find the conflict group. |
+| Decision log | Each decision that the issue needs: the date, who decided, and the confidence level. |
+| How to finish | The project's Definition of Done, plus what this issue adds (for example, a document to update or a live smoke test). |
 | Design rules | Only for user interface work. Name the design guideline source, the copy-language rule, and the component rules of the project. |
 
 4.4 Make each acceptance condition clear and complete. Use words such as "each", "all", and "no" when the scope is a full set.
+
+4.4.1 If the correctness of the change depends on a real boundary that tests replace with doubles (the network, the operating system or runtime, an external service, the deployment environment), add a live smoke test to the acceptance. If a live test is not possible in this environment, write "not live-verified" and the condition to verify it (live verification tiers in [practices.md](./practices.md)).
 
 4.5 Name each decision that you made for the owner. Write the reason. Tell the owner that they can change it.
 
 4.6 If the issue needs a decision that only the owner can make, ask the owner before you add the ready mark.
 
-4.7 Add the ready mark only if the issue meets the Definition of Ready and has no open hard dependency.
+4.7 Add the ready mark only if the issue meets the Definition of Ready and has no open hard dependency. The Definition of Ready means that an implementer can act on the issue at "high" confidence without asking (phase 4 of [framework.md](./framework.md)). Hold agents to a stricter bar than people: a person asks about a vague issue, an agent guesses.
 
 4.8 Select the epic for the issue (see Task 6A).
 
@@ -121,9 +131,10 @@ This standard gives the content and the rules for planning delivery through an i
 1. Put a problem that can lose data or show the data of one user to another user first.
 2. Put structure and standards before the features that use them.
 3. Put a shared module before the modules that use it.
-4. Put a small independent fix with high user value early.
-5. Put a refactor before an audit that examines its result. This prevents a second audit.
-6. Put two issues that change the same file next to each other, or in the order that causes less rework.
+4. Put the issues of a milestone's thinnest end-to-end path before the issues that thicken it.
+5. Put a small independent fix with high user value early.
+6. Put a refactor before an audit that examines its result. This prevents a second audit.
+7. Put two issues that change the same file next to each other, or in the order that causes less rework.
 
 5.6 Write one reason for each position in the suggested-order table.
 
@@ -133,7 +144,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 5.9 Set the WIP limit for the team or the epic. Write it in the epic.
 
-5.10 To let more issues run in parallel, divide the work so that issues change different files. Prefer this to a larger WIP limit.
+5.10 To let more issues run in parallel, divide the work so that issues change different files. Prefer this to a larger WIP limit. The other ways to reduce merge conflicts (remove hotspot files, small pull requests, one working copy per task, a merge queue) are in phase 5 of [framework.md](./framework.md).
 
 > **NOTE:** If there is only one implementer, all work is in sequence, and the conflict groups and the WIP limit have no effect. Keep them anyway, because more implementers can join later.
 
@@ -151,6 +162,8 @@ This standard gives the content and the rules for planning delivery through an i
 - If you cannot say how an issue makes the leading word better, the issue does not belong to the epic.
 
 6.1.2 Do not use a sequence name as a theme (for example "batch 7" or "queue 3"). A sequence name has no exit criterion.
+
+6.1.3 If the epic produces code, make its last issue a cleanup story (phase 5 of [framework.md](./framework.md)). Include the cleanup story in the exit criterion. Make the first issue of the next epic that builds on this code depend on the cleanup story.
 
 6.2 Keep an epic to 16 issues or fewer. This is a guideline, not a hard limit. If a theme needs more, divide it into phases at a dependency boundary. Make one epic for each phase.
 
@@ -259,9 +272,10 @@ This standard gives the content and the rules for planning delivery through an i
 1. Read the last report of the implementer in the issue.
 2. Run each acceptance command yourself. Compare each acceptance condition with the code. Search for the names, interfaces, and files that the issue names.
 3. Compare the numbers in the report with the acceptance conditions.
-4. Write down each part that you could not examine.
+4. Check the Definition of Done: the one-command check passes on the merged result, and each document that the issue names is updated.
+5. Write down each part that you could not examine.
 
-7.4 If all the acceptance conditions are satisfied, close the issue. If it is closed already, keep it closed.
+7.4 If all the acceptance conditions and the Definition of Done are satisfied, close the issue. If it is closed already, keep it closed. If the issue needs a live smoke test that has not run, do not close it as done: mark it "not live-verified" and write the condition.
 
 7.5 If a condition is not satisfied, write a comment in the issue. Name the condition and the evidence. Keep the issue open.
 
@@ -284,6 +298,41 @@ This standard gives the content and the rules for planning delivery through an i
 > **CAUTION:** Implementers and the owner can close issues and epics without you. Always get the real state before you change the epic.
 
 **Completion criterion:** Each reported issue is closed or has a comment with the failed condition. Each blocked, waiting, or on-hold issue has a reason, an owner, and a condition to continue. The epic agrees with the real state of each issue.
+
+## 7A. Task: handle a stop
+
+7A.1 Do this task when an implementer stops work on an issue, or reports that it cannot continue.
+
+7A.2 Classify the stop with three questions, in this sequence (phase 4 of [framework.md](./framework.md)):
+
+1. Does the business still want this now? If no, the issue is **on hold**. Remove the claim and the ready mark. Move it back to the backlog. Write the reason and the date to revisit.
+2. Could the work move forward if someone with capacity picked it up now? If no, the issue is **blocked**. Write the reason, the owner of the cause, and the condition to continue.
+3. Is someone, or some resource, available to pick it up now? If no, the issue is **waiting**. Leave it in the queue.
+
+7A.3 If the requirement is undecided or changing, the issue is blocked: a decision is missing. If the requirement is decided but deferred, the issue is on hold.
+
+7A.4 If the gap existed before the work started, the issue was not ready. Count it as a false ready, and write the cause.
+
+7A.5 Do not stop the clock while an issue is blocked.
+
+**Completion criterion:** Each stopped issue has one state (on hold, blocked, or waiting), a reason, an owner, and a condition to continue. Each false ready is counted with its cause.
+
+## 7B. Task: review delivery health
+
+7B.1 Do this task at each sync, or at a fixed interval that the team sets.
+
+7B.2 Measure these signals (phase 4 of [framework.md](./framework.md)):
+
+- The ready queue: the number of ready issues against how fast implementers consume them.
+- The false-ready rate: issues marked ready that implementers sent back as blocked or ambiguous.
+- The reasons for "not ready" and "blocked", by the role that can fix them: technical dependency (tech lead), architecture gap (architect), unclear story or acceptance (BA), missing test criteria (QA or BA), missing decision (owner).
+- The queue of work that waits for human verification or approval.
+
+7B.3 Count blocked, waiting, and on hold separately.
+
+7B.4 Find the causes that recur. For each one, make an issue that fixes the system (Task 8), or tell the owner which role must act.
+
+**Completion criterion:** The signals are measured with a date. Each recurring cause has an issue or has been reported to the owner.
 
 ## 8. Task: change findings into issues
 
@@ -312,13 +361,15 @@ This standard gives the content and the rules for planning delivery through an i
 
 9.2 Give each issue as a reference that the owner can open.
 
-9.3 Tell the owner each decision that you made for them, with the reason.
+9.3 Tell the owner each decision that you made for them, with the reason and the confidence level.
 
 9.4 Tell the owner each item that only the owner can do. Examples are approval of a rule change, an action in an external system, and data that only the owner has.
 
 9.5 Tell the owner what you did not examine.
 
-**Completion criterion:** The owner can see the result, the decisions, their own next actions, and the limits of your examination.
+9.6 Give the delivery health signals from Task 7B, and the issues that are blocked, waiting, or on hold, with their owners.
+
+**Completion criterion:** The owner can see the result, the decisions, their own next actions, the limits of your examination, and the health of delivery.
 
 ## 10. Reference: what the tracker must give
 
