@@ -40,7 +40,7 @@ interface Provider {
 
 | 端口 | 调用方 | 签名（示意） | 说明 |
 |---|---|---|---|
-| **Environment** | Capability、Lab | `reset(seed) → Observation[]`；`step(action) → StepResult { observations, valid, cost }`；`describe() → EnvironmentInfo` | 统一的环境接口。Micro World 和 World 0 都实现这个端口。这是 Memex 自己定义的三个标准之一 |
+| **Environment** | Capability、Lab | `reset(seed) → { goal, observations }`；`step(action) → StepResult { observations, valid, cost, goalReached }`；`describe() → EnvironmentInfo`（含可用 Action 的定义） | 统一的环境接口。Micro World 和 World 0 都实现这个端口。这是 Memex 自己定义的三个标准之一。`goalReached` 是 Agent 的学习信号；评分由 Evaluator 根据 Ground Truth 独立判定（ADR 0021） |
 | **CognitiveStrategy** | Runtime 循环 | `step(ctx: StepContext) → StepDecision` | `StepContext` 包含 Cognitive State、预算，以及可以调用的 `services`（其他端口）。返回值是这一步的决定：提交哪些 Action、要不要继续、要不要等待 |
 | **Attention** | Strategy | `select(state, budget) → AttentionResult { focus, ignored, reason }` | 只能通过 `services` 调用 Knowledge 和 Retrieval |
 | **Intuition** | Strategy | `judge(compactState, questions: Record<id, Question>) → Record<id, Judgement>` | Question 只有选择题一种（ADR 0018）：`{ state, question, options: 2–24 个带字母编号的选项 }`，与 Tev1 模型卡的输入格式一致；是非题是两个选项的选择题，打分题是选项有顺序的选择题。`Judgement = { answer, distribution, certainty, offOptionMass }`：输出用 grammar 约束为选项字母；`distribution` 是在选项字母范围内重新归一化后的分布；`offOptionMass` 是不属于任何选项的原始概率；`certainty` 是经过 Calibration 之后的值（ADR 0019） |
@@ -113,4 +113,4 @@ Event {                                                          // CloudEvents 
 
 - `StepContext.services` 的具体形状：要让 Provider 之间只能通过 Strategy 授权的接口互相调用，又不至于太繁琐。
 - 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 模型本身支持很长的上下文（262,144），但 Intuition 是单次、低延迟的判断，状态应保持精简；具体上限作为配置项。
-- Provider 的配置怎样传入：通过注册表中工厂函数的参数（code-style.md 第一节的示例），还是通过 `init(config, ctx)`。两者只保留一种。
+- Provider 的配置怎样传入：通过注册表中工厂函数的参数（code-style.md 第一节的示例），还是通过 `init(config, ctx)`。两者只保留一种。V0 集成设计建议用工厂函数参数、去掉 `init`（plans/v0-integration.md I2）。

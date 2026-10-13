@@ -22,4 +22,5 @@ status: accepted
 
 - World Generator 生成的每道题都要包含 Goal、可用的 Action，以及判断目标达成的条件。这一点在 V2 实现真实的 World Generator 时落实；V0 的最小 Micro World 也按这个形式设计，只是规模更小。
 - B-sym（掌握完整规则的符号求解器）用于检查目标型任务的难度：如果 B-sym 和 B0 都能轻松达成，就说明题目太简单（天花板效应，ADR 0017）。
+- **补充（2026-10-13，用户确认）：谁判断目标是否达成。** Environment 在 `StepResult` 中返回 `goalReached`，它根据世界状态算出，是 Agent 能拿到的学习信号（第 2 点），World 0 将来也能提供。Evaluator 用 Ground Truth 独立判定一遍，作为评分依据（第 3 点）。两者不一致时以 Evaluator 为准，并把不一致记为诊断指标；在 Micro World 中两者应当总是一致，不一致说明 Environment 有错误。
 - 产品阶段 P1 的设计以"目标"为中心：如何下达目标、如何查看进度、哪些行动需要用户批准（open-questions.md 第 4 条）。

@@ -226,6 +226,10 @@ _Avoid_: snapshot（单独使用时容易和 Event Log 的加速快照混淆）
 验证阶段运行和评测 Experiment 的工具：Runner 为每个 Experiment 启动一个独立的 Worker 进程，借助 Runtime 的录制与回放复现结果，汇总 Evaluator 的结果并输出报告。Worker 和 Runtime 运行同一套代码，所以被验证的就是产品组件本身。Lab 不属于产品，不随产品发布，通过 `pnpm lab ...` 在仓库中使用（ADR 0020）。
 _Avoid_: test harness, benchmark runner
 
+**Conformance Suite**:
+某个端口的一组一致性测试：凡是实现这个端口的 Provider 都必须通过，不管内部怎样实现。例如 Environment 的一致性测试检查"同一种子生成同一个世界"。中文称"一致性测试"（ADR 0025）。
+_Avoid_: contract test, TCK
+
 **Fake Provider**:
 按 Cognitive Contract 实现、行为由种子和配置确定的假组件，例如可以设定准确率的 FakeIntuition。用于在不接真实模型的情况下验证运行时和 Lab。
 _Avoid_: mock, stub
