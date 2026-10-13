@@ -25,6 +25,7 @@ Put this file at the repository root for the implementing agent. **Keep it to ab
 4. Do not change the plan documents, the ADRs, or the epics. If the plan is wrong, write it in the issue.
 5. If you must change a contract (`<path of the contracts>`), give the reason in the issue and update the contract document.
 6. In a cleanup story, refactor only. Do not add features.
+7. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the owner, and what would unblock it. Do not guess your way around the block.
 
 ## Rules
 - Use the terms in `GLOSSARY.md`. Do not use the words in its `_Avoid_` lines.
