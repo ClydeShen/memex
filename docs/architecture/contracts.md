@@ -32,7 +32,7 @@ interface Provider {
 规则：
 - Composition Root 在启动时把配置要求的能力和 Provider 声明的 `capabilities` 做比对。不匹配就立即报 `CapabilityMismatch` 错误，并说明缺少哪项能力。
 - Provider 只依赖 `@memex/contracts`，不能 import 其他 Provider。
-- 所有外部调用都必须经过录制和回放层（ADR 0005）：调用的输入和输出写入 Event Log，回放时直接读取，不再调用。
+- 所有外部调用都必须经过录制和回放层（ADR 0005、0024）：Model Backend、对真实世界的 Capability 和 Environment、时钟。Event Log 中写入调用的元数据和请求、响应的 sha256，原文按哈希存在内容存储中；回放时直接读取，不再调用。确定的部分（Micro World、Provider 的内部逻辑）回放时重新执行。
 
 ---
 
@@ -84,7 +84,7 @@ Event {                                                          // CloudEvents 
 }
 ```
 
-事件类型命名为 `memex.<领域>.<动作>`，例如 `memex.observation.recorded`、`memex.claim.asserted`、`memex.action.executed`、`memex.provider.call.recorded`（录制下来的模型调用）。CloudEvents 规定扩展属性名只能由小写字母和数字组成，所以写成 `memexactor` 这样的形式，不用点号或下划线。
+事件类型命名为 `memex.<领域>.<动作>`，例如 `memex.observation.recorded`、`memex.claim.asserted`、`memex.action.executed`、`memex.provider.call.recorded`（录制下来的外部调用，原文按 sha256 存在内容存储中，ADR 0024）。CloudEvents 规定扩展属性名只能由小写字母和数字组成，所以写成 `memexactor` 这样的形式，不用点号或下划线。
 
 ### 资源配置（ADR 0009）
 
@@ -92,7 +92,7 @@ Event {                                                          // CloudEvents 
 
 ### Experiment 快照（JSON）
 
-快照记录一次 Experiment 的全部输入：最终生效的配置及其哈希、每个 Provider 的 `type` 和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本（ADR 0017）、思考模式设置（ADR 0018）、硬件信息，以及录制文件的位置。只要有这份快照，就能回放这次 Experiment。快照属于 Instance 数据，来自真实 Domain 的快照不提交（ADR 0016）。
+快照记录一次 Experiment 的全部输入：最终生效的配置及其哈希、每个 Provider 的 `type` 和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本（ADR 0017）、思考模式设置（ADR 0018）、硬件信息，以及录制内容存储的位置（ADR 0024）。只要有这份快照，就能回放这次 Experiment。快照属于 Instance 数据，来自真实 Domain 的快照不提交（ADR 0016）。
 
 ---
 
@@ -114,4 +114,3 @@ Event {                                                          // CloudEvents 
 - `StepContext.services` 的具体形状：要让 Provider 之间只能通过 Strategy 授权的接口互相调用，又不至于太繁琐。
 - 精简状态（交给 Intuition 的状态）怎么序列化。Tev1 模型本身支持很长的上下文（262,144），但 Intuition 是单次、低延迟的判断，状态应保持精简；具体上限作为配置项。
 - Provider 的配置怎样传入：通过注册表中工厂函数的参数（code-style.md 第一节的示例），还是通过 `init(config, ctx)`。两者只保留一种。
-- 录制和回放的边界放在哪一层：是在每个 Provider 内部，还是在 Model Backend 的连接层统一处理。目前倾向后者，因为最省事。

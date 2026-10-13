@@ -219,7 +219,7 @@ _Avoid_: prompting technique
 _Avoid_: run, test, trial
 
 **Experiment 快照**:
-记录一次 Experiment 全部输入的 JSON 文件：最终生效的配置及其哈希、各 Provider 的类型和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本、思考模式设置、硬件信息，以及录制文件的位置。有了它就能回放这次 Experiment。
+记录一次 Experiment 全部输入的 JSON 文件：最终生效的配置及其哈希、各 Provider 的类型和版本、模型来源和 sha256、World Generator 的版本和种子、本体版本、Model Backend 版本、思考模式设置、硬件信息，以及录制内容存储的位置（ADR 0024）。有了它就能回放这次 Experiment。
 _Avoid_: snapshot（单独使用时容易和 Event Log 的加速快照混淆）
 
 **Lab**:

@@ -19,3 +19,5 @@ status: accepted
 - 前一条事件的标识：让日志天然能够分叉，类似 jj 的操作日志，为将来的分支和合并留余地。
 
 事件的存储格式为 JSONL，信封采用 CloudEvents（ADR 0015）。
+
+**补充（ADR 0024）**：录制在不确定性进入系统的边缘进行（Model Backend、对真实世界的 Capability 和 Environment、时钟）；事件写进 Event Log，大内容按 sha256 存在外面。

@@ -119,7 +119,7 @@
 |---|---|---|---|---|
 | V0.1 | Monorepo 骨架 | 工程 | pnpm workspaces、TypeScript、测试框架、lint、架构检查；建立四个包 `@memex/contracts`、`runtime`、`fakes`、`lab` | `pnpm check` 一条命令跑完所有包的类型检查、lint、架构检查和测试，结果为通过（没有构建步骤，见 tech-stack.md） |
 | V0.2 | 契约包（按 architecture/contracts.md 实现） | 产品核心 | 资源格式（apiVersion / kind / metadata / spec）的 schema，并能导出为 JSON Schema；核心类型 Observation、Claim（含溯源、双时态、确信状态、置信度）、Action、Event（CloudEvents 字段，加上执行者、Instance 标识、前一条事件的标识）；各 Provider 接口（Environment、Intuition、Reasoning、Knowledge、Policy、Cognitive Strategy），以及能力声明 | schema 的单元测试；生成的 JSON Schema 能校验示例配置 |
-| V0.3 | 运行时 | 产品核心 | JSONL Event Log，支持追加和重放；Composition Root，负责注册表、配置加载、overlay 合并和能力检查；认知循环，执行 Strategy，并让每个 Action 都经过 Policy 并写入日志；从日志生成 Trace Projection；输出 JSONL 运维日志；录制与回放（在 Model Backend 连接层统一处理，产品中用于审计和排错） | 单元测试；把日志重放后，得到的 Projection 必须与原来完全一致 |
+| V0.3 | 运行时 | 产品核心 | JSONL Event Log，支持追加和重放；Composition Root，负责注册表、配置加载、overlay 合并和能力检查；认知循环，执行 Strategy，并让每个 Action 都经过 Policy 并写入日志；从日志生成 Trace Projection；输出 JSONL 运维日志；录制与回放（在不确定性进入系统的边缘录制，大内容按哈希存在外面，ADR 0024；V0 用假的 Model Backend 测试；产品中用于审计和排错） | 单元测试；把日志重放后，得到的 Projection 必须与原来完全一致 |
 | V0.4 | Fake Provider | 验证专用 | 可以设定准确率的 FakeIntuition、FakeReasoning、FakeKnowledge、全部放行的 Policy、按种子确定性生成的最小 Micro World，以及一个"污染 Provider" | 同一个种子必须产生同样的结果 |
 | V0.5 | Lab | 验证专用 | 每个 Experiment 启动一个独立进程来运行；输出 JSON 格式的 Experiment 快照和报告；`pnpm lab run <experiment.yaml>` 和 `pnpm lab replay <快照>` | 用一份示例 Experiment 端到端跑通 |
 | V0.6 | 关卡 | 验证专用 | 把 V0 的三条通过标准写成自动化测试 | 三条标准全部通过之后，合并进 `main` |

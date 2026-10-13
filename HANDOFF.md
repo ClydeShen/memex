@@ -28,7 +28,7 @@
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**V0.2 按它实现** |
 | 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `docs/adr/0001`–`0023` | 23 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 7 | `docs/adr/0001`–`0024` | 24 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
 | 8 | `docs/open-questions.md` | 还剩 4 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 
@@ -54,7 +54,7 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（docs/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：23 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：24 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `docs/research/`。
 
@@ -113,7 +113,7 @@
 **顺序和产出**：
 1. **V0.1 Monorepo 骨架**：pnpm workspaces（见 docs/tech-stack.md）、TypeScript、测试框架、lint，建四个包：`@memex/contracts`、`@memex/runtime`、`@memex/fakes`、`@memex/lab`。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
 2. **V0.2 契约**：按 `docs/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
-3. **V0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志、录制与回放（在 Model Backend 连接层统一处理）。
+3. **V0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志、录制与回放（按 ADR 0024：在不确定性进入系统的边缘录制，大内容按哈希存在外面）。
 4. **V0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。
 5. **V0.5 Lab**（验证工具，不属于产品，ADR 0020）：每个 Experiment 一个子进程，Runner 和 Worker 之间用 JSONL 通信；提供 `pnpm lab run <experiment.yaml>` 和 `pnpm lab replay <快照>`。
 6. **V0.6 关卡**：把三条通过标准写成自动化测试，即可复现、不泄漏、可替换。全部通过之后再合并。合并之后，提醒用户在 GitHub 仓库设置中开启 CodeQL 的默认设置（docs/tech-stack.md）。
@@ -121,7 +121,7 @@
 **V0 中需要靠实现来确定的设计细节**（`contracts.md` 第六节）：
 - `StepContext.services` 的形状。
 - 交给 Intuition 的精简状态如何序列化。
-- 录制和回放放在哪一层。倾向于放在 Model Backend 连接层统一处理。
+- Provider 的配置通过工厂函数参数传入，还是通过 `init(config, ctx)` 传入（只保留一种）。
 
 如果实现中发现契约需要改动，就直接修改 `contracts.md` 并说明原因。契约要到决策关卡才冻结。
 

@@ -99,7 +99,7 @@ packages/runtime/
 运行时产生的数据属于 Instance，不属于仓库内容：
 
 - **默认目录 `.memex/`**，可以通过配置修改。它被 `.gitignore` 忽略。
-- **每次 Experiment 的输出**放在 `.memex/runs/<experiment 名称>/<运行 id>/`，包括 Event Log、录制、快照和报告。具体的文件格式在 V0.5 时确定。
+- **每次 Experiment 的输出**放在 `.memex/runs/<experiment 名称>/<运行 id>/`，包括 Event Log、按 sha256 存放录制原文的内容存储（`blobs/`，ADR 0024）、快照和报告。具体的文件格式在 V0.5 时确定。
 - 真实领域的数据只能放在这里，不能放进仓库（ADR 0016）。
 
 ## 五、什么时候建什么
