@@ -150,11 +150,22 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 7. **Ready, done, blocked**: define three states for the project and write them down.
    - **Definition of Ready (ready for agent)**: the ticket has a clear Definition of Done; every hard (physical) dependency is resolved; it has testable acceptance criteria (a command or a value for each); the decisions it needs are recorded; it points to the existing patterns and files to follow. In terms of four-dimension confidence (practices.md): the ticket gives the implementing agent enough to act at "high" without asking. Hold agents to a stricter bar than people: a person asks about a vague ticket, an agent guesses.
    - **Definition of Done**: every acceptance criterion is verified by running its command (by the planner, not by self-report); the one-command check passes; the docs the ticket names are updated.
-   - **Definition of Blocked**: the agent cannot move forward by its own actions (an open dependency, a decision only the user can make, an unavailable environment or external system, an acceptance criterion it cannot verify). Blocked is not the same as waiting in a queue. When blocked, the agent stops, marks the ticket blocked with the reason, the owner, and what would unblock it, and does not guess its way around it. Blocked tickets stay visible, and the time blocked is recorded.
+   - **Definition of Blocked**: the work cannot move forward even if someone with capacity picked it up now (an open dependency, a decision only the user can make, a requirement that is still undecided or changing, an unavailable environment or external system, an acceptance criterion that cannot be verified). When blocked, the agent stops, marks the ticket blocked with the reason, the owner, and what would unblock it, and does not guess its way around it. Blocked tickets stay visible, and the time blocked is recorded.
+   - **Not everything that stops is "blocked".** Ask three questions in sequence:
+
+     | # | Question | If "no", the state is | Owner | What to do |
+     |---|---|---|---|---|
+     | 1 | Does the business still want this now? | **On hold** (the business decided "not now") | User or product owner | Remove the ready mark; move it back before the commitment point (the backlog); write the reason and when to revisit. Not blocked |
+     | 2 | Could it move forward if someone with capacity picked it up now? | **Blocked** | The owner of the cause | Stop, mark blocked, write reason, owner, and unblock condition |
+     | 3 | Is someone (or some resource) available to pick it up now? | **Waiting** (for capacity) | Whoever allocates capacity | Leave it in the queue. It shows a capacity problem, not a block |
+
+     A requirement that is undecided or changing is **blocked** (a decision is missing). A requirement that is decided but deferred is **on hold**. A gap found **before** work starts means the ticket was **not ready**; a gap found **after** work starts makes it **blocked**.
+   - **Capacity in an agent-driven project** is often not the agent's coding speed but: the attention of whoever verifies and approves (the planner or the user), environment slots (one GPU, rate limits, token budgets), and file conflicts between agents working at the same time. With one implementing agent working in sequence, a queue is normal; a growing queue of work waiting for human verification is the signal.
 8. **Delivery health signals**: treat the ticket states as a trim tab for the whole delivery system.
    - **Ready queue**: the number of ready tickets against how fast the agent consumes them. A queue that keeps running dry means producing ready tickets is the bottleneck.
    - **False-ready rate**: tickets marked ready that the agent sends back as blocked or ambiguous. This tests the Definition of Ready itself.
    - **Reasons by owner**: classify every "not ready" and every "blocked" by the role that can fix it: technical dependency not cleared (tech lead), architecture gap (architect), unclear story or acceptance criteria (BA), missing test criteria (QA or BA), missing decision (user). Look for causes that recur, and fix the system, not just the ticket.
+   - **Keep the states apart in the numbers**: count blocked, waiting, and on hold separately. Counting waiting as blocked inflates the block signal and hides a capacity problem; leaving on-hold work in progress distorts cycle time and work in progress. Do not stop the clock while a ticket is blocked. Whether the cycle time of an on-hold ticket restarts or continues when it comes back is a project choice; write it down.
 
 **Outputs**: `docs/roadmap.md`, `docs/plans/<milestone>-integration.md`, epics and stories in the issue tracker.
 
