@@ -70,7 +70,7 @@ The principle: **procedural text** (it tells the reader what to do and in which 
 | ADRs, vision, research notes, architecture descriptions | No | They explain trade-offs and uncertainty; use the explanatory standard |
 | The handoff document | Partly: background in explanatory style; "first steps" and "do not" lists in STE | Mixed content |
 
-**Example**: an operating standard for a planning agent can be written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
+**Example**: [delivery-planning.md](./delivery-planning.md), the procedure for planners, is written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
 
 ### How non-English documents can borrow it
 

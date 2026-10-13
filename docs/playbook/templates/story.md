@@ -19,6 +19,10 @@ Blocked by #<prerequisite issue>, #<prerequisite issue>
 ## Out of scope
 - <What this story does not change, and the issue that owns it.>
 
+## Files
+- <The files and modules this story changes. Planners use this list to find conflict groups.>
+- Conflict group: <none, or the issues that change the same files. Do not claim this issue while another issue of the group is in progress.>
+
 ## Decision log
 - <YYYY-MM-DD: who confirmed or decided what, and why. When the planner decides for the user, say so and say that the user can change it.>
 
@@ -28,6 +32,7 @@ Blocked by #<prerequisite issue>, #<prerequisite issue>
 
 <!--
 How to use:
+- The full procedure is in ../delivery-planning.md.
 - Keep "Part of" on the first line and "Blocked by" on the second line. If the tracker has parent links and dependency links, set them too.
 - A hard dependency exists only when B uses something that A makes. Put other ordering in the epic's suggested order.
 - Add the "ready" mark only when the story meets the project's Definition of Ready: a clear Definition of Done, no open hard dependency, testable acceptance criteria, the decisions it needs recorded, and pointers to the existing patterns and files to follow.

@@ -7,6 +7,7 @@ This playbook is a language-agnostic framework and checklist for software projec
 | File | Content |
 |---|---|
 | [framework.md](./framework.md) | The framework: core ideas, seven phases (define, decide, architect, guardrails, plan, operate, maintain), how to scale it, common pitfalls |
+| [delivery-planning.md](./delivery-planning.md) | The delivery planning standard: how planners write issues and epics, set dependencies, the suggested order, and the rules for parallel work, verify results, and sync status |
 | [checklist.md](./checklist.md) | A checklist. Each item has a done criterion and is marked "required" or "recommended" |
 | [document-map.md](./document-map.md) | Which standard documents to prepare: purpose, audience, owner, when to create, when to update, writing standard |
 | [writing-standards.md](./writing-standards.md) | Writing standards: a single glossary, which documents use ASD-STE100, explanatory writing, dates and evidence |
@@ -21,7 +22,8 @@ This playbook is a language-agnostic framework and checklist for software projec
 3. Select your language in [language-profiles.md](./language-profiles.md). Select one tool for each role (package manager, formatter, tests, and so on).
 4. Work through [checklist.md](./checklist.md). Tick each item when it is done and write the date.
 5. Create the documents from [document-map.md](./document-map.md). Write them to [writing-standards.md](./writing-standards.md).
-6. Copy a template from [templates/](./templates/) when you write an ADR, a story, an epic, an AGENTS.md, or a research note.
+6. Plan delivery with [delivery-planning.md](./delivery-planning.md).
+7. Copy a template from [templates/](./templates/) when you write an ADR, a story, an epic, an AGENTS.md, or a research note.
 
 ## Maintenance rules
 
@@ -47,5 +49,5 @@ This playbook is a language-agnostic framework and checklist for software projec
 | Date | Change |
 |---|---|
 | 2026-10-13 | First version: framework, checklist, templates, document map, writing standards (glossary, ASD-STE100), collaboration practices. The language matrix waits for the Python and C# research. |
-| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. Removed every reference to the source project, its files, and its domain terms, so that the playbook can be shared on its own. |
+| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. Removed every reference to the source project, its files, and its domain terms, so that the playbook can be shared on its own. Added the delivery planning standard, adapted for several implementers working in parallel (claims, conflict groups, WIP limits, more status values). |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |

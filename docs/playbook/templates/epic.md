@@ -11,14 +11,19 @@ Title: `Epic: <leading word>: <goal>`
 2. #<epic> <leading word> (hard dependency on #<previous epic>) ← this epic
 3. ...
 
+## Parallel work
+- WIP limit: <maximum number of issues of this epic in progress at the same time>
+- Conflict groups: <for each group, the issues that change the same files; none of them run at the same time>
+
 ## All issues
 
 | Issue | Title | Type | Status |
 |---|---|---|---|
+| #<n> | <title> | story | 🟡 in progress (claimed by <implementer>) |
 | #<n> | <title> | story | 🔵 ready |
 | #<n> | <title> | story | ⚫ blocked by #<n> |
 
-Status values: 🟢 closed (date) · 🔵 ready · ⚫ blocked by #n · 🟠 done in part and kept open (reason)
+Status values: 🟢 closed (date) · 🟡 in progress (claimed by …) · 🔵 ready · ⚫ blocked by #n or reason · ⚪ waiting (capacity) · ⏸ on hold (reason, revisit date) · 🟠 done in part and kept open (reason)
 
 ## Suggested order (YYYY-MM-DD)
 
@@ -45,7 +50,7 @@ flowchart TD
 ```
 **Legend:** green = closed · blue = ready · gray = blocked · dotted arrow = suggested order · thick arrow = hard dependency.
 
-**Current status** (YYYY-MM-DD): <closed>/<total> closed, <open> open. Next: #<n> <short name>.
+**Current status** (YYYY-MM-DD): <closed>/<total> closed, <in progress> in progress (claimed by …), <open> open. Next: #<n> <short name>.
 <!-- progress-diagram:end -->
 
 <!--

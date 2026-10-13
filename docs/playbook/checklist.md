@@ -59,6 +59,7 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Required]** Write each story with: parent epic, background (with evidence), scope, acceptance (with a command or a value), out of scope, decision log. Done when: the implementer can read only the story and know what to do and when it is done.
 - [ ] **[Recommended]** Write each epic with: leading word, one-sentence goal, exit criterion, epic order, issue table, suggested-order table, dependency diagram.
 - [ ] **[Required]** Record hard dependencies with the tracker's dependency link. Put all other ordering in the suggested order only.
+- [ ] **[Recommended]** Adopt [delivery-planning.md](./delivery-planning.md) as the planners' procedure. Done when: each issue lists the files it changes, conflict groups are written, and each epic has a WIP limit.
 - [ ] **[Recommended]** End each epic that produces code with a cleanup story.
 - [ ] **[Required]** Write the Definition of Ready (ready for agent), the Definition of Done, and the Definition of Blocked for the project (see phase 4 of [framework.md](./framework.md)). Done when: the "ready" mark is added only to tickets that meet the Definition of Ready.
 - [ ] **[Recommended]** Track the delivery health signals: the ready queue, the false-ready rate, and the reasons for "not ready" and "blocked" by owner.

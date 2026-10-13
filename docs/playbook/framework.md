@@ -164,6 +164,8 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, and com
    - **Reasons by owner**: classify every "not ready" and every "blocked" by the role that can fix it: technical dependency not cleared (tech lead), architecture gap (architect), unclear story or acceptance criteria (BA), missing test criteria (QA or BA), missing decision (user). Look for causes that recur, and fix the system, not just the ticket.
    - **Keep the states apart in the numbers**: count blocked, waiting, and on hold separately. Counting waiting as blocked inflates the block signal and hides a capacity problem; leaving on-hold work in progress distorts cycle time and work in progress. Do not stop the clock while a ticket is blocked. Whether the cycle time of an on-hold ticket restarts or continues when it comes back is a project choice; write it down.
 
+The full procedure for writing issues and epics, setting dependencies and parallel work, verifying results, and syncing status is in [delivery-planning.md](./delivery-planning.md).
+
 **Outputs**: `docs/roadmap.md`, `docs/plans/<milestone>-integration.md`, epics and stories in the issue tracker.
 
 **Done when**: an implementer can read any one story and know what to do and when it is done; anyone can say when any epic may close.
