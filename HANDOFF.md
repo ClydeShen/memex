@@ -140,8 +140,8 @@
 | # | 事项 | 当前状态 |
 |---|---|---|
 | D1 | 产品阶段 P1–P5 的范围和退出条件 | `roadmap.md` 中标为**草案**，在决策关卡确定（ADR 0020） |
-| D2 | 计划是否同步到 GitHub 的 Milestone 和 Issue | 已提过两次，用户还没有回答 |
-| D3 | 是否用 `/plan-delivery` skill 把 roadmap 转成交付计划 | 用户主动问起过这个 skill，云端会话无法访问它。本地可以使用后，**建议先向用户确认，再按它处理 roadmap** |
+| D2 | 计划是否同步到 GitHub 的 Milestone 和 Issue | **已完成（2026-10-13）**：Milestone "V0 骨架"，4 个 epic（#38–#41）和 27 个 story（#42–#68）；v1 遗留的 issue 和 Milestone 已全部关闭 |
+| D3 | 是否用 `/plan-delivery` skill 把 roadmap 转成交付计划 | **已完成（2026-10-13）**：V0 已按 plan-delivery 的标准写成 epic 和 story；V1 的集成设计和 ticket 在 V0 合并之后做（ADR 0025） |
 | D4 | Micro World 对 Agent 隐藏哪些信息 | 在 V2 之前决定；会做成配置项（`open-questions.md` #1） |
 | D5 | 是否精简流程 | 到决策关卡时再决定（`open-questions.md` #2） |
 

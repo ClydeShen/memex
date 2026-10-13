@@ -2,7 +2,7 @@
 
 本文件是 V0 里程碑的集成设计（ADR 0025 第 1 步）。它列出 V0 的组件、组件之间的接缝和每条接缝的关卡，并把工作拆成可以执行、可以追踪的 story。契约的总体定义见 [architecture/contracts.md](../architecture/contracts.md)，里程碑和通过标准见 [roadmap.md](../roadmap.md)，术语见 GLOSSARY.md。
 
-- **状态**：草案，待用户审阅（2026-10-13）。
+- **状态**：已用于交付规划（2026-10-13）；story 已同步为 GitHub Issue，见各 epic。V0-02 排在 V0-01 之前：骨架要用到这些工具，先实测排除风险。
 - **V0 的完成定义**：三条通过标准（可复现、不泄漏、可替换）写成自动化测试并全部通过；分支合并进 `main`（roadmap 第三部分）。
 - **字段级别**：本文件中的字段是设计意图，实现时以 `@memex/contracts` 中的 Zod schema 为准。实现中发现需要调整，就同时修改 schema、本文件和 contracts.md，并说明原因。
 
@@ -131,8 +131,8 @@
 
 | ID | Story | 依赖 | 验收标准 | 对应 |
 |---|---|---|---|---|
-| V0-01 | 建立 Monorepo 骨架 | — | 四个包加上根目录配置；`pnpm check` 一条命令跑完类型检查、lint、架构检查和测试，结果为通过 | V0.1 |
-| V0-02 | 实测 tech-stack 中"尚未核实"的几项 | V0-01 | TS 7 下 dependency-cruiser 和 knip 能否工作（不能就启用 TS 6 退路）；pnpm 12 的安全设置名；Vitest 5 的变化；结论写回 tech-stack.md | V0.1 |
+| V0-01 | 建立 Monorepo 骨架 | V0-02 | 四个包加上根目录配置；`pnpm check` 一条命令跑完类型检查、lint、架构检查和测试，结果为通过 | V0.1 |
+| V0-02 | 实测 tech-stack 中"尚未核实"的几项 | — | TS 7 下 dependency-cruiser 和 knip 能否工作（不能就启用 TS 6 退路）；pnpm 12 的安全设置名；Vitest 5 的变化；结论写回 tech-stack.md | V0.1 |
 | V0-03 | Git hooks | V0-01 | pre-commit 运行 `biome check --staged`；commit-msg 拒绝不符合 Conventional Commits 的提交信息；pre-push 运行 `pnpm check`；在 Windows 上实测通过 | V0.1 |
 
 ### B 阶段：最薄的端到端
@@ -195,4 +195,19 @@
 | R2 | `StepContext.services` 的形状 | B 阶段先用最小形式，V0-12 定稿 |
 | R3 | 交给 Intuition 的精简状态怎样序列化 | V0-17（Fake）先定接口，V1 接入真实模型时再确认 |
 | R4 | 一致性测试放在哪里、怎样不依赖测试框架 | V0-12。倾向：在 `@memex/contracts` 中导出一组不依赖测试框架的检查函数，由各包的测试调用 |
-| R5 | 是否把 story 同步到 GitHub Issue | 用户决定（HANDOFF D2、D3） |
+| R5 | 是否把 story 同步到 GitHub Issue | 已决定并完成（2026-10-13），见第六节 |
+
+---
+
+## 六、交付跟踪（GitHub，2026-10-13）
+
+Milestone：**V0 骨架**。按 plan-delivery 的标准，每个 story 是一个 issue，父子关系用 sub-issue，硬依赖用 issue 的 blocked-by 关系；每个 epic 的表格、顺序和依赖图以 GitHub 上的 epic 为准。
+
+| Epic | 主题词 | Story（按建议顺序） |
+|---|---|---|
+| #38 | 地基 | V0-02 #42 → V0-01 #43 → V0-03 #44 |
+| #39 | 端到端 | V0-04 #45 → V0-05 #46 → V0-06 #47 → V0-07 #48 → V0-08 #49 → V0-09 #50 → V0-10 #51 |
+| #40 | 契约 | V0-11 #52 → V0-12 #53 → V0-13 #54 → V0-14 #55 → V0-15 #56 → V0-16 #57 → V0-17 #58 → V0-20 #59 → V0-19 #60 → V0-18 #61 → V0-21 #62 → V0-22 #63 → V0-23 #64 |
+| #41 | 关卡 | V0-24 #65 → V0-25 #66 → V0-26 #67 → V0-27 #68 |
+
+epic 之间依次是硬依赖：#38 → #39 → #40 → #41。第四节中的建议顺序以此为准：V0-02 排在 V0-01 之前，V0-20 排在 V0-19 之前（Fake Strategy 先于世界的完整版，二者互不依赖）。
