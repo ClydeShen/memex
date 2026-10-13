@@ -23,9 +23,9 @@ Agents and people both reach for synonyms. When a concept changes its name betwe
 Entry format example:
 
 ```markdown
-**Confidence**:
-The confidence of a Claim: a number derived from the evidence, the reliability of its sources, and how recent it is. It applies only to Claims.
-_Avoid_: certainty (Certainty is only the Intuition's confidence in one judgment)
+**Order**:
+A customer's confirmed request to buy one or more products. An order exists only after payment is authorized; before that it is a Cart.
+_Avoid_: purchase, booking (Booking is only a reserved time slot)
 ```
 
 ### When to add or change an entry
@@ -34,11 +34,6 @@ _Avoid_: certainty (Certainty is only the Intuition's confidence in one judgment
 - When a concept has two names, or a word has two meanings, fix it at once: change the entry, then search all docs and code and replace each occurrence.
 - When the meaning of an entry changes, write an ADR with the reason.
 - Check term usage in each consistency review (phase 6 of [framework.md](./framework.md)). A small script can read each entry's `_Avoid_` list and report misused words in the docs.
-
-### In Memex
-
-- GLOSSARY.md, in sections: world and beliefs, experience and learning, cognitive process, semantic structure, architecture, evaluation.
-- Pairs unified in one review: Provider (only a component that implements a contract) versus Model Backend (the service that runs inference); Confidence (of a Claim) versus Certainty (of an Intuition judgment); and two Chinese terms for "epistemic status", one of which was easily confused with "Cognitive State".
 
 ---
 
@@ -75,7 +70,7 @@ The principle: **procedural text** (it tells the reader what to do and in which 
 | ADRs, vision, research notes, architecture descriptions | No | They explain trade-offs and uncertainty; use the explanatory standard |
 | The handoff document | Partly: background in explanatory style; "first steps" and "do not" lists in STE | Mixed content |
 
-**Example**: the plan-delivery operating standard (a skill for a planning agent) that this playbook draws on is written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
+**Example**: an operating standard for a planning agent can be written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
 
 ### How non-English documents can borrow it
 

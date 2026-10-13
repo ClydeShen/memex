@@ -1,13 +1,13 @@
 # A Framework for Starting Agent-Driven Projects
 
-This file organizes what a project should prepare before the first line of product code into a language-agnostic framework. It comes from the preparation of Memex, but it stands on its own. Three companion files cover the non-technical side: which documents to prepare ([document-map.md](./document-map.md)), how to write them ([writing-standards.md](./writing-standards.md)), and how people and agents judge and collaborate ([practices.md](./practices.md)). How to use and maintain the playbook is in [README.md](./README.md). The checklist is [checklist.md](./checklist.md), tools per language are in [language-profiles.md](./language-profiles.md), and templates are in [templates/](./templates/).
+This file organizes what a project should prepare before the first line of product code into a language-agnostic framework. It comes from the preparation of a real project, and it stands on its own. Three companion files cover the non-technical side: which documents to prepare ([document-map.md](./document-map.md)), how to write them ([writing-standards.md](./writing-standards.md)), and how people and agents judge and collaborate ([practices.md](./practices.md)). How to use and maintain the playbook is in [README.md](./README.md). The checklist is [checklist.md](./checklist.md), tools per language are in [language-profiles.md](./language-profiles.md), and templates are in [templates/](./templates/).
 
-**Assume the complex case.** This playbook is a team standard. Do not assume one person or one agent: assume several people and several agents working in parallel, with many pull requests open at once. A project with one person and one agent working in sequence is the simple case; drop what it does not need. Memex, the source project, is such a simple case, so its choices are examples, not defaults.
+**Assume the complex case.** This playbook is a team standard. Do not assume one person or one agent: assume several people and several agents working in parallel, with many pull requests open at once. A project with one person and one agent working in sequence is the simple case; drop what it does not need.
 
 **Status markers** (the "status" column of each practice):
-- **Used**: Memex uses it, and it has produced real artifacts (documents, issues, and so on).
-- **Designed**: written into the Memex docs, but the code that implements it does not exist yet. Not validated.
-- **Researched**: only researched. Memex has not adopted it yet.
+- **Used**: applied in a real project, where it produced real artifacts (documents, issues, and so on).
+- **Designed**: specified in a real project's documents, but not yet implemented. Not validated.
+- **Researched**: only researched. Not yet adopted in a real project.
 
 "Used" only means used. It does not mean the effect is proven.
 
@@ -29,7 +29,7 @@ This file organizes what a project should prepare before the first line of produ
 | 10 | **Clean up at milestone boundaries.** Every epic that produces code ends with a cleanup story: architecture review, fix severe issues, re-index, update the as-built docs | Technical debt does not pile up; the next epic builds on a tidy structure | Designed |
 | 11 | **Decide at the last responsible moment.** A default is not a commitment. A choice that can be configuration is not a one-time decision | Keeps options open and avoids locking in early | Used |
 | 12 | **Machine details stay out of the repository.** Machines, paths, and secrets go only in files that are not committed. The repository holds requirements and check methods | The repository may be public; docs do not break when you change machines | Used |
-| 13 | **Configure a trusted work environment first; writing code comes late.** Unlike a traditional project, the main early work is to set the limits and conditions before implementation: what the agent may do, what it may not do, and how each rule is checked. Code structure, uniform code patterns, and as-built docs matter more than in a traditional project | Trust and reliability come from narrowing what the agent can produce. This applies most fully to new projects; retrofitting it onto an inconsistent existing codebase can cost more than it returns | Used (Memex prepared this before any code) |
+| 13 | **Configure a trusted work environment first; writing code comes late.** Unlike a traditional project, the main early work is to set the limits and conditions before implementation: what the agent may do, what it may not do, and how each rule is checked. Code structure, uniform code patterns, and as-built docs matter more than in a traditional project | Trust and reliability come from narrowing what the agent can produce. This applies most fully to new projects; retrofitting it onto an inconsistent existing codebase can cost more than it returns | Used |
 | 14 | **Review moves; it does not disappear.** Line-by-line review of style becomes less important, because tools enforce style. Review moves **left** to the plan (stories, contracts, acceptance criteria), moves **up** to the guardrails (are the rules and tests strong enough?), and **stays** on behavior and security (run the acceptance commands; security scanning) | Tools cannot tell whether code does the right thing or is secure, and a weak test passes broken code | Used (acceptance in stories); Designed (verification flow, scanning) |
 | 15 | **"Ready for agent" is a strong signal, and a health check of the delivery system.** A ticket is ready only when an implementer (person or agent) can act on it at high confidence without asking. Read the other way, how often tickets are ready, falsely ready, or blocked shows whether the people upstream (tech lead, architect, BA) have done their part | An agent given a vague ticket guesses with confidence instead of asking; when implementation is fast, the bottleneck moves to producing ready tickets | Used (ready mark); Designed (definitions and signals) |
 
@@ -53,7 +53,7 @@ Seven phases. A small project can do only the minimum set of each phase (see sec
 
 ## 3. The phases in detail
 
-Each phase lists: what to do, outputs (suggested paths), done criterion, common mistakes, and where Memex does it.
+Each phase lists: what to do, outputs (suggested paths), done criterion, and common mistakes.
 
 ### Phase 0: Define
 
@@ -68,10 +68,9 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 **Done when**: the glossary covers every concept that recurs in the docs; a new reader can say what the project will not do after reading the vision.
 
 **Common mistakes**
-- The same word means different things in different docs (for example, "validation" meaning both a phase and a cognitive step). Fix: define both in the glossary and list the confusable word under `_Avoid_`.
+- The same word means different things in different docs (for example, "session" meaning both a login session and a work session). Fix: define both in the glossary and list the confusable word under `_Avoid_`.
 - A hypothesis to be tested is written as a settled fact.
 
-**In Memex**: VISION.md, GLOSSARY.md.
 
 ### Phase 1: Decide
 
@@ -91,7 +90,6 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 - An ADR changes but the documents that cite it do not (counts, IDs, and terms drift). Fix: after changing an ADR, search for every reference and update it.
 - Version numbers, dates, and tool capabilities written from memory. Fix: look them up (for example, through the package registry API) and write the date of the check.
 
-**In Memex**: the ADRs under docs/adr/; the global constraint table in the roadmap; open-questions; the research notes under docs/research with confidence markers; the consistency review of 2026-10-11 (recorded in docs/research/review-2026-10-10.md and the ADR revisions that followed).
 
 ### Phase 2: Architect
 
@@ -111,7 +109,6 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 - The directory structure and the dependency rules drift apart: the docs say "the core does not depend on implementations", but no tool checks it.
 - Choosing every tool at once. Fix: mark the milestone at which each tool is introduced, and choose it then.
 
-**In Memex**: docs/architecture/c4.md and contracts.md; ADR 0008 (dependency inversion) and 0009 (a single resource format); docs/dependencies.md; docs/project-structure.md; docs/tech-stack.md.
 
 ### Phase 3: Guardrails
 
@@ -133,7 +130,6 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 - Treating "the hook passed" as "the code is acceptable".
 - Tests chase count and coverage but miss the contracts and invariants.
 
-**In Memex**: docs/code-style.md, security-and-data.md, the "Git hooks" section of tech-stack.md, ADR 0016 (external content and secrets).
 
 ### Phase 4: Plan
 
@@ -178,7 +174,6 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 - An epic that becomes a bucket, with no theme and no exit criterion.
 - Using dependency links to express "do this first", which blocks work for no reason.
 
-**In Memex**: docs/roadmap.md, docs/plans/v0-integration.md, ADR 0025, the epics and stories of the V0 milestone on GitHub.
 
 ### Phase 5: Operate
 
@@ -207,7 +202,6 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 - Adding features during cleanup, which breaks the "refactor only" boundary.
 - An AGENTS.md that keeps growing until it becomes another design document.
 
-**In Memex**: ADR 0025 and 0026; docs/research/as-built-docs-2026-10-13.md; HANDOFF.md.
 
 ### Phase 6: Maintain
 
@@ -251,4 +245,4 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 
 ## 6. Where this framework comes from
 
-This framework comes from the preparation work on Memex (a cognitive agent framework written in TypeScript) in October 2026 and the discussions along the way. Each phase names where Memex does the practice. Memex had no product code yet, so most practices are "used (produced documents)" or "designed", and their effect has not been tested in practice. The framework will be updated under the maintenance rules in the README as Memex moves forward.
+This framework comes from the preparation work on one real project in October 2026, and the discussions along the way. That project had no product code yet, so most practices are "used (produced documents)" or "designed", and their effect has not been tested in practice. The framework will be updated under the maintenance rules in the README as practices are tested in real projects.

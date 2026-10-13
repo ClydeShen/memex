@@ -1,6 +1,6 @@
 # Playbook: Starting and Running Agent-Driven Projects
 
-This playbook is a language-agnostic framework and checklist for software projects that AI agents help build. It says what to prepare before the first line of product code, and how to keep the plan, the code, and the docs consistent during development. It was extracted from the preparation work on Memex, but it is **self-contained**: you can copy this directory into another project and use it without any other Memex document.
+This playbook is a language-agnostic framework and checklist for software projects that AI agents help build. It says what to prepare before the first line of product code, and how to keep the plan, the code, and the docs consistent during development. It was extracted from the preparation work on a real project, but it is **self-contained**: you can copy this directory into another project, or share it on its own, without any other document.
 
 ## Files
 
@@ -32,7 +32,7 @@ This playbook is a language-agnostic framework and checklist for software projec
   2. Check the tools and versions in the language matrix every quarter, or before you use them in a new project. Write the date of the check.
   3. When you use the playbook in a new project and find a gap or an error, write it back here.
 - **A team standard for the complex case**: write every rule for several people and several agents working in parallel. Do not assume one person or one agent. Simple projects drop what they do not need.
-- **No project-specific content**: Memex is a personal project with one person and one agent working in sequence, an extreme simple case. It appears only as an example. An example is not a rule.
+- **No project-specific content**: do not name or describe a specific project, its files, or its domain terms. The playbook must make sense to a reader who has never seen the project it came from. Use generic examples.
 - **No tool facts from memory**: get versions and capabilities from a command or the official docs. Write the source and the date.
 - **Change log**: at the end of this file.
 
@@ -40,12 +40,12 @@ This playbook is a language-agnostic framework and checklist for software projec
 
 - Fits: software projects that AI agents help build and that live longer than a few weeks.
 - Does not fit: one-off scripts and throwaway prototypes. For these, use only the "required" items of the checklist.
-- The playbook has been shaped by one project (Memex) so far. It has not been used in a second project. When you first use it elsewhere, write back what you find.
+- The playbook has been shaped by one project so far. It has not been used in a second project. When you first use it elsewhere, write back what you find.
 
 ## Change log
 
 | Date | Change |
 |---|---|
 | 2026-10-13 | First version: framework, checklist, templates, document map, writing standards (glossary, ASD-STE100), collaboration practices. The language matrix waits for the Python and C# research. |
-| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. |
+| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. Removed every reference to the source project, its files, and its domain terms, so that the playbook can be shared on its own. |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |

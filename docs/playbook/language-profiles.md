@@ -3,7 +3,7 @@
 This file maps each tooling **role** to concrete tools for each language. The roles are the same for every language; only the tools change. Pick one tool per role for your project, write the choice in the project's tech stack document, and record the date.
 
 - **Versions**: checked on **2026-10-13** against the package registries (npm, PyPI, NuGet). They will go stale. Check them again before you use them (see "How to check a version" below).
-- **Status**: the Node/TypeScript column is the stack chosen for Memex; most of it is **designed**, not yet built. The Python and C# columns are **researched** only; no project has used them yet. In the Python column, a minimal project ran Ruff, ty, and import-linter on the check date; the other Python tools and all C# tools were read from their docs, not run.
+- **Status**: the Node/TypeScript column is a stack chosen for a real project; most of it is **designed**, not yet built. The Python and C# columns are **researched** only; no project has used them yet. In the Python column, a minimal project ran Ruff, ty, and import-linter on the check date; the other Python tools and all C# tools were read from their docs, not run.
 
 ---
 
