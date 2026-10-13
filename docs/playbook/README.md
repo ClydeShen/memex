@@ -25,13 +25,14 @@ This playbook is a language-agnostic framework and checklist for software projec
 
 ## Maintenance rules
 
-- **Owner**: the planning agent. The project owner confirms each change before it is committed.
+- **Owner**: a planner (a person or an agent) who maintains the team's standards. The owner of the standard confirms each change before it is committed.
 - **Source**: every practice comes from a real project. Its status says **used**, **designed**, or **researched**. "Used" does not mean the practice is proven to work.
 - **When to update**:
   1. When the source project confirms, rejects, or changes a practice, update it here and give the reason.
   2. Check the tools and versions in the language matrix every quarter, or before you use them in a new project. Write the date of the check.
   3. When you use the playbook in a new project and find a gap or an error, write it back here.
-- **No project-specific content**: Memex appears only as an example. An example is not a rule.
+- **A team standard for the complex case**: write every rule for several people and several agents working in parallel. Do not assume one person or one agent. Simple projects drop what they do not need.
+- **No project-specific content**: Memex is a personal project with one person and one agent working in sequence, an extreme simple case. It appears only as an example. An example is not a rule.
 - **No tool facts from memory**: get versions and capabilities from a command or the official docs. Write the source and the date.
 - **Change log**: at the end of this file.
 
@@ -46,4 +47,5 @@ This playbook is a language-agnostic framework and checklist for software projec
 | Date | Change |
 |---|---|
 | 2026-10-13 | First version: framework, checklist, templates, document map, writing standards (glossary, ASD-STE100), collaboration practices. The language matrix waits for the Python and C# research. |
+| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |

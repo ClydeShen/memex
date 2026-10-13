@@ -68,8 +68,11 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 
 - [ ] **[Required]** Write `AGENTS.md`: commands, way of working, where to read first. Do not describe the current state of the codebase. Done when: the file has about 60 lines or fewer.
 - [ ] **[Recommended]** Write the handoff document: what to read, what to do, what to verify, what to watch out for, what not to do.
-- [ ] **[Required]** Write down the roles: who plans, who implements, and the channel between them.
-- [ ] **[Recommended]** Set the verification flow: the planning agent runs the acceptance commands itself, closes the issue only when they pass, and then syncs the epic.
+- [ ] **[Required]** Write down the roles: who plans, who implements (people or agents, how many), and the channel between them. Done when: each ticket in progress has exactly one implementer.
+- [ ] **[Recommended]** Set the rules for parallel work: tickets in progress at the same time do not change the same files; a limit on tickets in progress; one working copy per task; small pull requests.
+- [ ] **[Recommended]** Switch on a merge queue that runs the checks on the combined result before each merge.
+- [ ] **[Recommended]** Remove hotspot files: one file per change instead of a shared changelog, self-registering modules, regenerated lock files.
+- [ ] **[Recommended]** Set the verification flow: a planner who is not the implementer runs the acceptance commands, closes the issue only when they pass, and then syncs the epic.
 - [ ] **[Recommended]** Set up the as-built docs: a template, one page per package, `covers` and `verified-at`, and a check script. Done when: the check commands report no stale page.
 - [ ] **[Recommended]** If the environment has a code indexing tool, re-index in each cleanup story.
 - [ ] **[Recommended]** Record the way of working and the roles in the agent's persistent memory, so that each session does not need them again.
