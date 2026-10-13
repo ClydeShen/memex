@@ -50,6 +50,10 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Recommended]** Set the supply-chain controls: do not run install scripts by default, delay newly published versions, audit known vulnerabilities (see the language matrix for each language).
 - [ ] **[Recommended]** Switch on code security scanning, dependency update alerts, secret scanning, and push protection.
 - [ ] **[Recommended]** Write the security and data requirements. Give each requirement a source, a risk, a start time, and a check.
+- [ ] **[Required]** Set the log format: the OpenTelemetry log data model with trace context on every record, the same field names in every service. Done when: a log record from any service can be joined to its trace by `trace_id`.
+- [ ] **[Required]** Give agents read access to logs, traces, and errors (files, a command-line tool, or an MCP server), read-only. Done when: AGENTS.md says where and how to read them.
+- [ ] **[Required]** Write the error-handling rules in the code style: exceptions as correlated log records, cause chains kept, stable error codes, one record per error where it is handled, and one style for expected failures.
+- [ ] **[Recommended]** Write one wide event per request or job, and put the service version and commit in the resource attributes.
 - [ ] **[Required]** Add `.env.example` and `.gitignore`. Do not commit machine details. Done when: a search of the staged diff for local paths and user names finds nothing.
 
 ## Phase 4: Plan
