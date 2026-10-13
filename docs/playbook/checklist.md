@@ -1,0 +1,90 @@
+# Setup Checklist
+
+The items are grouped by phase. **[Required]** items are the minimum set; do them even in a small project. **[Recommended]** items are for medium and large projects. Each item has a done criterion. When an item is done, tick it and write the date at the end of the line. The phases and the reasons are in [framework.md](./framework.md).
+
+How to use: copy this file into the new project (for example, `docs/setup-checklist.md`). Fill in the "Project" line. Work through the items in sequence.
+
+Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/large): ＿＿＿＿＿＿　Start date: ＿＿＿＿＿＿
+
+---
+
+## Phase 0: Define
+
+- [ ] **[Required]** Write a one-sentence product definition. Done when: a person who does not know the project can say who it is for and what it does.
+- [ ] **[Required]** Write the scope and the non-goals. Done when: the list has at least three things the project will not do.
+- [ ] **[Recommended]** Write the vision and the numbered first principles. Give each principle a reason and a test. Mark each claim as proven or as a hypothesis.
+- [ ] **[Required]** Write the glossary. Give each entry a canonical name, a definition, and an `_Avoid_` line (format: section 2 of [writing-standards.md](./writing-standards.md)). Done when: each concept that occurs again and again in the docs has an entry.
+- [ ] **[Required]** Write the language policy: the language for docs, code, commit messages, and canonical term names. Put it in the README or the handoff document.
+- [ ] **[Recommended]** Use [document-map.md](./document-map.md) to decide which documents to prepare, where they go, and who maintains them. In the README index, say which documents come later and when.
+- [ ] **[Recommended]** Decide which documents use ASD-STE100 (or its principles, for non-English docs) and which use the explanatory standard. Done when: AGENTS.md, checklists, runbooks, and the scope and acceptance sections of stories follow the procedural standard.
+
+## Phase 1: Decide
+
+- [ ] **[Required]** Create the ADR directory and the template. Done when: the first ADR states the decision, the reasons, the options considered, and the consequences.
+- [ ] **[Required]** Create the global constraint table (ID, constraint, source). Done when: each constraint traces back to an ADR or a principle.
+- [ ] **[Required]** Create the open-questions list. Give each question a decision date.
+- [ ] **[Recommended]** Set the rules for research notes: confidence markers, a source list, and a "not verified" section.
+- [ ] **[Recommended]** Do one consistency review (counts, IDs, terms, references, defaults). Done when: the review is recorded and the contradictions it found are fixed.
+
+## Phase 2: Architect
+
+- [ ] **[Required]** Draw the architecture diagrams: at least one context diagram and one component diagram.
+- [ ] **[Required]** Write the contracts between the main components (interface and data types). Done when: each port has explicit inputs and outputs, and each data type is serializable.
+- [ ] **[Recommended]** Classify the dependencies (hard, configurable, optional). Say when each default must be chosen.
+- [ ] **[Required]** Write the directory structure and the "who may depend on whom" table. Done when: the rules can be written as an automatic check.
+- [ ] **[Recommended]** Write the naming rules (directories, files, packages, tests, resource files).
+- [ ] **[Required]** Write the tech stack document. For each tool, give its role, its class, and when it is introduced. List the tools you will not use.
+- [ ] **[Recommended]** Define one configuration format. Version it. Validate it on load. Reference secrets only through environment variables.
+
+## Phase 3: Guardrails
+
+- [ ] **[Required]** Write the code style document. Mark each rule [auto] or [review]. Done when: each [auto] rule names a tool and a rule.
+- [ ] **[Required]** Select the tools for the language: package manager, formatter and linter, type or null checking, test framework (see [language-profiles.md](./language-profiles.md)).
+- [ ] **[Required]** Make one command check everything. Done when: after a clean clone, one command runs type checking, lint, and tests, and it passes.
+- [ ] **[Required]** Add an architecture boundary check. Done when: an import that breaks a dependency rule makes the check fail.
+- [ ] **[Recommended]** Write the test strategy: the list of critical points (contracts, milestone pass criteria, invariants, security gates). Write a failing test before each bug fix. Do not set a coverage threshold.
+- [ ] **[Recommended]** Write a conformance suite for each port.
+- [ ] **[Required]** Set the commit message format (for example, Conventional Commits).
+- [ ] **[Required]** Add three tiers of git hooks: a light check before commit, a commit message check, and the full check before push. Done when: a bad commit message is rejected, and a deliberate check failure stops a push.
+- [ ] **[Required]** Commit the dependency lock file. Install in the mode that only reads the lock file.
+- [ ] **[Recommended]** Set the supply-chain controls: do not run install scripts by default, delay newly published versions, audit known vulnerabilities (see the language matrix for each language).
+- [ ] **[Recommended]** Switch on code security scanning, dependency update alerts, secret scanning, and push protection.
+- [ ] **[Recommended]** Write the security and data requirements. Give each requirement a source, a risk, a start time, and a check.
+- [ ] **[Required]** Add `.env.example` and `.gitignore`. Do not commit machine details. Done when: a search of the staged diff for local paths and user names finds nothing.
+
+## Phase 4: Plan
+
+- [ ] **[Required]** Write the roadmap. Give each milestone observable entry and exit criteria.
+- [ ] **[Required]** Write the integration design of the first milestone: the component list, the seams (who produces, what is handed over, who consumes), and the gates of each seam.
+- [ ] **[Recommended]** Put the "thinnest end-to-end path" stories first. Plan one review of the seams after them.
+- [ ] **[Required]** Write each story with: parent epic, background (with evidence), scope, acceptance (with a command or a value), out of scope, decision log. Done when: the implementer can read only the story and know what to do and when it is done.
+- [ ] **[Recommended]** Write each epic with: leading word, one-sentence goal, exit criterion, epic order, issue table, suggested-order table, dependency diagram.
+- [ ] **[Required]** Record hard dependencies with the tracker's dependency link. Put all other ordering in the suggested order only.
+- [ ] **[Recommended]** End each epic that produces code with a cleanup story.
+
+## Phase 5: Operate
+
+- [ ] **[Required]** Write `AGENTS.md`: commands, way of working, where to read first. Do not describe the current state of the codebase. Done when: the file has about 60 lines or fewer.
+- [ ] **[Recommended]** Write the handoff document: what to read, what to do, what to verify, what to watch out for, what not to do.
+- [ ] **[Required]** Write down the roles: who plans, who implements, and the channel between them.
+- [ ] **[Recommended]** Set the verification flow: the planning agent runs the acceptance commands itself, closes the issue only when they pass, and then syncs the epic.
+- [ ] **[Recommended]** Set up the as-built docs: a template, one page per package, `covers` and `verified-at`, and a check script. Done when: the check commands report no stale page.
+- [ ] **[Recommended]** If the environment has a code indexing tool, re-index in each cleanup story.
+- [ ] **[Recommended]** Record the way of working and the roles in the agent's persistent memory, so that each session does not need them again.
+- [ ] **[Recommended]** Adopt the practices in [practices.md](./practices.md). At minimum: give each important judgment a confidence level and its supporting dimensions; agree on a plan before you change code; mark work that is only logic-done as "not live-verified".
+
+## Phase 6: Maintain
+
+- [ ] **[Recommended]** Do a consistency review at the end of each milestone.
+- [ ] **[Required]** Set the change process: write an ADR before you break a constraint.
+- [ ] **[Recommended]** Set a cadence for checking tools and versions (every quarter, or before use). Write the date of each check.
+- [ ] **[Recommended]** Write practices that the project has validated back into this playbook.
+
+---
+
+## Final check before work starts
+
+- [ ] A new agent that reads only `AGENTS.md` and the first story can say what to do and how to verify it.
+- [ ] After a clean clone, the one-command check passes.
+- [ ] The repository contains no machine details and no secrets.
+- [ ] The exit criterion of the first milestone is a command or a test that can run.

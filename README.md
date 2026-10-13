@@ -30,6 +30,7 @@ Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Age
 | [docs/security-and-data.md](docs/security-and-data.md) | 安全与数据要求 |
 | [docs/dependencies.md](docs/dependencies.md) | 依赖分类 |
 | [docs/plans/](docs/plans/) | 每个里程碑的集成设计：组件、接缝、关卡和 story |
+| [docs/playbook/](docs/playbook/) | 从本项目提取的通用工程范式（英文）：agent 驱动项目的框架、清单、文档地图、写作规范、协作做法、多语言工具矩阵和模板；可复制到其他项目 |
 | [docs/open-questions.md](docs/open-questions.md) | 待决问题 |
 | [docs/research/](docs/research/) | 调研与核对的依据（选型、标准、算法、实测） |
 | [HANDOFF.md](HANDOFF.md) | 新的开发会话从这里开始 |
