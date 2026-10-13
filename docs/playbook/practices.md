@@ -4,7 +4,7 @@ This file collects ways of working that do not depend on language or tech stack:
 
 | # | Practice | In one sentence | Status |
 |---|---|---|---|
-| 1 | Four-dimension confidence | How many dimensions support a judgment decides whether you may act on your own | Used, confirmed by the user |
+| 1 | Four-dimension confidence | The number of dimensions that support a judgment sets the agent's confidence and what it may do; at "very low", do not act, gather evidence first | Used, confirmed by the user |
 | 2 | Sync before writing code | Before you change implementation code, give a plan and wait for confirmation | Used, confirmed by the user |
 | 3 | Search before asking | Look up what can be looked up; ask only what cannot | Used, confirmed by the user |
 | 4 | Live verification tiers | "Done" is either logic-done or live-done; the line is the environment boundary | Used, confirmed by the user |
@@ -19,26 +19,30 @@ This file collects ways of working that do not depend on language or tech stack:
 
 ## 1. Four-dimension confidence
 
-**Practice**: every judgment is made of four dimensions:
-1. the user's judgment;
-2. the model's own reasoning;
-3. mature logic, code, or algorithms that can serve as a reference;
-4. findings from searching or researching with tools.
+**Concept**: confidence is the basis of everything an agent does, in any project and any language. It comes from four dimensions:
 
-The level depends on **how many dimensions support the judgment at the same time**:
+| Dimension | Source |
+|---|---|
+| **User** | The user's intent and ideas |
+| **Research** | Third-party verification found by research (official docs, sources on the web, tools) |
+| **Reasoning** | The agent's conclusions from common knowledge, known algorithms, or reasoning |
+| **Project history** | What the project has already done: working code patterns, ways of thinking already used, wording and writing habits, recorded history |
 
-| Dimensions | Level | What you may do |
+The level is **the number of dimensions that support a judgment at the same time**:
+
+| Supporting dimensions | Level | What the agent does |
 |---|---|---|
-| 4/4 | High (0.9–1) | Act directly |
-| 3/4 | Medium (0.6–0.9) | Act, then tell the user which decisions you made |
-| 2/4 | Low (0.3–0.6) | Ask the user first |
-| 1/4 | None (0–0.3) | Do not act; keep discussing until at least a second dimension supports it |
+| 4 | High | Act |
+| 3 | Medium | Act, then tell the user which decisions were made |
+| 2 | Low | Ask the user first |
+| 1 or 0 | Very low (none) | Do not act ("if in doubt, don't"). Gather more certain evidence first |
 
-How to raise the level: at low, the user's decision adds dimension 1. If the user has decided and it is still low, research to add dimension 4.
+At "very low", the agent follows the principle in Anthropic's constitution for Claude: prefer cautious actions, and in novel or unclear situations, "if in doubt, don't". It raises the level before it acts, in one or more of these ways:
+- **Project history**: look for something similar that the project has already done.
+- **Research**: find out what others say.
+- **User**: ask the user again from a different angle, to collect a more certain answer.
 
-**Why**: it makes "how far to trust this judgment" explicit and auditable, so that tone and confidence do not pass for evidence. The level directly decides whether you may act on your own.
-
-**How**: when you give an important judgment, state the level and which dimensions support it, for example "Confidence: medium, three dimensions (the user's direction, the model's reasoning, a reference); no dedicated research". At low, say which dimension is missing and how to add it.
+**How**: when the agent gives an important judgment, it states the level and which dimensions support it, for example "Confidence: medium (user, reasoning, project history; no research)". When the level is low or very low, it says which dimension is missing and how it will add it.
 
 ## 2. Sync before writing code
 
