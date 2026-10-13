@@ -39,6 +39,7 @@
 | A12 | 实验工具（Lab）不属于产品，不随产品发布；被验证的是产品组件本身 | ADR 0020 |
 | A13 | 验证任务一律是目标型任务；目标完成率是所有对比的共同主指标 | ADR 0021 |
 | A14 | 每种 Action 带风险等级，Policy 的结果为 allow / deny / ask；执行者由核心记录，不由请求填写；"修改自身须用户批准"是核心不变量，不随 Policy 档位变化 | ADR 0022 |
+| A15 | Oracle 只用于评分和诊断；产品运行时需要的配置（含 Calibration 阈值）只能来自产品中也能拿到的信号 | ADR 0023 |
 
 ### 工程
 | # | 约束 | 出处 |
@@ -93,7 +94,8 @@
 
 ### 实验约定
 - 上下文预算统一按"实际送入推理模型的 token 数"计算。成本指标分开记录：Reasoning 调用次数、Reasoning 输入 token、Reasoning 输出 token（含思考）、Intuition token、延迟。Reasoning 是否开启思考模式是 Experiment 的配置项，同一组对比使用相同设置（ADR 0018）。
-- 学习信号只来自 Environment 和 Verification；Oracle 只用于 Evaluator 打分（ADR 0018）。
+- 学习信号只来自 Environment 和 Verification；Oracle 只用于 Evaluator 打分和诊断，Calibration 等产品运行时需要的配置也不能用它（ADR 0018、0023）。
+- Calibration 用影子升级定阈值：有把握时按配置的比例照样调用 Reasoning，比较是否一致；影子升级产生的 Reasoning 调用和 token 单独记录，并计入 B3 的成本（ADR 0023）。
 - B1 和 B3 获得的信息内容相同，只是组织方式不同：B1 的文本块里也写明来源和观测时间。
 - 验证阶段，从 Observation 形成 Claim 由运行时以确定性方式完成。
 - 统计判定规则在 World Generator 完成之后、评测候选版本之前确定。

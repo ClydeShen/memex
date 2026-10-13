@@ -35,7 +35,7 @@ llama.cpp 返回的 `top_logprobs` 是**约束之前**的原始分布。因此�
 2. **把同一个字母的各个 token 变体合并**（概率相加）。
 3. **在本题的选项字母范围内重新归一化**，得到每个选项的分布 `distribution`。归一化后概率最高的字母，就是约束下输出的字母（temperature 为 0 时），两者一致。
 4. **记录"不属于任何选项的概率"**（off-option mass）：所有选项字母的原始概率之和与 1 的差。它高，说明输入不正常、或者模型没把它当成选择题（实测：注入题上 Tev1 的选项字母概率之和接近 0）。它是 Escalation 的触发条件之一，阈值作为 Calibration 配置项。
-5. Certainty 再按 docs/research/core-algorithms-2026-10-11.md 第 1 节的流程做 Calibration（去除选项先验偏差、温度缩放、在校准集上定阈值）。
+5. Certainty 再按 docs/research/core-algorithms-2026-10-11.md 第 1 节的流程做 Calibration（去除选项先验偏差、温度缩放、在校准集上定阈值）。（**ADR 0023 修订**：阈值的标签来自影子升级，即与 Reasoning 的结论是否一致，不用 Oracle 标签。）
 
 ## Considered Options
 

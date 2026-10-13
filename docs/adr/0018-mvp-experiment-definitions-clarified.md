@@ -21,7 +21,7 @@ status: accepted
 此前的矛盾：ADR 0003 规定 Agent 永远不能访问 Oracle；调研建议"只有经 Oracle 确认的成功才能形成 Pattern"，这样做等于让 Agent 用标准答案学习，而 World 0 并没有标准答案。
 
 - Pattern 的形成和降级、Claim 的修正，只能依据 **Environment 返回的 Observation**（例如"目标已达成"）和 **确定性的 Verification**。
-- **Oracle 只给 Evaluator 用来打分**，它的结果不能以任何形式回流给 Agent。
+- **Oracle 只给 Evaluator 用来打分**，它的结果不能以任何形式回流给 Agent。（**ADR 0023 澄清**："任何形式"包括 Calibration 的阈值等产品运行时需要的配置；Oracle 只能用于打分和诊断。）
 
 ### 三、"同一个模型"指同一个 Reasoning 模型
 

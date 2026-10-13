@@ -121,8 +121,12 @@ Intuition 对单个判断给出的把握度，由模型的输出经过 Calibrati
 _Avoid_: confidence（Confidence 专指 Claim 的置信度）
 
 **Calibration**:
-调整 Certainty 与实际正确率之间对应关系的配置参数，例如阈值或温度系数。它不修改模型本身，因此不属于训练。
+调整 Certainty 与实际正确率之间对应关系的配置参数，例如阈值或温度系数。它不修改模型本身，因此不属于训练。所用的标签只能来自产品中也能拿到的信号，主要是 Shadow Escalation，不能用 Oracle（ADR 0023）。
 _Avoid_: training, fine-tuning
+
+**Shadow Escalation**:
+Intuition 有把握、本可以走 Fast Path 时，按配置的比例照样调用 Reasoning，比较两边的结论是否一致，作为 Calibration 的标签。它产生的 Reasoning 调用计入成本（ADR 0023）。中文称"影子升级"。
+_Avoid_: double check, audit call
 
 **Escalation**:
 Intuition 判断当前情况不适合走 Fast Path，转交给 Reasoning。
@@ -251,7 +255,7 @@ World Generator 掌握的 Micro World 真实状态和因果规则。只有 Oracl
 _Avoid_: label, answer key
 
 **Oracle**:
-能访问 Ground Truth、为评测提供标准答案和标签的组件。Agent 永远无法访问 Oracle。
+能访问 Ground Truth、为评测提供标准答案和标签的组件。Agent 永远无法访问 Oracle；它的结果只用于打分和诊断，不进入 Agent 的 Worldview、Pattern 或任何配置（ADR 0018、0023）。
 _Avoid_: judge, grader
 
 **Evaluator**:
