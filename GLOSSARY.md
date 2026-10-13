@@ -136,6 +136,10 @@ _Avoid_: validation（英文 validation 指验证阶段，见 ADR 0020）。中�
 一次有名字、有参数结构、记录执行者，并经过策略检查的改动，可以改动 World（通过 Capability 执行），也可以改动 Worldview 或本体。所有改动都必须以 Action 的形式进行。Observation 不是 Action：Observation 是"发生了什么"的记录，直接写入 Event Log；而根据 Observation 形成或修改 Claim，则是一个 Action。
 _Avoid_: step, tool call, direct write, mutation
 
+**Risk Level**:
+每种 Action 在定义中声明的风险等级：只读、可撤销、不可撤销、对外发送、修改自身。Policy 按它和配置的档位决定放行、拒绝或等待用户审批；风险等级为"修改自身"的 Action 只有用户能执行，不随档位变化（ADR 0022）。中文称"风险等级"。
+_Avoid_: severity, permission level
+
 **Capability**:
 Agent 能够执行的一种操作，带有输入输出说明。
 _Avoid_: tool, function, skill（Skill 指外部的 Agent Skills 格式）

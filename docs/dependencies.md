@@ -40,7 +40,7 @@
 | Capability | Micro World 的模拟器动作 | 本地沙箱能力、MCP | V1 |
 | Communication | CLI | HTTP / SSE、A2A | P1（产品命令在决策关卡后设计） |
 | Trace 导出 | 写入本地文件 | OTLP | V0 |
-| Policy（策略检查） | 全部允许 | 角色和权限、多用户、对象级访问控制（ADR 0014） | V0 |
+| Policy（策略检查） | 验证阶段全部允许；产品阶段默认以谨慎为主的档位（ADR 0022） | 其他档位、快速分类模型判断、角色和权限、多用户、对象级访问控制（ADR 0014） | V0（产品默认档位在决策关卡确定） |
 | 运维遥测导出 | 以 JSONL 格式输出到 stdout，并写入本地文件 | OTLP（Grafana、Jaeger、Prometheus 等）（ADR 0015） | V0 |
 | 组合层 | 一个很薄的工厂函数 | Cordis、iii | V0 |
 | Environment | Micro World 生成器 | World 0、其他 Domain Pack | V0 用最简单的世界 |

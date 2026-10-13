@@ -7,7 +7,7 @@ status: accepted
 对 Worldview 的写入、对本体的修改、Capability 的执行，都必须通过一个有名字、有参数结构的 Action 完成，不能直接写入。每个 Action 都会：
 
 - 记录执行者，即 PROV-O 意义上的归属（ADR 0007）。执行者可以是用户、Agent 自身，或者其他 Agent。
-- 在执行前经过 `PolicyProvider` 检查。`PolicyProvider` 是可配依赖，默认实现是"全部允许"。
+- 在执行前经过 `PolicyProvider` 检查。`PolicyProvider` 是可配依赖，默认实现是"全部允许"。（**ADR 0022 修订**："全部允许"只适用于验证阶段；Action 带风险等级，Policy 结果增加"等待审批"，执行者由核心记录，"修改自身须用户批准"是核心不变量。）
 - 作为一条事件写入事件日志（ADR 0005）。
 
 Observation 不是 Action：它记录的是"发生了什么"，直接写入事件日志，不经过策略检查。根据 Observation 形成或修改 Claim，才是 Action。在 MVP 阶段，这个 Action 由运行时以确定性的方式执行。

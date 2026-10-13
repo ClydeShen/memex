@@ -48,7 +48,7 @@ interface Provider {
 | **Verification** | Strategy | `verify(candidate) → Verdict { ok, reasons }` | 能用确定性规则检查的，就不交给模型 |
 | **Knowledge** | Attention、Strategy | `query(q: ClaimQuery) → Claim[]` | 只读。写入一律走 Action 和 Event Log，再由 Projector 更新 |
 | **Retrieval** | Attention | `retrieve(query, budget) → RetrievedItem[]` | BM25 加向量检索；每一条结果都带上来源和观测时间（B1 和 B3 信息对等） |
-| **Policy** | Action Executor | `authorize(action, actor) → Decision { allow, reason }` | 默认实现是全部放行。用户的审批也通过这个端口实现（ADR 0014） |
+| **Policy** | Action Executor | `authorize(action, actor) → Decision { outcome: "allow" \| "deny" \| "ask", reason }` | 按 Action 的风险等级和配置的档位决定（ADR 0022）。`ask` 表示等待用户审批：Action Executor 写入 `memex.action.pending` 事件，审批后再执行或放弃。验证阶段默认全部放行；产品阶段默认档位以谨慎为主 |
 | **Capability** | Action Executor | `list() → CapabilityDescriptor[]`；`execute(request) → Observation[]` | 输入和输出用 JSON Schema 描述，与 MCP 兼容 |
 | **Communication** | Runtime | `start(api: RuntimeApi)`；`stop()` | CLI、HTTP/SSE、A2A 都实现这个端口 |
 
@@ -57,7 +57,7 @@ interface Provider {
 | 组件 | 接口（示意） |
 |---|---|
 | Event Log | `append(event) → EventId`；`read(from?) → AsyncIterable<Event>` |
-| Action Executor | `submit(actionRequest, actor) → ActionResult`：先经过 Policy 检查，再写入日志，然后执行 |
+| Action Executor | `submit(actionRequest, origin) → ActionResult`：执行者由核心根据 `origin`（Strategy、经过认证的用户入口、A2A）记录，不由请求填写；先检查不变量（风险等级为"修改自身"的 Action 只允许 `user` 执行），再经过 Policy，然后写入日志并执行（ADR 0022） |
 | Projector | `apply(event)`；`rebuild(fromLog)`：重建出来的结果必须和原来一模一样 |
 
 ---
@@ -76,7 +76,8 @@ Claim {
   validTime: { from, until? }, recordedAt,                       // 双时态（ADR 0002）
   evidence[]
 }
-ActionRequest { name, params, actor }                            // params 由该 Action 的 schema 校验
+ActionRequest { name, params }                                   // params 由该 Action 的 schema 校验；执行者由核心记录（ADR 0022）
+ActionDefinition { name, paramsSchema, risk: "read-only"|"reversible"|"irreversible"|"external-send"|"self-modify" }  // 风险等级（ADR 0022）
 Event {                                                          // CloudEvents 1.0 结构化格式，每行一个
   specversion: "1.0", id, source, type, time, datacontenttype, data,
   memexactor, memexinstance, memexparent                         // 扩展属性：执行者、所属 Instance、前一条事件
