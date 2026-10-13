@@ -43,7 +43,8 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Required]** Add an architecture boundary check. Done when: an import that breaks a dependency rule makes the check fail.
 - [ ] **[Recommended]** Write the test strategy: the list of critical points (contracts, milestone pass criteria, invariants, security gates). Write a failing test before each bug fix. Do not set a coverage threshold.
 - [ ] **[Recommended]** Write a conformance suite for each port.
-- [ ] **[Required]** Set the commit message format (for example, Conventional Commits).
+- [ ] **[Required]** Set the commit message format (for example, Conventional Commits). Done when: the header format, the body rule (why, not what), and the trailers (issue reference, breaking change, attribution) are written down.
+- [ ] **[Recommended]** Enforce the commit message format on the server (a rule on the protected branch), and check pull request titles with a required status check if you squash merge.
 - [ ] **[Required]** Add three tiers of git hooks: a light check before commit, a commit message check, and the full check before push. Done when: a bad commit message is rejected, and a deliberate check failure stops a push.
 - [ ] **[Required]** Commit the dependency lock file. Install in the mode that only reads the lock file.
 - [ ] **[Recommended]** Set the supply-chain controls: do not run install scripts by default, delay newly published versions, audit known vulnerabilities (see the language matrix for each language).

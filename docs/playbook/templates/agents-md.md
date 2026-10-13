@@ -33,6 +33,8 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 - If a merge conflict touches a contract or core logic, do not pick a side. Mark the issue blocked and ask a person.
 - `<architecture check tool>` checks the dependency direction. Do not add an exception to make the check pass. If an exception is necessary, write the reason.
 - Do not put machine details or secrets in the repository.
+- Do not skip hooks with `--no-verify` unless a person asks you to.
+- In each commit message, write why in the body, and end with the issue reference (`Refs: #<n>`) and your attribution trailer.
 ```
 
 ---
