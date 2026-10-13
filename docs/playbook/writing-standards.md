@@ -4,23 +4,7 @@ This file sets how project documents are written: a single glossary, which docum
 
 ---
 
-## 1. Decide the language policy first
-
-Write it down at the start of the project, in the README or the handoff document:
-
-| Item | What to decide | Memex's choice (example) |
-|---|---|---|
-| Documents | Which language | Chinese |
-| Code, identifiers, comments | Which language | English |
-| Commit messages, PRs | Which language and which format | English, Conventional Commits |
-| Terms | Which language for canonical names; how local-language names map to them | Canonical names in English (matching code identifiers); the glossary gives the Chinese name |
-| Conversation with agents | Which language | Chinese |
-
-When canonical names match code identifiers, you can search the code for any concept directly.
-
----
-
-## 2. A single glossary
+## 1. A single glossary
 
 ### Why
 
@@ -58,7 +42,7 @@ _Avoid_: certainty (Certainty is only the Intuition's confidence in one judgment
 
 ---
 
-## 3. ASD-STE100: which documents follow it
+## 2. ASD-STE100: which documents follow it
 
 ### What it is
 
@@ -78,7 +62,7 @@ Rules relevant to this playbook (Issue 9; rule numbers from a third-party term c
 
 ### Which documents use it
 
-The principle: **procedural text** (it tells the reader what to do and in which order) follows STE; **explanatory text** (it explains why, or compares options) follows the explanatory standard in section 4. If procedural text is misread, the reader does the wrong thing, and an agent follows text literally. STE's "one instruction per sentence" also makes every step checkable.
+The principle: **procedural text** (it tells the reader what to do and in which order) follows STE; **explanatory text** (it explains why, or compares options) follows the explanatory standard ("Writing explanatory documents" below). If procedural text is misread, the reader does the wrong thing, and an agent follows text literally. STE's "one instruction per sentence" also makes every step checkable.
 
 | Document | STE? | Reason |
 |---|---|---|
@@ -111,14 +95,14 @@ Write English procedural documents in ASD-STE100.
 
 ---
 
-## 4. Writing explanatory documents
+## 3. Writing explanatory documents
 
 For ADRs, the vision, architecture descriptions, research notes, the tech stack, and the background parts of the handoff document.
 
 1. **Conclusion first, then reasons.** The first paragraph states the decision or conclusion.
 2. **One topic per paragraph.** Use a table to compare options.
 3. **Use the canonical glossary name** the first time a term appears; add a one-line explanation if needed.
-4. **Separate facts from judgments.** Give facts a source; mark inferences as inferences. Research notes use the evidence markers (section 6).
+4. **Separate facts from judgments.** Give facts a source; mark inferences as inferences. Research notes use the evidence markers ("Evidence and confidence" below).
 5. **Do not overstate.** If it is uncertain, say so. If it is not verified, write "not verified". If nothing was found, write "not found".
 6. **Do not write numbers that drift**, such as "26 ADRs in total" or "as section 3 says". If you must write one, make it searchable and update it when it changes.
 7. **Reference with relative paths** to files in the repository. Do not cite changing code by line number (as-built docs use paths and symbol names).
@@ -127,7 +111,7 @@ For ADRs, the vision, architecture descriptions, research notes, the tech stack,
 
 ---
 
-## 5. Dates and decision records
+## 4. Dates and decision records
 
 - **Use absolute dates only**, in the format `YYYY-MM-DD`. Do not write "yesterday", "last week", or "recently".
 - **Record the date and who confirmed each decision**, for example "(confirmed by the user, 2026-10-13)". When the planner decides on the user's behalf, write "planner's recommendation; the user can change it".
@@ -135,7 +119,7 @@ For ADRs, the vision, architecture descriptions, research notes, the tech stack,
 
 ---
 
-## 6. Evidence and confidence
+## 5. Evidence and confidence
 
 - **Mark each fact in research** with its confidence: [official], [official · summary only], [secondhand], [inference], [measured]. Template: [templates/research-note.md](./templates/research-note.md).
 - **Look up version numbers, release dates, and tool capabilities** with a command or the official docs, and write the date. Never write them from memory.

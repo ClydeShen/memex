@@ -8,8 +8,8 @@ This file lists the standard documents of an agent-driven project. For each it g
 - **Implementer**: a person or an agent; there can be many. Writes code and updates the as-built docs in cleanup stories.
 
 **Writing standard**:
-- **STE**: procedural text, in ASD-STE100 or its principles for non-English docs (section 3 of the writing standards).
-- **Explanatory**: explanatory text (section 4 of the writing standards).
+- **STE**: procedural text, in ASD-STE100 or its principles for non-English docs (the ASD-STE100 section of the writing standards).
+- **Explanatory**: explanatory text (the explanatory writing section of the writing standards).
 
 ---
 

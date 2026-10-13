@@ -13,8 +13,7 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Required]** Write a one-sentence product definition. Done when: a person who does not know the project can say who it is for and what it does.
 - [ ] **[Required]** Write the scope and the non-goals. Done when: the list has at least three things the project will not do.
 - [ ] **[Recommended]** Write the vision and the numbered first principles. Give each principle a reason and a test. Mark each claim as proven or as a hypothesis.
-- [ ] **[Required]** Write the glossary. Give each entry a canonical name, a definition, and an `_Avoid_` line (format: section 2 of [writing-standards.md](./writing-standards.md)). Done when: each concept that occurs again and again in the docs has an entry.
-- [ ] **[Required]** Write the language policy: the language for docs, code, commit messages, and canonical term names. Put it in the README or the handoff document.
+- [ ] **[Required]** Write the glossary. Give each entry a canonical name, a definition, and an `_Avoid_` line (format: the glossary section of [writing-standards.md](./writing-standards.md)). Done when: each concept that occurs again and again in the docs has an entry.
 - [ ] **[Recommended]** Use [document-map.md](./document-map.md) to decide which documents to prepare, where they go, and who maintains them. In the README index, say which documents come later and when.
 - [ ] **[Recommended]** Decide which documents use ASD-STE100 (or its principles, for non-English docs) and which use the explanatory standard. Done when: AGENTS.md, checklists, runbooks, and the scope and acceptance sections of stories follow the procedural standard.
 

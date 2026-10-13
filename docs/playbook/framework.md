@@ -61,8 +61,7 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 1. Write a one-sentence product definition, then expand it into a paragraph. The sentence must tell an outsider "who it is for and what it does".
 2. Write the vision and **first principles**. Number them. For each, say why it holds and how to test it. Separate what is proven from what is a hypothesis; do not write a hypothesis as a fact.
 3. Write the **scope and non-goals**: what you will not build, and what you might build later.
-4. Write the **glossary**: one paragraph per term, plus an `_Avoid_` line with synonyms not to use. Use only glossary terms in code and docs. Entry format and upkeep rules are in section 2 of [writing-standards.md](./writing-standards.md).
-5. Set the **language policy**: which language for docs, code, commit messages, and canonical term names (section 1 of writing-standards.md).
+4. Write the **glossary**: one paragraph per term, plus an `_Avoid_` line with synonyms not to use. Use only glossary terms in code and docs. Entry format and upkeep rules are in the glossary section of [writing-standards.md](./writing-standards.md).
 
 **Outputs**: `VISION.md`, `GLOSSARY.md` (choose the paths, then keep them fixed).
 

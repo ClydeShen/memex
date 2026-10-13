@@ -9,7 +9,7 @@ This playbook is a language-agnostic framework and checklist for software projec
 | [framework.md](./framework.md) | The framework: core ideas, seven phases (define, decide, architect, guardrails, plan, operate, maintain), how to scale it, common pitfalls |
 | [checklist.md](./checklist.md) | A checklist. Each item has a done criterion and is marked "required" or "recommended" |
 | [document-map.md](./document-map.md) | Which standard documents to prepare: purpose, audience, owner, when to create, when to update, writing standard |
-| [writing-standards.md](./writing-standards.md) | Writing standards: language policy, a single glossary, which documents use ASD-STE100, explanatory writing, dates and evidence |
+| [writing-standards.md](./writing-standards.md) | Writing standards: a single glossary, which documents use ASD-STE100, explanatory writing, dates and evidence |
 | [practices.md](./practices.md) | Collaboration and judgment practices: four-dimension confidence, sync before writing code, search before asking, live verification tiers, and more |
 | [language-profiles.md](./language-profiles.md) | Tool matrix per language (Node/TypeScript, Python, C#) and how to add a language |
 | [templates/](./templates/) | Templates: ADR, story, epic, AGENTS.md, research note |
@@ -47,5 +47,5 @@ This playbook is a language-agnostic framework and checklist for software projec
 | Date | Change |
 |---|---|
 | 2026-10-13 | First version: framework, checklist, templates, document map, writing standards (glossary, ASD-STE100), collaboration practices. The language matrix waits for the Python and C# research. |
-| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. |
+| 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |
