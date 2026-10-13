@@ -17,7 +17,7 @@ This file organizes what a project should prepare before the first line of produ
 |---|---|---|---|
 | 1 | **The repository is the single source of truth.** Conversations and memories get lost; documents, issues, and code do not. Agents get their context by reading the repository, so decisions, constraints, and terms must be written there | A new agent or a new session needs no verbal handoff | Used |
 | 2 | **Decisions carry a date and a source, and are recorded immediately.** Write important decisions as ADRs. To change an existing decision, write a new ADR first | Otherwise documents contradict each other and nobody knows which one is current | Used |
-| 3 | **What can be checked automatically is not left to discipline.** Mark every rule as "automatic" or "review", and turn review rules into automatic checks where you can | Agents miss things, and so do people | Used (marking); Designed (the checks) |
+| 3 | **What can be checked automatically is not left to discipline.** Mark every rule as "automatic" or "review", and turn review rules into automatic checks where you can. Instructions to an agent (AGENTS.md, prompts) are suggestions; tools (linters, structural tests, hooks, CI) are physical constraints. Enforce code style and writing conventions with tools wherever a tool can do it | Agents miss things, and so do people; a rule an agent may skip is not a guardrail | Used (marking); Designed (the checks) |
 | 4 | **Contracts first, dependencies inverted.** Define the interfaces between components first. Components depend only on interfaces. Concrete implementations appear only in one composition entry point | Components can be built in parallel and replaced independently; problems at the seams show up early | Designed |
 | 5 | **Prove the thinnest end-to-end path first, then thicken it.** At the start of a milestone, run the whole path once with the least content possible | Building layer by layer pushes integration problems to the very end | Designed |
 | 6 | **Acceptance criteria must be checkable by a command.** Each criterion has a command, a visible result, or a concrete value. The planner runs the commands itself and does not take the implementer's word for it | "It's done" is not evidence | Used (in stories); Designed (the verification flow) |
@@ -27,6 +27,8 @@ This file organizes what a project should prepare before the first line of produ
 | 10 | **Clean up at milestone boundaries.** Every epic that produces code ends with a cleanup story: architecture review, fix severe issues, re-index, update the as-built docs | Technical debt does not pile up; the next epic builds on a tidy structure | Designed |
 | 11 | **Decide at the last responsible moment.** A default is not a commitment. A choice that can be configuration is not a one-time decision | Keeps options open and avoids locking in early | Used |
 | 12 | **Machine details stay out of the repository.** Machines, paths, and secrets go only in files that are not committed. The repository holds requirements and check methods | The repository may be public; docs do not break when you change machines | Used |
+| 13 | **Configure a trusted work environment first; writing code comes late.** Unlike a traditional project, the main early work is to set the limits and conditions before implementation: what the agent may do, what it may not do, and how each rule is checked. Code structure, uniform code patterns, and as-built docs matter more than in a traditional project | Trust and reliability come from narrowing what the agent can produce. This applies most fully to new projects; retrofitting it onto an inconsistent existing codebase can cost more than it returns | Used (Memex prepared this before any code) |
+| 14 | **Review moves; it does not disappear.** Line-by-line review of style becomes less important, because tools enforce style. Review moves **left** to the plan (stories, contracts, acceptance criteria), moves **up** to the guardrails (are the rules and tests strong enough?), and **stays** on behavior and security (run the acceptance commands; security scanning) | Tools cannot tell whether code does the right thing or is secure, and a weak test passes broken code | Used (acceptance in stories); Designed (verification flow, scanning) |
 
 ---
 
@@ -213,6 +215,8 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, common 
 8. **Experiment tools treated as product.** If the project has a phase that tests ideas, say which parts are validation tools (not shipped) and which are product components (shipped after validation).
 9. **Rules without tools.** For every rule, ask: can a tool check this?
 10. **Cleanup that turns into a rewrite.** Cleanup is refactoring only. Write the severity criteria in advance; relax on minor issues and record them for next time.
+11. **Dropping review altogether.** Tools enforce style, not correctness or security. Keep behavior and security verification, and review the guardrails themselves.
+12. **Rules that live only in agent instructions.** A rule in AGENTS.md or a prompt can be skipped. If a tool can check it, make the tool check it.
 
 ---
 
