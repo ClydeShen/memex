@@ -35,7 +35,7 @@
 | Biome | 2.5.x | 开发工具 | lint 和格式化合在一个工具里，带类型相关的规则，不依赖 TypeScript 的接口 | V0.1 |
 | dependency-cruiser | 18.5.x | 开发工具 | 把架构约束写成自动检查：核心只依赖 `@memex/contracts`；Provider 之间不能互相 import；只有 Composition Root 能引用具体实现（A2，ADR 0008）。违反时检查失败 | V0.1 |
 | knip | 6.41.x | 开发工具 | 找出没用到的文件、导出和依赖，原生支持 monorepo | V0.1 |
-| CodeQL | GitHub 提供 | 开发工具 | 安全扫描，公开仓库免费，支持 JS 和 TS | 决策关卡建立 CI 时（ADR 0012、0020） |
+| CodeQL | GitHub 提供 | 开发工具 | 安全扫描，公开仓库免费，支持 JS 和 TS。追踪不可信数据在代码中的流向，例如模型输出流进 `eval`、配置中的路径穿越、`child_process` 命令注入、overlay 合并时的原型污染（security-and-data.md X3、X5、C2）。用 GitHub 的默认设置（default setup）：在仓库的 Settings → Code security 中开启，不需要 workflow 文件；推送到 `main` 时和每周各扫描一次，只报告问题、不阻止合并，所以不增加 ADR 0012 想避免的流程负担。开启仓库设置由用户操作 | V0 首次合并进 `main` 时（用户确认，2026-10-13） |
 | Dependabot、`pnpm audit` | GitHub 和 pnpm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | V0.1 起（不需要 CI，与 security-and-data.md S4 一致） |
 
 备选：
@@ -156,7 +156,7 @@ V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里�
 - Node 原生 TypeScript：[Node.js 文档：TypeScript](https://nodejs.org/api/typescript.md) · [原生运行 TypeScript](https://nodejs.org/zh-cn/learn/typescript/run-natively)
 - Lint：[InfoQ：ESLint 10](https://infoq.com/news/2026/04/eslint-10-release) · [Oxfmt Beta](https://oxc.rs/blog/2026-02-24-oxfmt-beta) · [Biome vs Oxc 2026](https://www.pkgpulse.com/guides/biome-vs-oxc-2026) · [Biome vs ESLint vs Oxlint 2026](https://www.pkgpulse.com/guides/biome-vs-eslint-vs-oxlint-2026)
 - 架构检查：[lastminute.com：用 dependency-cruiser 守住架构边界](https://technology.lastminute.com/how-we-enforce-architecture-boundaries-at-scale-on-our-app/) · [knip](https://www.npmjs.com/package/knip)
-- 安全扫描：[CodeQL code scanning](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning) · [SonarQube Cloud 订阅计划](https://docs.sonarsource.com/sonarcloud/administering-sonarcloud/managing-subscription/subscription-plans)
+- 安全扫描：[CodeQL code scanning](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning) · [CodeQL 默认设置](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning) · [SonarQube Cloud 订阅计划](https://docs.sonarsource.com/sonarcloud/administering-sonarcloud/managing-subscription/subscription-plans)
 - 测试：[Vitest 博客](https://main.vitest.dev/blog)
 - 构建：[tsdown 基准](https://tsdown.dev/advanced/benchmark) · [从 tsup 换到 tsdown](https://alan.norbauer.com/articles/tsdown-bundler)
 - 工具函数：[es-toolkit vs lodash](https://blog.logrocket.com/es-toolkit-lodash-alternative)

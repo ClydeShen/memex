@@ -116,7 +116,7 @@
 3. **V0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志、录制与回放（在 Model Backend 连接层统一处理）。
 4. **V0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。
 5. **V0.5 Lab**（验证工具，不属于产品，ADR 0020）：每个 Experiment 一个子进程，Runner 和 Worker 之间用 JSONL 通信；提供 `pnpm lab run <experiment.yaml>` 和 `pnpm lab replay <快照>`。
-6. **V0.6 关卡**：把三条通过标准写成自动化测试，即可复现、不泄漏、可替换。全部通过之后再合并。
+6. **V0.6 关卡**：把三条通过标准写成自动化测试，即可复现、不泄漏、可替换。全部通过之后再合并。合并之后，提醒用户在 GitHub 仓库设置中开启 CodeQL 的默认设置（docs/tech-stack.md）。
 
 **V0 中需要靠实现来确定的设计细节**（`contracts.md` 第六节）：
 - `StepContext.services` 的形状。
