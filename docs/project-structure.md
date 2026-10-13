@@ -23,7 +23,9 @@ memex/
 │  └─ intuition-tev1/        例：type 为 intuition.tev1 的 Provider
 ├─ apps/                     产品的可执行程序：`memex` 命令行、以后的 Web 界面（P1 起）
 ├─ examples/                 示例资源 YAML（Experiment、Model、Provider），只包含合成数据
-├─ docs/                     文档：adr/、architecture/、research/ 和各份规范
+├─ scripts/                  仓库自己的工具脚本，不属于任何包；`scripts/docs/` 检查和生成 as-built 文档（ADR 0026）
+├─ docs/                     文档：adr/、architecture/、plans/、research/、as-built/ 和各份规范；as-built/ 描述代码现状，每个包一页（ADR 0026）
+├─ AGENTS.md                 给 coding agent 的很薄的入口：命令、工作方式、先读哪里；不放现状描述
 ├─ package.json              根配置：统一的脚本入口，`packageManager` 固定 pnpm 版本
 ├─ pnpm-workspace.yaml       pnpm workspaces 与依赖安全设置（docs/security-and-data.md 第五节）
 ├─ pnpm-lock.yaml            锁定依赖版本，必须提交
@@ -108,6 +110,8 @@ packages/runtime/
 |---|---|
 | `packages/contracts`、`runtime`、`fakes`、`lab`，以及根目录的配置文件 | V0.1 |
 | `examples/` | V0.5（第一个示例 Experiment） |
+| `scripts/`、根目录 `AGENTS.md`、`docs/as-built/TEMPLATE.md` 和 `index.md` | V0-28 |
+| `docs/as-built/` 的各包页面 | V0-29（第一次整理） |
 | `providers/` | V1（第一个真实 Provider） |
 | `apps/` | P1（产品命令在决策关卡后设计） |
 

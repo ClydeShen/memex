@@ -23,12 +23,12 @@
 | 顺序 | 文件 | 读它要得到什么 |
 |---|---|---|
 | 1 | `VISION.md` | 项目目的、中心假设、12 条第一性原则、核心模块、验证之后的产品方向、跨领域迁移的设想 |
-| 2 | `docs/roadmap.md` | **执行计划**：30 条全局约束（S/A/E/P）、验证阶段 V0–V2 和产品阶段 P1–P5 的进入和退出条件、V0 的任务分解 |
+| 2 | `docs/roadmap.md` | **执行计划**：31 条全局约束（S/A/E/P）、验证阶段 V0–V2 和产品阶段 P1–P5 的进入和退出条件、V0 的任务分解 |
 | 3 | `GLOSSARY.md` | 领域术语。**写代码、写文档时一律使用这里的术语**，`_Avoid_` 列出的词不要用 |
 | 4 | `docs/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `docs/architecture/contracts.md` | 集成契约 v0 草案。**V0.2 按它实现** |
 | 6 | `docs/dependencies.md`、`docs/tech-stack.md`、`docs/code-style.md`、`docs/security-and-data.md`、`docs/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `docs/adr/0001`–`0025` | 25 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 7 | `docs/adr/0001`–`0026` | 26 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
 | 8 | `docs/open-questions.md` | 还剩 4 个待决问题，每个都已标明在什么时候决定 |
 | 9 | `docs/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 | 10 | `docs/plans/v0-integration.md` | **V0 的执行计划**：组件、接缝、关卡和 story（ADR 0025） |
@@ -52,10 +52,10 @@
 | `exp/*`、`feat/*`、`eval/*` | 旧系统遗留的分支 | 不要动 |
 
 - **仓库里目前只有文档和工程配置文件**：README、VISION、GLOSSARY、HANDOFF、`docs/`，以及 `.gitignore`、`.gitattributes`、`.editorconfig`、`.nvmrc`、`.env.example`。没有 `package.json`，没有任何代码。
-- 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（docs/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里没有 CLAUDE.md。用户明确不沿用旧项目的工程规范和 harness。
+- 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（docs/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里目前没有 CLAUDE.md；根目录 `AGENTS.md` 由 V0-28（#69）创建。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：25 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：26 份 ADR 已确认。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `docs/research/`。
 
@@ -107,7 +107,7 @@
 
 ## 5. 下一步：V0（已确认，可以开始）
 
-**V0 按 `docs/plans/v0-integration.md` 执行**（ADR 0025）：组件、接缝、关卡，以及 A–E 五个阶段的 27 个 story。先打通最薄的端到端（B 阶段），再契约先行（C、D 阶段）。下面的 V0.1–V0.6 是里程碑级概览，只补充执行上的注意事项。
+**V0 按 `docs/plans/v0-integration.md` 执行**（ADR 0025）：组件、接缝、关卡，以及 A–E 五个阶段的 27 个 story，加上 ADR 0026 的三个整理 story（V0-28 至 V0-30），共 30 个。每个产出代码的 epic 以整理 story 结束：架构审查、修复严重问题、重新索引、更新 `docs/as-built/`。先打通最薄的端到端（B 阶段），再契约先行（C、D 阶段）。下面的 V0.1–V0.6 是里程碑级概览，只补充执行上的注意事项。
 
 **分支**：从 `main` 开一个实验分支，例如 `exp/v0-skeleton`。通过 V0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
 
@@ -140,7 +140,7 @@
 | # | 事项 | 当前状态 |
 |---|---|---|
 | D1 | 产品阶段 P1–P5 的范围和退出条件 | `roadmap.md` 中标为**草案**，在决策关卡确定（ADR 0020） |
-| D2 | 计划是否同步到 GitHub 的 Milestone 和 Issue | **已完成（2026-10-13）**：Milestone "V0 骨架"，4 个 epic（#38–#41）和 27 个 story（#42–#68）；v1 遗留的 issue 和 Milestone 已全部关闭 |
+| D2 | 计划是否同步到 GitHub 的 Milestone 和 Issue | **已完成（2026-10-13）**：Milestone "V0 骨架"，4 个 epic（#38–#41）和 30 个 story（#42–#71）；v1 遗留的 issue 和 Milestone 已全部关闭 |
 | D3 | 是否用 `/plan-delivery` skill 把 roadmap 转成交付计划 | **已完成（2026-10-13）**：V0 已按 plan-delivery 的标准写成 epic 和 story；V1 的集成设计和 ticket 在 V0 合并之后做（ADR 0025） |
 | D4 | Micro World 对 Agent 隐藏哪些信息 | 在 V2 之前决定；会做成配置项（`open-questions.md` #1） |
 | D5 | 是否精简流程 | 到决策关卡时再决定（`open-questions.md` #2） |
