@@ -46,6 +46,8 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Required]** Set the commit message format (for example, Conventional Commits). Done when: the header format, the body rule (why, not what), and the trailers (issue reference, breaking change, attribution) are written down.
 - [ ] **[Recommended]** Enforce the commit message format on the server (a rule on the protected branch), and check pull request titles with a required status check if you squash merge.
 - [ ] **[Required]** Add three tiers of git hooks: a light check before commit, a commit message check, and the full check before push. Done when: a bad commit message is rejected, and a deliberate check failure stops a push.
+- [ ] **[Recommended]** Write down the layers of checks (agent session hooks, git hooks, CI, after integration): what each layer runs and which layer is the gate. Done when: each inner layer runs a subset of the next one, every check runs in the outermost gate, and all layers call the same commands and configuration.
+- [ ] **[Recommended]** Protect the checks: deny agents edit access to the check configuration, the hook scripts, and the gate tests, and require an owner's review for these paths.
 - [ ] **[Required]** Commit the dependency lock file. Install in the mode that only reads the lock file.
 - [ ] **[Recommended]** Set the supply-chain controls: do not run install scripts by default, delay newly published versions, audit known vulnerabilities (see the language matrix for each language).
 - [ ] **[Recommended]** Switch on code security scanning, dependency update alerts, secret scanning, and push protection.

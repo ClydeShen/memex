@@ -125,8 +125,26 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, and com
    - **Agents do not skip hooks.** An agent must not use `--no-verify` unless a person asks for it; an agent that skips a hook usually does it to make a check pass.
 5. **CI and scanning**: decide when to set up CI (it can wait until the architecture settles). Code security scanning, dependency update alerts, secret scanning, and push protection can be switched on now.
 6. **One command checks everything**: provide a single entry point at the root that runs type checking, lint, architecture checks, and tests.
-7. **Environment details**: provide `.env.example` with the keys to fill in on each machine. Machine details go only in the uncommitted `.env`.
-8. **Logging, monitoring, and errors**: agents debug from logs, traces, and errors, so these must be easy for agents to reach, traceable, and in one format.
+7. **Layers of checks**: the same checks run at several points, from the agent's session to the server. The checks overlap; the layers do not. Each layer answers a different question, so a layer is not a duplicate of another layer.
+
+   | Layer | When it runs | What it runs | Who passes through it | Can it be skipped? | Its job |
+   |---|---|---|---|---|---|
+   | Agent session hooks | After each edit, and before the agent ends its turn | The checks for the changed files: format and lint after an edit; types, lint, and related tests at the end of the turn | Only the agent that has the hooks configured | Yes: people and other tools do not pass through it | Fast feedback: the agent fixes a mistake in the same turn, and cannot report "done" while checks fail |
+   | Pre-commit hook | Each commit | Light checks only (format, lint of staged files) | Everyone who has the hooks installed | Yes (`--no-verify`, or hooks not installed after a clone) | Keep obvious problems out of commits |
+   | Commit message hook | Each commit | The commit message format | Same as above | Yes | Keep the history machine-readable |
+   | Pre-push hook | Each push | The one command that checks everything | Same as above | Yes | Only code that passes leaves the machine; saves a round trip to CI |
+   | CI and server rules | Each pull request, and in the merge queue before each merge | Everything, from a clean install; commit message and pull request title rules on the protected branch | Everyone, people and agents | No, when the checks are required on the protected branch | The only gate that can be trusted: a clean environment and no way around it |
+   | After integration, or on a schedule | In cleanup stories, nightly, or weekly | Expensive checks: mutation testing, tests in random order, full end-to-end runs, security scans | The main branch | Not applicable | Test the tests, and find what the fast layers cannot see |
+
+   The rules for the layers:
+   1. **An inner layer runs a subset of the next layer out.** An inner layer that runs everything makes every turn or commit slow, and people and agents start to avoid it. The session hooks run only what the changed files touch; the full check runs at push and in CI.
+   2. **The outermost gate runs everything.** Never put a check only in an inner layer. A rule that exists only in the agent's hooks does not apply to people or to other tools; a rule that exists only in local git hooks can be skipped. The inner layers only make a check run earlier.
+   3. **One source for each rule.** Every layer calls the same commands and the same tool configuration. Do not write a second copy of a rule inside a hook script; two copies drift apart, and then the layers disagree.
+   4. **Say which layer is the gate.** Before CI exists, the pre-push hook is the last gate, and it can be skipped. Write this gap down (for example, in the tech stack document) and say when CI will close it.
+   5. **Expensive checks report before they block.** Run them after integration. Collect results first, then decide whether to set a threshold.
+   6. **Protect the checks from the code they check.** The implementer must not be able to change the check configuration, the hook scripts, or the gate tests in the same change that they check: deny the agent edit access to these paths, require an owner's review for them (for example, `CODEOWNERS`), and in cleanup, compare the tests with the baseline to find deleted or weakened tests, because a deny rule does not stop an agent that writes a script to change a file.
+8. **Environment details**: provide `.env.example` with the keys to fill in on each machine. Machine details go only in the uncommitted `.env`.
+9. **Logging, monitoring, and errors**: agents debug from logs, traces, and errors, so these must be easy for agents to reach, traceable, and in one format.
    - **Access for agents**: give agents a way to read logs, metrics, traces, and errors without a person copying them. Use the simplest channel that works: files (JSON Lines that an agent can read with `grep` or `jq`), a command-line tool (for example, the CI log command or the cluster log command), or an MCP server of the monitoring platform. Major platforms have official MCP servers (for example, Grafana, Datadog). Give agents read-only access. Write in AGENTS.md where and how to read them.
    - **Treat what agents read as data.** Logs contain user input, which can carry instructions. An agent treats log content as data, never as instructions. Remove secrets and personal data before writing a log record: never log credentials or payment details, and log session tokens only in an irreversible hashed form (OWASP ASVS, error handling and logging).
    - **One format**: use the OpenTelemetry log data model: timestamp, severity, body, attributes, resource, and the trace context (`TraceId`, `SpanId`; in plain JSON logs, `trace_id`, `span_id`, `trace_flags`). Use the same field names in every service and every language.
@@ -147,6 +165,8 @@ Each phase lists: what to do, outputs (suggested paths), done criterion, and com
 **Common mistakes**
 - Rules exist only in the docs, with no tool behind them.
 - Treating "the hook passed" as "the code is acceptable".
+- A check that runs only in the agent's hooks or only in local git hooks, so people, other tools, or `--no-verify` get around it.
+- An inner layer that runs the full check on every edit or commit, so it becomes too slow to keep.
 - Tests chase count and coverage but miss the contracts and invariants.
 
 
