@@ -68,8 +68,6 @@ The principle: **procedural text** (it tells the reader what to do and in which 
 | ADRs, vision, research notes, architecture descriptions | No | They explain trade-offs and uncertainty; use the explanatory standard |
 | The handoff document | Partly: background in explanatory style; "first steps" and "do not" lists in STE | Mixed content |
 
-**Examples**: [delivery-planning.md](./delivery-planning.md), [workflow.md](./workflow.md), and [review.md](./review.md) are written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
-
 ### How non-English documents can borrow it
 
 ASD-STE100 covers English only. Its dictionary and word limits do not carry over to other languages. Procedural text in another language can borrow its **principles**. The list below is this playbook's proposal [inference]; there is no matching standard for other languages:

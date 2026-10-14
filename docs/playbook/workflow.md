@@ -1,7 +1,5 @@
 # Workflow
 
-Written in ASD-STE100 Simplified Technical English. Each procedural sentence has one instruction.
-
 This standard gives the states of an issue, the transitions between them, and the loops that close the work, from "ready" to production and back. It applies to all roles: planners, implementers, reviewers, and the owner. The roles and the terms are in [glossary.md](./glossary.md). The tasks of each role are in [delivery-planning.md](./delivery-planning.md) (planner), [review.md](./review.md) (reviewer), and [templates/agents-md.md](./templates/agents-md.md) (implementing agent).
 
 ## 1. Rules for all roles

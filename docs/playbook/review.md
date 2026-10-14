@@ -1,7 +1,5 @@
 # Review Standard
 
-Written in ASD-STE100 Simplified Technical English. Each procedural sentence has one instruction. Steps are in sequence. Each task ends on a completion criterion.
-
 This standard gives the procedure for reviewers. A reviewer can be a person or an agent. The workflow states ("in review", "verifying") are in [workflow.md](./workflow.md). The format of findings and the order of sources in a conflict are in [feedback.md](./feedback.md).
 
 ## 1. Scope

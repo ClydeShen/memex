@@ -1,7 +1,5 @@
 # Delivery Planning Standard
 
-Written in ASD-STE100 Simplified Technical English. Each procedural sentence has one instruction. Steps are in sequence. Each task ends on a completion criterion.
-
 This standard gives the tasks of a planner: write issues and epics, set dependencies and parallel work, verify results, sync status, and report to the owner. It does not name a tool or a platform. The terms are in [glossary.md](./glossary.md). The states and the transitions of an issue are in [workflow.md](./workflow.md). The templates are [templates/story.md](./templates/story.md) and [templates/epic.md](./templates/epic.md).
 
 ## 1. Scope

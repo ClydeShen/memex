@@ -1,7 +1,5 @@
 # Social Contract
 
-Written in ASD-STE100 Simplified Technical English. Each agreement is one short sentence or two.
-
 The harness enforces some rules with tools: checks, branch rules, permissions. Other rules cannot be enforced, or are not worth a tool. A team keeps those rules by agreement. This file is a catalog of such agreements for teams of several people, each with their own agents.
 
 An agreement is not a workflow step. The workflow is in [workflow.md](./workflow.md). Nobody tracks the agreements. Each member keeps them in mind and applies them at the moment they act.
