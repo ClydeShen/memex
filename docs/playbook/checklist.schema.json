@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "checklist.schema.json",
+  "title": "Setup checklist for agent-driven projects",
+  "description": "The shape of checklist.yaml. Field meanings are in the `fields` section of checklist.yaml.",
+  "type": "object",
+  "required": ["version", "weights", "scoring", "items", "final_checks"],
+  "properties": {
+    "version": { "type": "integer" },
+    "checked_on": { "type": "string" },
+    "project": { "type": "object" },
+    "fields": { "type": "object" },
+    "weights": { "type": "object" },
+    "scoring": { "type": "object" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "phase", "level", "weight", "check", "done_when", "harness", "why", "weight_reason", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "phase": { "type": "integer", "minimum": 0, "maximum": 6 },
+          "level": { "enum": ["required", "recommended"] },
+          "weight": { "enum": [1, 2, 3] },
+          "check": { "type": "string" },
+          "done_when": { "type": "string" },
+          "harness": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "control", "timing"],
+            "properties": {
+              "role": { "enum": ["guide", "sensor", "guide+sensor", "foundation"] },
+              "control": { "enum": ["computational", "inferential", "human"] },
+              "timing": { "enum": ["feedforward", "in-session", "pre-integration", "post-integration", "continuous", "setup"] }
+            }
+          },
+          "why": { "type": "string" },
+          "weight_reason": { "type": "string" },
+          "see": { "type": "array", "items": { "type": "string" } },
+          "status": { "enum": ["todo", "done", "n/a"] },
+          "date": { "type": "string" },
+          "note": { "type": "string" }
+        },
+        "if": { "properties": { "level": { "const": "required" } } },
+        "then": { "properties": { "status": { "enum": ["todo", "done"] } } }
+      }
+    },
+    "final_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "check", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "check": { "type": "string" },
+          "status": { "enum": ["todo", "done"] },
+          "date": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

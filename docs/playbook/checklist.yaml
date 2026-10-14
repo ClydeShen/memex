@@ -1,0 +1,967 @@
+# yaml-language-server: $schema=./checklist.schema.json
+#
+# Setup checklist for agent-driven projects, as structured data.
+# This file is a reference for people and agents. It is not read by a program.
+#
+# How to use:
+#   1. Copy this file into the new project (for example, docs/setup-checklist.yaml).
+#   2. Fill in `project`.
+#   3. Work through the items in phase order. When an item is done, set `status: done` and `date`.
+#      When a Recommended item does not apply, set `status: n/a` and write the reason in `note`.
+#      A Required item is done or not done; it cannot be n/a.
+#   4. Score at the end of each milestone (see `scoring`) and write the result in `project.score`.
+#
+# The phases and the reasons behind them are in framework.md.
+# To change an item: change the text here, keep its `id`, and write the change in the change log of README.md.
+
+version: 1
+checked_on: "2026-10-14"
+
+project:
+  name: ""
+  language: ""
+  size: ""          # small | medium | large
+  start_date: ""
+  score:
+    value: ""       # for example "61/126 = 48%"
+    core: ""        # for example "9/14"
+    scored_on: ""
+
+fields:
+  id: Stable identifier. Never reuse or renumber.
+  phase: "0 Define, 1 Decide, 2 Architect, 3 Guardrails, 4 Plan, 5 Operate, 6 Maintain (framework.md)."
+  level: "required: do it even in a small project. recommended: for medium and large projects."
+  weight: "How much the item adds to the harness: 3, 2, or 1 (see `weights`). Separate from `level`."
+  check: What to do.
+  done_when: The observable condition that makes the item done.
+  harness.role: "guide: guides the agent before it acts. sensor: checks the work after the agent acts. guide+sensor: both. foundation: makes guides or sensors possible, but does not guide or check by itself."
+  harness.control: "computational: a tool decides, the same way each time. inferential: a model or a person judges. human: a person decides or acts."
+  harness.timing: "feedforward (read or applied before acting), in-session (while the agent works), pre-integration (commit, push, pull request), post-integration (after merge, cleanup, milestone), continuous (on a schedule or at run time), setup (once, when the project starts)."
+  why: Why the harness needs the item.
+  weight_reason: Why the item has its weight.
+  see: Where the playbook explains the item.
+  status: "todo | done | n/a (per project)."
+  date: The date the item was done (per project).
+  note: Evidence, or the reason for n/a (per project).
+
+weights:
+  3:
+    name: core harness
+    meaning: >-
+      An automatic check or a hard limit that the agent meets every time, or a protection of the tests
+      and checks that decide whether work is done. Without it, wrong work can pass and nobody sees it.
+  2:
+    name: strengthens the harness
+    meaning: >-
+      Makes the guidance clearer or the checks more complete, but the agent can work without it.
+  1:
+    name: nice to have
+    meaning: >-
+      Helps at scale, makes work faster, or keeps the documents up to date over time.
+
+scoring:
+  score: The sum of the weights of the done items, divided by the sum of the weights of the items that apply, times 100.
+  core: The number of done weight-3 items, divided by the number of weight-3 items that apply.
+  rule: >-
+    Read the two numbers together. Agents can work on their own when the core is complete, whatever the
+    score. If a weight-3 item is not done, a person watches the agents' work closely, even if the score is high.
+  general: >-
+    The weights are a general standard from harness practice. Do not change a weight for one project.
+    A project's situation shows in its own score and in its n/a items.
+
+items:
+
+  # ---------------------------------------------------------------- Phase 0: Define
+
+  - id: product-definition
+    phase: 0
+    level: required
+    weight: 2
+    check: Write a one-sentence product definition.
+    done_when: A person who does not know the project can say who it is for and what it does.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: The agent uses it to decide what is in and out when a story does not say.
+    weight_reason: It guides judgment calls, but no check depends on it.
+    see: [framework.md#phase-0-define]
+    status: todo
+
+  - id: scope-and-non-goals
+    phase: 0
+    level: required
+    weight: 2
+    check: Write the scope and the non-goals.
+    done_when: The list has at least three things the project will not do.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents add features that nobody asked for. Written non-goals give a planner and a reviewer a reason to reject them.
+    weight_reason: It limits scope creep, but only when someone reads it.
+    see: [framework.md#phase-0-define]
+    status: todo
+
+  - id: vision-and-principles
+    phase: 0
+    level: recommended
+    weight: 1
+    check: Write the vision and the numbered first principles. Give each principle a reason and a test. Mark each claim as proven or as a hypothesis.
+    done_when: Each principle has a number, a reason, a test, and a proven or hypothesis mark.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Gives the planner something to re-anchor on when the work drifts.
+    weight_reason: Planners use it; implementers rarely meet it.
+    see: [framework.md#phase-0-define]
+    status: todo
+
+  - id: glossary
+    phase: 0
+    level: required
+    weight: 2
+    check: Write the glossary. Give each entry a canonical name, a definition, and an `_Avoid_` line.
+    done_when: Each concept that occurs again and again in the docs has an entry.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents copy the words they see. One name per concept keeps code, docs, and issues searchable and consistent.
+    weight_reason: It prevents drift in names, but nothing stops an agent from using a wrong term.
+    see: [writing-standards.md#1-a-single-glossary]
+    status: todo
+
+  - id: document-map
+    phase: 0
+    level: recommended
+    weight: 1
+    check: Use document-map.md to decide which documents to prepare, where they go, and who maintains them. In the README index, say which documents come later and when.
+    done_when: The README index lists each document, its owner, and the documents that come later.
+    harness: { role: foundation, control: human, timing: setup }
+    why: Agents look for information in fixed places. A known map stops them from writing a second copy of a document.
+    weight_reason: Organizes the guides; does not guide or check by itself.
+    see: [document-map.md]
+    status: todo
+
+  - id: writing-standard
+    phase: 0
+    level: recommended
+    weight: 1
+    check: Decide which documents use ASD-STE100 (or its principles, for non-English docs) and which use the explanatory standard.
+    done_when: AGENTS.md, checklists, runbooks, and the scope and acceptance sections of stories follow the procedural standard.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Short, unambiguous instructions are followed more reliably by agents and by readers in a second language.
+    weight_reason: Makes guides clearer; a vague instruction still works most of the time.
+    see: [writing-standards.md]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 1: Decide
+
+  - id: adr
+    phase: 1
+    level: required
+    weight: 2
+    check: Create the ADR directory and the template.
+    done_when: The first ADR states the decision, the reasons, the options considered, and the consequences.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents re-open settled questions when they cannot see the decision and its reasons.
+    weight_reason: Prevents rework and drift, but is read only when someone looks.
+    see: [framework.md#phase-1-decide, templates/adr.md]
+    status: todo
+
+  - id: constraint-table
+    phase: 1
+    level: required
+    weight: 2
+    check: Create the global constraint table (ID, constraint, source).
+    done_when: Each constraint traces back to an ADR or a principle.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: One list of hard limits that the agent can check its plan against, and the source of the automatic checks.
+    weight_reason: It guides; the checks built from it are scored separately.
+    see: [framework.md#phase-1-decide]
+    status: todo
+
+  - id: open-questions
+    phase: 1
+    level: required
+    weight: 1
+    check: Create the open-questions list. Give each question a decision date.
+    done_when: Each open question has an owner and a decision date.
+    harness: { role: foundation, control: human, timing: setup }
+    why: Shows the agent which areas are not decided, so it marks work blocked instead of guessing.
+    weight_reason: Supports the Definition of Blocked; little direct effect on agent output.
+    see: [framework.md#phase-1-decide]
+    status: todo
+
+  - id: research-note-rules
+    phase: 1
+    level: recommended
+    weight: 1
+    check: Set the rules for research notes. Use confidence markers, a source list, and a "not verified" section.
+    done_when: The research note template has these three parts.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents state remembered facts as true. Markers and sources separate what was checked from what was assumed.
+    weight_reason: Improves the quality of inputs to decisions, not of the code.
+    see: [templates/research-note.md]
+    status: todo
+
+  - id: first-consistency-review
+    phase: 1
+    level: recommended
+    weight: 1
+    check: Do one consistency review (counts, IDs, terms, references, defaults).
+    done_when: The review is recorded and the contradictions it found are fixed.
+    harness: { role: sensor, control: inferential, timing: setup }
+    why: Agents follow whichever of two contradicting documents they read first.
+    weight_reason: A one-time check of the guides.
+    see: [framework.md#phase-1-decide]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 2: Architect
+
+  - id: architecture-diagrams
+    phase: 2
+    level: required
+    weight: 1
+    check: Draw the architecture diagrams. Draw at least one context diagram and one component diagram.
+    done_when: Both diagrams exist and match the component list.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: A quick map of the system for a new agent session.
+    weight_reason: No agent is stopped or corrected by a diagram.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  - id: contracts
+    phase: 2
+    level: required
+    weight: 3
+    check: Write the contracts between the main components (interface and data types).
+    done_when: Each port has explicit inputs and outputs, and each data type is serializable.
+    harness: { role: guide+sensor, control: computational, timing: feedforward }
+    why: >-
+      Contracts are what several implementers build against in parallel, and the type checker and schema
+      tests enforce them. Without them, each agent invents its own interface.
+    weight_reason: Typed contracts are checked on every build and are the base of conformance and seam tests.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  - id: dependency-classes
+    phase: 2
+    level: recommended
+    weight: 1
+    check: Classify the dependencies (hard, configurable, optional). Say when each default must be chosen.
+    done_when: Each external dependency has a class and a decision date for its default.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Tells the agent which dependencies it may replace or must keep.
+    weight_reason: A planning aid.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  - id: structure-and-dependency-rules
+    phase: 2
+    level: required
+    weight: 2
+    check: Write the directory structure and the "who may depend on whom" table.
+    done_when: The rules can be written as an automatic check.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Tells the agent where new code goes, and is the source of the boundary check.
+    weight_reason: The boundary check that enforces it is weight 3; the document alone only guides.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  - id: naming-rules
+    phase: 2
+    level: recommended
+    weight: 1
+    check: Write the naming rules (directories, files, packages, tests, resource files).
+    done_when: Each kind of name has a rule and an example.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents find related code by name. Consistent names make search reliable.
+    weight_reason: Agents copy existing names well without a written rule.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  - id: tech-stack
+    phase: 2
+    level: required
+    weight: 2
+    check: Write the tech stack document. For each tool, give its role, its class, and when it is introduced. List the tools you will not use.
+    done_when: Each tool in the repository is in the document, and the document lists rejected tools.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents add libraries they know. A list of chosen and rejected tools stops new dependencies that nobody decided on.
+    weight_reason: Guides tool choice; a lock file review catches what it misses.
+    see: [framework.md#phase-2-architect, language-profiles.md]
+    status: todo
+
+  - id: configuration-format
+    phase: 2
+    level: recommended
+    weight: 1
+    check: Define one configuration format. Version it. Validate it on load. Reference secrets only through environment variables.
+    done_when: Loading an invalid configuration fails with a clear error, and no secret is in a configuration file.
+    harness: { role: sensor, control: computational, timing: continuous }
+    why: Validation on load turns a configuration mistake into an error the agent can read.
+    weight_reason: Product quality more than agent guidance.
+    see: [framework.md#phase-2-architect]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 3: Guardrails
+
+  - id: code-style
+    phase: 3
+    level: required
+    weight: 2
+    check: Write the code style document. Mark each rule [auto] or [review].
+    done_when: Each [auto] rule names a tool and a rule.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Marking rules shows which rules a tool enforces and which depend on discipline, so the latter can be turned into checks.
+    weight_reason: The [auto] rules are enforced by the one-command check; the document guides.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: language-tools
+    phase: 3
+    level: required
+    weight: 2
+    check: Select the tools for the language. Select a package manager, a formatter and linter, type or null checking, and a test framework.
+    done_when: One tool is chosen for each role and written in the tech stack document.
+    harness: { role: foundation, control: computational, timing: setup }
+    why: The sensors are built from these tools.
+    weight_reason: A precondition; the checks that use the tools carry the weight.
+    see: [language-profiles.md]
+    status: todo
+
+  - id: one-command-check
+    phase: 3
+    level: required
+    weight: 3
+    check: Make one command check everything.
+    done_when: After a clean clone, one command runs type checking, lint, architecture checks, and tests, and it passes.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: The agent and the planner need one unambiguous answer to "is this acceptable?". Every layer of checks calls it or a subset of it.
+    weight_reason: The main computational sensor. Without it, "done" is a claim.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: short-machine-readable-output
+    phase: 3
+    level: required
+    weight: 2
+    check: Make the check output short and machine-readable.
+    done_when: >-
+      A failing run prints only the failures and their errors (the test runner's agent-oriented output,
+      or an equivalent), and a tool can read the result (the exit code, plus JUnit XML or JSON where a tool needs it).
+    harness: { role: sensor, control: computational, timing: in-session }
+    why: Agents read every line. Pages of passing output waste context and hide the failure.
+    weight_reason: Makes the sensors more useful; the sensors work without it.
+    see: [testing.md]
+    status: todo
+
+  - id: agent-session-hooks
+    phase: 3
+    level: required
+    weight: 3
+    check: Add agent session hooks.
+    done_when: >-
+      After each edit, the agent gets lint feedback for the changed files in the same turn; the agent cannot
+      end its turn while types, lint, or the related tests fail; a guard stops an endless loop.
+    harness: { role: sensor, control: computational, timing: in-session }
+    why: >-
+      Git hooks run only at commit and push, but an agent edits many times per task. Session hooks give
+      feedback before the agent builds on a mistake, and stop it from reporting "done" while checks fail.
+    weight_reason: The earliest deterministic sensor; it removes "done" claims that the checks contradict.
+    see: [framework.md#phase-3-guardrails, testing.md]
+    status: todo
+
+  - id: boundary-check
+    phase: 3
+    level: required
+    weight: 3
+    check: Add an architecture boundary check.
+    done_when: An import that breaks a dependency rule makes the check fail.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Agents take the shortest path, which often crosses a layer. Only a tool keeps the architecture intact over many changes.
+    weight_reason: Architecture erosion is silent and hard to undo; only a computational check stops it reliably.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: test-strategy
+    phase: 3
+    level: recommended
+    weight: 2
+    check: >-
+      Write the test strategy. List the critical points (contracts, milestone pass criteria, invariants,
+      security gates). Write a failing test before each bug fix. Do not set a coverage threshold.
+    done_when: The critical points are listed, and the code style or AGENTS.md has the bug-fix rule.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Tells agents where tests matter, so they do not write many tests that check nothing.
+    weight_reason: Guides test effort; the ownership and determinism items carry the protection.
+    see: [testing.md]
+    status: todo
+
+  - id: conformance-suites
+    phase: 3
+    level: recommended
+    weight: 2
+    check: Write a conformance suite for each port. Give each suite a negative case.
+    done_when: Every implementation of a port runs the suite, and a deliberately wrong implementation fails it.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Lets several implementers build replaceable parts that are proven to behave the same.
+    weight_reason: Strong where there are several implementations of one port; less useful otherwise.
+    see: [testing.md]
+    status: todo
+
+  - id: test-ownership
+    phase: 3
+    level: required
+    weight: 3
+    check: Write who owns which tests.
+    done_when: >-
+      Gate tests and acceptance tests are written by someone other than the implementer, are protected after
+      they are committed, and an implementer who thinks a protected test is wrong marks the issue blocked.
+    harness: { role: guide+sensor, control: computational, timing: in-session }
+    why: Agents work toward the signal. If the implementer can change the test that judges it, the cheapest way to green is to weaken the test.
+    weight_reason: Protects the oracle. Without it, every other test can be quietly defeated.
+    see: [testing.md]
+    status: todo
+
+  - id: verify-as-user
+    phase: 3
+    level: required
+    weight: 3
+    check: Give agents a way to verify behaviour as a user does, and require evidence.
+    done_when: >-
+      Each session starts with one end-to-end smoke test; a product with a user interface has a browser
+      command-line tool that the agent can use; AGENTS.md says that the agent pastes command output or screenshots, not claims.
+    harness: { role: sensor, control: computational, timing: in-session }
+    why: Unit tests pass while the product does not work. Behaviour is the hardest thing to check, and a claim cannot be checked.
+    weight_reason: The main sensor for behaviour, the gap that type checks and lint cannot cover.
+    see: [testing.md]
+    status: todo
+
+  - id: deterministic-tests
+    phase: 3
+    level: required
+    weight: 3
+    check: Make tests deterministic and keep retries out of gates.
+    done_when: >-
+      The clock, random numbers, and the network are passed in as parameters; a lint rule rejects focused
+      and skipped tests; no gate retries a failing test.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: >-
+      An agent cannot tell a flaky failure from a real one. It "fixes" code that is not broken, or learns
+      to run again until green. Skipping a test is the cheapest way to pass.
+    weight_reason: A sensor that gives random answers teaches wrong behaviour; this keeps the signal trustworthy.
+    see: [testing.md]
+    status: todo
+
+  - id: expensive-checks-after-integration
+    phase: 3
+    level: recommended
+    weight: 1
+    check: Run the expensive test checks after integration (mutation testing report only, tests in random order with recorded seeds).
+    done_when: Cleanup stories or a schedule run them, and the results are recorded.
+    harness: { role: sensor, control: computational, timing: post-integration }
+    why: Tests the tests. A sensor that never fires may mean quality or blindness; mutation testing tells which.
+    weight_reason: Valuable, but slow and not needed for every change.
+    see: [testing.md]
+    status: todo
+
+  - id: commit-message-format
+    phase: 3
+    level: required
+    weight: 2
+    check: Set the commit message format (for example, Conventional Commits).
+    done_when: The header format, the body rule (why, not what), and the trailers (issue reference, breaking change, attribution) are written down.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents read the history to learn why the code is the way it is. Reasons in the body and issue references make it useful.
+    weight_reason: Improves the project memory the agents read; does not check work.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: commit-format-on-server
+    phase: 3
+    level: recommended
+    weight: 1
+    check: Enforce the commit message format on the server (a rule on the protected branch). Check pull request titles with a required status check if you squash merge.
+    done_when: A push or merge with a bad message or title is rejected.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Local hooks can be skipped.
+    weight_reason: Protects history quality, not code quality.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: git-hooks
+    phase: 3
+    level: required
+    weight: 2
+    check: Add three tiers of git hooks. Add a light check before commit, a commit message check, and the full check before push.
+    done_when: A bad commit message is rejected, and a deliberate check failure stops a push.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Covers people and every tool, not only the agent that has session hooks.
+    weight_reason: Can be skipped with --no-verify; it gives earlier feedback, it is not the gate.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: layers-of-checks
+    phase: 3
+    level: recommended
+    weight: 2
+    check: Write down the layers of checks (agent session hooks, git hooks, CI, after integration). Say what each layer runs and which layer is the gate.
+    done_when: Each inner layer runs a subset of the next one, every check runs in the outermost gate, and all layers call the same commands and configuration.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Stops a check from living only in a layer that can be skipped, and stops copies of rules that drift apart.
+    weight_reason: Keeps the layers coherent; the layers themselves carry the weight.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: protect-checks
+    phase: 3
+    level: recommended
+    weight: 3
+    check: Protect the checks. Deny agents edit access to the check configuration, the hook scripts, and the gate tests. Require an owner's review for these paths.
+    done_when: An agent's attempt to edit a protected path is rejected, and a pull request that changes one needs the owner's approval.
+    harness: { role: guide, control: computational, timing: in-session }
+    why: A check that the checked code can change is not a check. Agents that cannot pass a rule may relax the rule.
+    weight_reason: Protects every other sensor from the implementer.
+    see: [framework.md#phase-3-guardrails, testing.md]
+    status: todo
+
+  - id: required-check-on-server
+    phase: 3
+    level: recommended
+    weight: 3
+    check: Make the full check required on the server.
+    done_when: >-
+      The protected branch requires the full check to pass in CI before each merge, and nobody (person or agent)
+      can merge without it. Until CI exists, write down that the pre-push hook is the last gate, and when CI will close the gap.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: The only gate that runs in a clean environment and that nobody can skip.
+    weight_reason: Every local layer can be bypassed; this is the gate that can be trusted.
+    see: [framework.md#phase-3-guardrails, testing.md]
+    status: todo
+
+  - id: lock-file
+    phase: 3
+    level: required
+    weight: 2
+    check: Commit the dependency lock file. Install in the mode that only reads the lock file.
+    done_when: A clean install does not change the lock file.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Every agent and every machine runs the same dependencies, so a check result means the same everywhere.
+    weight_reason: Keeps sensors reproducible and makes dependency changes visible.
+    see: [language-profiles.md]
+    status: todo
+
+  - id: supply-chain
+    phase: 3
+    level: recommended
+    weight: 1
+    check: Set the supply-chain controls. Do not run install scripts by default, delay newly published versions, and audit known vulnerabilities.
+    done_when: The package manager settings for each control are committed.
+    harness: { role: guide, control: computational, timing: pre-integration }
+    why: Agents install packages quickly and may pick a malicious or new version.
+    weight_reason: Security hygiene; small direct effect on agent work quality.
+    see: [language-profiles.md]
+    status: todo
+
+  - id: security-scanning
+    phase: 3
+    level: recommended
+    weight: 1
+    check: Switch on code security scanning, dependency update alerts, secret scanning, and push protection.
+    done_when: Each one is switched on in the repository settings.
+    harness: { role: sensor, control: computational, timing: post-integration }
+    why: Finds unsafe data flows and leaked secrets that agents may add.
+    weight_reason: Reports after the fact; usually does not block.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: security-requirements
+    phase: 3
+    level: recommended
+    weight: 2
+    check: Write the security and data requirements. Give each requirement a source, a risk, a start time, and a check.
+    done_when: Each requirement has the four parts.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Agents do not know the threat model unless it is written down, and each requirement leads to a check.
+    weight_reason: Guides risky areas; the checks derived from it carry the enforcement.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: log-format
+    phase: 3
+    level: required
+    weight: 2
+    check: Set the log format. Use the OpenTelemetry log data model with trace context on every record, and the same field names in every service.
+    done_when: A log record from any service can be joined to its trace by `trace_id`.
+    harness: { role: foundation, control: computational, timing: continuous }
+    why: Agents debug from logs. One format and trace context let an agent follow one request across services.
+    weight_reason: Makes the run-time sensor readable; the access item gives it to the agent.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: agent-log-access
+    phase: 3
+    level: required
+    weight: 3
+    check: Give agents read access to logs, traces, and errors (files, a command-line tool, or an MCP server), read-only.
+    done_when: AGENTS.md says where and how to read them.
+    harness: { role: sensor, control: computational, timing: in-session }
+    why: Without access, an agent guesses at the cause of a failure, or a person copies logs by hand.
+    weight_reason: The agent's only view of run-time behaviour.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: error-handling-rules
+    phase: 3
+    level: required
+    weight: 2
+    check: >-
+      Write the error-handling rules in the code style. Record exceptions as correlated log records, keep cause chains,
+      use stable error codes, write one record per error where it is handled, and use one style for expected failures.
+    done_when: The rules are in the code style, and the [auto] ones name a tool.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Error output is what the agent reads when something fails. Consistent errors make the failure readable.
+    weight_reason: Improves the quality of a sensor's output.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: wide-events
+    phase: 3
+    level: recommended
+    weight: 1
+    check: Write one wide event per request or job. Put the service version and commit in the resource attributes.
+    done_when: Each request or job writes one summary record with its key facts.
+    harness: { role: foundation, control: computational, timing: continuous }
+    why: An agent reads one line instead of reconstructing a story from many, and the commit leads to the issue.
+    weight_reason: A convenience on top of the log format.
+    see: [framework.md#phase-3-guardrails]
+    status: todo
+
+  - id: env-and-gitignore
+    phase: 3
+    level: required
+    weight: 2
+    check: Add `.env.example` and `.gitignore`. Do not commit machine details.
+    done_when: A search of the staged diff for local paths and user names finds nothing.
+    harness: { role: guide, control: computational, timing: pre-integration }
+    why: Agents copy what they see, including local paths and secrets, into committed files.
+    weight_reason: Prevents leaks; does not affect whether work is correct.
+    see: [practices.md]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 4: Plan
+
+  - id: roadmap
+    phase: 4
+    level: required
+    weight: 2
+    check: Write the roadmap. Give each milestone observable entry and exit criteria.
+    done_when: Each exit criterion is a command, a test, or a value.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Gives every story a target that can be checked.
+    weight_reason: Guides planning; stories turn it into checks.
+    see: [framework.md#phase-4-plan]
+    status: todo
+
+  - id: integration-design
+    phase: 4
+    level: required
+    weight: 2
+    check: Write the integration design of the first milestone. Write the component list, the seams (who produces, what is handed over, who consumes), and the gates of each seam.
+    done_when: Each seam has a producer, a consumer, and its gates.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Parallel implementers meet at seams. Defined seams and gates let them work apart and integrate safely.
+    weight_reason: Guides parallel work; the gate tests carry the enforcement.
+    see: [framework.md#phase-4-plan, delivery-planning.md]
+    status: todo
+
+  - id: thinnest-end-to-end-first
+    phase: 4
+    level: recommended
+    weight: 2
+    check: Put the "thinnest end-to-end path" stories first. Plan one review of the seams after them.
+    done_when: The first stories in the suggested order build one path through every component.
+    harness: { role: sensor, control: human, timing: post-integration }
+    why: Integration problems show early, before many agents build on a wrong seam.
+    weight_reason: Reduces late surprises; a planning choice, not a check.
+    see: [framework.md#phase-4-plan]
+    status: todo
+
+  - id: story-spec
+    phase: 4
+    level: required
+    weight: 3
+    check: Write each story with a parent epic, background (with evidence), scope, acceptance (with a command or a value), out of scope, and a decision log.
+    done_when: The implementer can read only the story and know what to do and when it is done.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: The story is the agent's whole task. Acceptance with commands is the agent's definition of done and the planner's verification.
+    weight_reason: An agent guesses where a story is vague; executable acceptance turns the story into a sensor.
+    see: [delivery-planning.md, templates/story.md]
+    status: todo
+
+  - id: epic-spec
+    phase: 4
+    level: recommended
+    weight: 1
+    check: Write each epic with a leading word, a one-sentence goal, an exit criterion, the epic order, an issue table, a suggested-order table, and a dependency diagram.
+    done_when: Each epic has these parts.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Lets planners and implementers see the order and progress.
+    weight_reason: Mostly for planners.
+    see: [delivery-planning.md, templates/epic.md]
+    status: todo
+
+  - id: hard-dependencies
+    phase: 4
+    level: required
+    weight: 1
+    check: Record hard dependencies with the tracker's dependency link. Put all other ordering in the suggested order only.
+    done_when: Each "B uses something A produces" is a tracker link, and nothing else is.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Stops an agent from starting work whose inputs do not exist yet.
+    weight_reason: The Definition of Ready already covers resolved dependencies.
+    see: [delivery-planning.md]
+    status: todo
+
+  - id: delivery-planning-procedure
+    phase: 4
+    level: recommended
+    weight: 1
+    check: Adopt delivery-planning.md as the planners' procedure.
+    done_when: Each issue lists the files it changes, conflict groups are written, and each epic has a WIP limit.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Planners produce consistent issues, and parallel agents do not change the same files.
+    weight_reason: A procedure for planners; its effect reaches agents through the issues.
+    see: [delivery-planning.md]
+    status: todo
+
+  - id: cleanup-story
+    phase: 4
+    level: recommended
+    weight: 2
+    check: End each epic that produces code with a cleanup story.
+    done_when: Each code epic ends with a cleanup story that reviews the architecture, fixes severe problems, and updates the as-built docs.
+    harness: { role: sensor, control: inferential, timing: post-integration }
+    why: Agent-written code drifts a little with each story. A fixed point to review and correct stops the drift from adding up.
+    weight_reason: A regular correction step; not on every change.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: ready-done-blocked
+    phase: 4
+    level: required
+    weight: 3
+    check: Write the Definition of Ready (ready for agent), the Definition of Done, and the Definition of Blocked for the project.
+    done_when: The "ready" mark is added only to tickets that meet the Definition of Ready.
+    harness: { role: guide+sensor, control: human, timing: feedforward }
+    why: >-
+      A person asks about a vague ticket; an agent guesses. Ready keeps vague work away from agents, Done makes
+      completion a verified fact, and Blocked gives the agent a legal way to stop instead of guessing.
+    weight_reason: Decides what agents receive and what counts as done.
+    see: [framework.md#phase-4-plan]
+    status: todo
+
+  - id: delivery-health-signals
+    phase: 4
+    level: recommended
+    weight: 1
+    check: Track the delivery health signals. Track the ready queue, the false-ready rate, and the reasons for "not ready" and "blocked" by owner.
+    done_when: The signals are reviewed at least once per milestone.
+    harness: { role: sensor, control: human, timing: continuous }
+    why: Shows where the harness or the planning fails, for example tickets that agents send back as ambiguous.
+    weight_reason: Improves the system over time.
+    see: [framework.md#phase-4-plan]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 5: Operate
+
+  - id: agents-md
+    phase: 5
+    level: required
+    weight: 3
+    check: Write `AGENTS.md` with the commands, the way of working, and where to read first. Do not describe the current state of the codebase.
+    done_when: The file has about 60 lines or fewer.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Every agent session reads it first. It is the entry point to every other guide and sensor.
+    weight_reason: The guide that every agent meets, every time.
+    see: [templates/agents-md.md]
+    status: todo
+
+  - id: handoff-document
+    phase: 5
+    level: recommended
+    weight: 1
+    check: Write the handoff document. Say what to read, what to do, what to verify, what to watch out for, and what not to do.
+    done_when: A new session can start work from it without asking.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Carries context across sessions and people.
+    weight_reason: Overlaps with AGENTS.md and the stories.
+    see: [document-map.md]
+    status: todo
+
+  - id: roles
+    phase: 5
+    level: required
+    weight: 2
+    check: Write down the roles. Say who plans, who implements (people or agents, how many), and the channel between them.
+    done_when: Each ticket in progress has exactly one implementer.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Separates the one who implements from the one who verifies, and stops two agents from taking the same ticket.
+    weight_reason: Makes independent verification possible; the verification flow carries the check.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: parallel-work-rules
+    phase: 5
+    level: recommended
+    weight: 2
+    check: Set the rules for parallel work. Tickets in progress at the same time do not change the same files. Limit the tickets in progress. Use one working copy per task. Keep pull requests small.
+    done_when: The rules are in AGENTS.md or the delivery procedure, and each issue lists the files it changes.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Parallel agents that touch the same files create conflicts that someone must resolve by hand.
+    weight_reason: Important with many implementers; not needed with one.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: merge-queue
+    phase: 5
+    level: recommended
+    weight: 1
+    check: Switch on a merge queue that runs the checks on the combined result before each merge.
+    done_when: Merges to the main branch go through the queue.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: Catches two changes that pass alone and fail together.
+    weight_reason: Needed only at high merge rates.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: hotspot-files
+    phase: 5
+    level: recommended
+    weight: 1
+    check: Remove hotspot files. Use one file per change instead of a shared changelog, self-registering modules, and regenerated lock files.
+    done_when: No file is changed by most pull requests.
+    harness: { role: foundation, control: human, timing: setup }
+    why: Fewer conflicts between parallel agents.
+    weight_reason: Efficiency at scale.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: verification-flow
+    phase: 5
+    level: recommended
+    weight: 3
+    check: Set the verification flow. A planner who is not the implementer runs the acceptance commands, closes the issue only when they pass, and then syncs the epic.
+    done_when: Each closed issue has the verifier's command results.
+    harness: { role: sensor, control: computational, timing: pre-integration }
+    why: An agent's "done" is a claim. Someone else running the acceptance commands turns it into evidence.
+    weight_reason: Separates the implementer from the judge of completion.
+    see: [delivery-planning.md]
+    status: todo
+
+  - id: as-built-docs
+    phase: 5
+    level: recommended
+    weight: 1
+    check: Set up the as-built docs. Use a template, one page per package, `covers` and `verified-at`, and a check script.
+    done_when: The check commands report no stale page.
+    harness: { role: guide+sensor, control: computational, timing: post-integration }
+    why: Agents read docs as truth. Stale docs guide them wrong; a staleness check shows which pages to distrust.
+    weight_reason: Keeps guides accurate over time; the code itself remains the source.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: code-index
+    phase: 5
+    level: recommended
+    weight: 1
+    check: If the environment has a code indexing tool, re-index in each cleanup story.
+    done_when: Each cleanup story records the re-index.
+    harness: { role: foundation, control: computational, timing: post-integration }
+    why: Agents search a stale index and miss new code.
+    weight_reason: A convenience that depends on the environment.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
+  - id: agent-memory
+    phase: 5
+    level: recommended
+    weight: 1
+    check: Record the way of working and the roles in the agent's persistent memory.
+    done_when: A new session follows the way of working without being told again.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Saves repeating the same instructions in each session.
+    weight_reason: AGENTS.md carries the essential part.
+    see: [practices.md]
+    status: todo
+
+  - id: practices
+    phase: 5
+    level: recommended
+    weight: 2
+    check: >-
+      Adopt the practices in practices.md. At minimum, give each important judgment a confidence level and its
+      supporting dimensions, agree on a plan before you change code, and mark work that is only logic-done as "not live-verified".
+    done_when: The practices are in AGENTS.md or the agent's memory, and agents follow them.
+    harness: { role: guide, control: inferential, timing: in-session }
+    why: Makes the agent say how sure it is and stop when it is not, instead of acting on guesses.
+    weight_reason: Guides judgment; depends on the agent following it.
+    see: [practices.md]
+    status: todo
+
+  # ---------------------------------------------------------------- Phase 6: Maintain
+
+  - id: milestone-consistency-review
+    phase: 6
+    level: recommended
+    weight: 1
+    check: Do a consistency review at the end of each milestone.
+    done_when: The review is recorded and its findings are fixed or ticketed.
+    harness: { role: sensor, control: inferential, timing: post-integration }
+    why: Docs and code drift apart a little with each change.
+    weight_reason: Periodic and slow to pay off.
+    see: [framework.md#phase-6-maintain]
+    status: todo
+
+  - id: change-process
+    phase: 6
+    level: required
+    weight: 2
+    check: Set the change process. Write an ADR before you break a constraint.
+    done_when: The rule is in AGENTS.md, and each broken constraint has an ADR.
+    harness: { role: guide, control: human, timing: feedforward }
+    why: Stops agents from breaking a constraint silently to finish a task.
+    weight_reason: Guides; the boundary and other checks catch most breaks.
+    see: [framework.md#phase-6-maintain]
+    status: todo
+
+  - id: tool-version-cadence
+    phase: 6
+    level: recommended
+    weight: 1
+    check: Set a cadence for checking tools and versions (every quarter, or before use). Write the date of each check.
+    done_when: Each tool document has a "checked on" date that is not older than the cadence.
+    harness: { role: sensor, control: human, timing: continuous }
+    why: Agents use tool facts from memory, which go stale.
+    weight_reason: Upkeep.
+    see: [language-profiles.md]
+    status: todo
+
+  - id: write-back-to-playbook
+    phase: 6
+    level: recommended
+    weight: 1
+    check: Write practices that the project has validated back into this playbook.
+    done_when: Each validated or rejected practice has a change log entry.
+    harness: { role: guide, control: human, timing: continuous }
+    why: Improves the harness for the next project.
+    weight_reason: Benefits other projects more than this one.
+    see: [README.md]
+    status: todo
+
+# Not scored. Do all four before agents start work.
+final_checks:
+  - id: new-agent-can-start
+    check: A new agent that reads only `AGENTS.md` and the first story can say what to do and how to verify it.
+    status: todo
+  - id: clean-clone-passes
+    check: After a clean clone, the one-command check passes.
+    status: todo
+  - id: no-machine-details
+    check: The repository contains no machine details and no secrets.
+    status: todo
+  - id: first-exit-criterion-runs
+    check: The exit criterion of the first milestone is a command or a test that can run.
+    status: todo
