@@ -4,7 +4,7 @@ Written in ASD-STE100 Simplified Technical English. Each agreement is one short 
 
 The harness enforces some rules with tools: checks, branch rules, permissions. Other rules cannot be enforced, or are not worth a tool. A team keeps those rules by agreement. This file is a catalog of such agreements for teams of several people, each with their own agents.
 
-An agreement is not a workflow step. The workflow is in section 2A of [delivery-planning.md](./delivery-planning.md). Nobody tracks the agreements. Each member keeps them in mind and applies them at the moment they act.
+An agreement is not a workflow step. The workflow is in [workflow.md](./workflow.md). Nobody tracks the agreements. Each member keeps them in mind and applies them at the moment they act.
 
 ## 1. The base principle
 
@@ -17,7 +17,7 @@ The principle applies also to a team whose members never meet, or work in differ
 ## 2. How to use this catalog
 
 1. Read the catalog. Select the agreements for your team.
-2. Copy them into your team's agreements file (for example, `docs/team-agreements.md`). Keep the IDs, so that people can refer to them.
+2. Copy them into your team's agreements file (for example, `docs/team-agreements.md`). Keep the IDs, so that people can refer to them. An ID is never used again; a removed agreement leaves a gap.
 3. Copy the agreements that apply to agents into your AGENTS.md. An agent knows only what its context tells it.
 4. Change the wording if necessary. Keep each agreement to one action.
 5. Add your own agreements. Use the same form.
@@ -31,7 +31,7 @@ Each agreement has one of two levels:
 
 ## 3. Agreements or settings
 
-- If a tool can enforce a rule at a low cost, use the tool. Do not make it an agreement. Examples: who can merge, which paths need a review, the format of the code.
+- If a tool can enforce a rule at a low cost, use the tool. Do not make it an agreement. Examples: who can merge, which paths need a review (for example, the shared agent context), the format of the code.
 - If people often do not follow an agreement and a tool can check it, change it into a check ([feedback.md](./feedback.md), section 4.2).
 - If a check is often bypassed or marked "not useful", examine it. It can become an agreement.
 - If nobody uses an agreement, remove it.
@@ -63,7 +63,7 @@ Each agreement has one of two levels:
 
 | ID | Agreement | Level | Why |
 |---|---|---|---|
-| C1 | Write each decision where the work is: the issue, the ADR, or the code. | Recommended | Other people and their agents read only these places. |
+| C1 | Write each decision where the work is: the issue, the ADR, or the code. | Recommended | Other people and their agents read only these places ([writing-standards.md](./writing-standards.md), section 4). |
 | C2 | Write the result of each chat, call, or meeting in the issue. | Recommended | A result that is not written does not exist for the next person. |
 | C3 | If you had to ask a question to continue, write the answer in the document. | Recommended | The next person does not have to ask. |
 | C4 | Write for a reader who does not know the history. | Recommended | The reader can be a new member or a new agent session. |
@@ -75,12 +75,12 @@ Each agreement has one of two levels:
 
 | ID | Agreement | Level | Why |
 |---|---|---|---|
-| D1 | If you can reverse a decision, write it and act. Other people can object with a reason. | Recommended | Work does not wait for a meeting. |
+| D1 | If a decision is in your role and you can reverse it, write it and act. Other people can object with a reason. This does not apply to an ADR, a constraint, or the scope of an issue. | Recommended | Work does not wait for a meeting. |
 | D2 | If you cannot reverse a decision, get the approval of the owner before you act. | Recommended | Some mistakes cannot be repaired. |
 | D3 | When you object, give a reason and an alternative. | Recommended | An objection without an alternative only stops the work. |
 | D4 | Settle an objection by its reason, not by the number of people who agree. | Good to know | A majority can be wrong about a technical fact. |
 | D5 | To change a decision, write a new decision with the reason. Do not ignore the old decision. | Recommended | Two silent decisions contradict each other. |
-| D6 | If two people cannot agree, give the question to the person who owns the decision. | Recommended | A disagreement must not stop the work without an end. |
+| D6 | If two people cannot agree, give the question to the owner, or to the person that the owner named for the area. | Recommended | A disagreement must not stop the work without an end. |
 | D7 | When a decision is made, follow it, also if you did not agree. | Good to know | A team that reopens each decision does not move. |
 
 ### E. Shared and personal harness
@@ -88,10 +88,9 @@ Each agreement has one of two levels:
 | ID | Agreement | Level | Why |
 |---|---|---|---|
 | E1 | Keep your personal settings in the local layer of your tool. Do not commit them. | Recommended | Your preferences must not change the agents of other people. |
-| E2 | Keep the details of your machine only in the uncommitted `.env`. | Recommended | Paths, hardware, and secrets are different on each machine. |
+| E2 | Keep the details of your machine only in the uncommitted `.env`. | Recommended | Paths, hardware, and secrets are different on each machine (phase 3 of [framework.md](./framework.md)). |
 | E3 | Do not put your personal tool names, skill names, or paths in shared files. | Recommended | Other people cannot use them. |
 | E4 | If a task works only with your personal setup, move the setup to the shared layer or remove the dependency. | Recommended | Otherwise the task works only on your machine. |
-| E5 | Get a review before you change the shared agent context: AGENTS.md, shared skills, hooks, and checks. | Recommended | A change there changes the agents of all members. |
 | E6 | Write the reason for each change to the shared agent context. | Recommended | Other members can see why their agents behave differently. |
 | E7 | Try a new instruction or skill in your local layer before you propose it for the shared layer. | Good to know | You find the problems before they reach other people. |
 | E8 | Write a lesson that helps the team in the shared feedback log, not only in your personal memory. | Recommended | The agents of other people cannot read your memory. |
@@ -113,7 +112,7 @@ Each agreement has one of two levels:
 
 | ID | Agreement | Level | Why |
 |---|---|---|---|
-| G1 | If you break the main branch, fix or revert it before other work. | Recommended | A broken main branch stops all members. |
+| G1 | If you break the main branch, revert your change before other work. Then fix it. | Recommended | A broken main branch stops all members ([workflow.md](./workflow.md), section 4.2). |
 | G2 | Report your own mistakes in the issue. | Recommended | A hidden mistake causes more damage later. |
 | G3 | Do not blame a person for a reported mistake. | Recommended | People stop reporting if they get blame. |
 | G4 | Revert a change that breaks the main branch, also if another person wrote it. Write the reason. | Good to know | A revert repairs the work. It is not an attack. |

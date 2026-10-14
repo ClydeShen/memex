@@ -1,53 +1,74 @@
 # Playbook: Starting and Running Agent-Driven Projects
 
-This playbook is a language-agnostic framework and checklist for software projects that AI agents help build. It says what to prepare before the first line of product code, and how to keep the plan, the code, and the docs consistent during development. It was extracted from the preparation work on a real project, but it is **self-contained**: you can copy this directory into another project, or share it on its own, without any other document.
+This playbook is a framework and checklist for software projects that AI agents help build. It says what to prepare before the first line of product code, how work moves between people and agents, and how to keep the plan, the code, and the docs consistent. You can copy this directory into another project, or share it on its own, without any other document.
 
 ## Files
 
 | File | Content |
 |---|---|
-| [framework.md](./framework.md) | The framework: core ideas, seven phases (define, decide, architect, guardrails, plan, operate, maintain), how to scale it, common pitfalls |
-| [delivery-planning.md](./delivery-planning.md) | The delivery planning standard: how planners write issues and epics, set dependencies, the suggested order, and the rules for parallel work, verify results, and sync status |
-| [testing.md](./testing.md) | Testing at scale: who owns which tests, minimum practices, nice-to-have practices, copyable acceptance lines |
-| [review.md](./review.md) | The review standard: what a reviewer (person or agent) examines, in which order, how to decide, and how to settle a disagreement |
-| [feedback.md](./feedback.md) | Feedback loops: what useful feedback is, review findings, where feedback comes from, the order of sources when feedback conflicts, and how feedback goes back into the harness |
-| [social-contract.md](./social-contract.md) | A catalog of team agreements for what tools do not enforce: start and stop work, records, decisions, shared and personal harness, agents, mistakes. Teams select from it |
-| [checklist.yaml](./checklist.yaml) | The checklist as structured data. Each item says what to check, when it is done, its place in the harness, why the harness needs it, and its weight. Shape: [checklist.schema.json](./checklist.schema.json) |
-| [document-map.md](./document-map.md) | Which standard documents to prepare: purpose, audience, owner, when to create, when to update, writing standard |
-| [writing-standards.md](./writing-standards.md) | Writing standards: a single glossary, which documents use ASD-STE100, explanatory writing, dates and evidence |
-| [practices.md](./practices.md) | Collaboration and judgment practices: four-dimension confidence, sync before writing code, search before asking, live verification tiers, and more |
-| [language-profiles.md](./language-profiles.md) | Tool matrix per language (Node/TypeScript, Python, C#) and how to add a language |
+| [framework.md](./framework.md) | The map: core ideas, seven phases (define, decide, architect, guardrails, plan, operate, maintain), and how to scale them |
+| [glossary.md](./glossary.md) | The terms and roles of the playbook |
+| [workflow.md](./workflow.md) | How work moves, for all roles: states, Definitions of Ready, Done, and Blocked, transitions, round limit, release, loop cards, closure rules, delivery health |
+| [delivery-planning.md](./delivery-planning.md) | The planner's tasks: write issues and epics, set dependencies and parallel work, verify and sync, report to the owner |
+| [review.md](./review.md) | The reviewer's procedure: what to examine, in which order, how to decide, how to settle a disagreement |
+| [guardrails.md](./guardrails.md) | Layers of checks, Git conventions, security and data requirements, logging and errors, parallel work and merge conflicts |
+| [testing.md](./testing.md) | Who owns which tests, where to put tests, minimum and nice-to-have practices |
+| [feedback.md](./feedback.md) | Useful feedback, review findings, the order of sources in a conflict, and how feedback goes back into the harness |
+| [social-contract.md](./social-contract.md) | A catalog of team agreements for what tools do not enforce. Teams select from it |
+| [practices.md](./practices.md) | Judgment practices: four-dimension confidence, search before asking, live verification tiers, and more |
+| [writing-standards.md](./writing-standards.md) | How to write: one glossary, ASD-STE100 for procedures, explanatory writing, dates, decisions, evidence |
+| [document-map.md](./document-map.md) | Which documents a project prepares, who maintains them, and when |
+| [checklist.yaml](./checklist.yaml) | The setup checklist as structured data, with harness weights. Shape: [checklist.schema.json](./checklist.schema.json) |
+| [language-profiles.md](./language-profiles.md) | Tools for each role, per language (Node/TypeScript, Python, C#), and how to add a language |
 | [templates/](./templates/) | Templates: ADR, story, epic, AGENTS.md, research note |
 
 ## How to use
 
-1. Read sections 1 and 2 of [framework.md](./framework.md) for the core ideas and the phases. Read [practices.md](./practices.md) for how people and agents work together.
-2. Select the phases for your project size from section 4 of [framework.md](./framework.md).
-3. Select your language in [language-profiles.md](./language-profiles.md). Select one tool for each role (package manager, formatter, tests, and so on).
-4. Copy [checklist.yaml](./checklist.yaml) into the project and work through it. Set the status and the date of each item, and score it at the end of each milestone.
+1. Read [framework.md](./framework.md) for the core ideas and the phases, and [glossary.md](./glossary.md) for the terms.
+2. Select the phases for your project size (framework, section 4).
+3. Select your language and one tool for each role in [language-profiles.md](./language-profiles.md).
+4. Copy [checklist.yaml](./checklist.yaml) into the project and work through it. Score it at the end of each milestone.
 5. Create the documents from [document-map.md](./document-map.md). Write them to [writing-standards.md](./writing-standards.md).
-6. Plan delivery with [delivery-planning.md](./delivery-planning.md). Set the test rules with [testing.md](./testing.md), the review procedure with [review.md](./review.md), and the feedback rules with [feedback.md](./feedback.md).
-7. Select your team agreements from [social-contract.md](./social-contract.md). Copy the agreements for agents into AGENTS.md.
-8. Copy a template from [templates/](./templates/) when you write an ADR, a story, an epic, an AGENTS.md, or a research note.
+6. Set up the workflow with [workflow.md](./workflow.md). Give each role its standard: [delivery-planning.md](./delivery-planning.md) for planners, [review.md](./review.md) for reviewers, [templates/agents-md.md](./templates/agents-md.md) for implementing agents.
+7. Set the guardrails, the tests, and the feedback rules with [guardrails.md](./guardrails.md), [testing.md](./testing.md), and [feedback.md](./feedback.md).
+8. Select your team agreements from [social-contract.md](./social-contract.md). Copy the agreements for agents into AGENTS.md.
+
+## Maturity
+
+The playbook comes from the preparation work on one real project, in October 2026. That project had no product code yet. The playbook has not been used in a second project.
+
+| Status | Meaning |
+|---|---|
+| **Used** | Applied in a real project, where it produced real artifacts (documents, issues, and so on). "Used" does not mean that the effect is proven |
+| **Designed** | Specified in a real project's documents, but not implemented yet |
+| **Researched** | Only researched. Not adopted in a real project yet |
+
+| Part | Status |
+|---|---|
+| Documents, glossary, ADRs, research notes, writing standards, judgment practices | Used |
+| Stories, epics, the ready mark, delivery planning | Used |
+| Workflow states and transitions, review, verification flow, release, loop cards | Designed |
+| Guardrails: layers of checks, Git conventions, logging and errors | Designed |
+| Testing and feedback | Researched; parts designed |
+| Social contract | Researched |
+| Language profiles | Node/TypeScript designed; Python and C# researched |
 
 ## Maintenance rules
 
-- **Owner**: a planner (a person or an agent) who maintains the team's standards. The owner of the standard confirms each change before it is committed.
-- **Source**: every practice comes from a real project. Its status says **used**, **designed**, or **researched**. "Used" does not mean the practice is proven to work.
+- **Maintainer**: a planner (a person or an agent) maintains the playbook. The owner confirms each change before it is committed.
 - **When to update**:
-  1. When the source project confirms, rejects, or changes a practice, update it here and give the reason.
-  2. Check the tools and versions in the language matrix every quarter, or before you use them in a new project. Write the date of the check.
+  1. When a project that uses the playbook confirms, rejects, or changes a practice, update it here, give the reason, and update the maturity table.
+  2. Check the tools and versions in the language profiles every quarter, or before you use them in a new project. Write the date of the check.
   3. When you use the playbook in a new project and find a gap or an error, write it back here.
-- **A team standard for the complex case**: write every rule for several people and several agents working in parallel. Do not assume one person or one agent. Simple projects drop what they do not need.
-- **No project-specific content**: do not name or describe a specific project, its files, or its domain terms. The playbook must make sense to a reader who has never seen the project it came from. Use generic examples.
+- **One place for each rule**: each file has one purpose (the table above). Write a rule in the file that owns its topic, and link to it from other files. Do not copy it.
+- **Written for teams**: write every rule for several people and several agents working in parallel. A smaller project drops what it does not need.
+- **No project-specific content**: do not name or describe a specific project, its files, or its domain terms. Use generic examples.
 - **No tool facts from memory**: get versions and capabilities from a command or the official docs. Write the source and the date.
-- **Change log**: at the end of this file.
 
 ## Scope and limits
 
 - Fits: software projects that AI agents help build and that live longer than a few weeks.
 - Does not fit: one-off scripts and throwaway prototypes.
-- The playbook has been shaped by one project so far. It has not been used in a second project. When you first use it elsewhere, write back what you find.
 
 ## Change log
 
@@ -66,4 +87,5 @@ This playbook is a language-agnostic framework and checklist for software projec
 | 2026-10-14 | Reviewed the whole playbook so that each rule fits any project, team size, domain, language, platform, and agent tool, and each word has one meaning. Defined the words once in framework.md: owner (the person who decides), planner, implementer, issue (story, epic), user (a person who uses the product); replaced "ticket" with "issue" and "user" with "owner" where it meant the person who decides. Stated the concept behind domain examples: tests go where a failure hits what matters most in the project, with money values in a payment product as one example; roles such as tech lead, architect, and business analyst can be people or agents. Removed rules that fit only some platforms or products: listen only on localhost, a risk list only for LLM products, hosting-platform details, a vendor's document as a source of a principle. Project sizes now map to the checklist levels (small: Required items; medium: plus the Recommended items that fit; large: all). log-format is now Recommended, because a project with no running service has no logs. Added fallbacks for agent tools without hooks or persistent memory, and CI results to agent log access. The AGENTS.md template has the attempt limit and the conflict rule. The document map lists the checklist copy and the feedback log. |
 | 2026-10-14 | Closed the workflow loops, after a test of the playbook with three roles (a planner, an implementer, a reviewer). Added the workflow (states, owner of each state, condition of each transition; "in review" and "verifying"; merge before verification; a round limit). Added review.md, the reviewer's procedure. Added the release loop (trigger, smoke test after release, rollback, watch time, postmortems with owned and dated actions). Added loop cards (trigger, who acts, verifier and evidence, done when, limit, escalation, record) for every loop, and closure rules. Acceptance tests are written as examples of the requirement by the planner; the implementer writes only the connecting code. Changes to the structure need an ADR. Checklist: added workflow-states, release-loop, and workflow-closure-check; extended review-findings-format and change-process. |
 | 2026-10-14 | Added social-contract.md: a catalog of team agreements for what tools do not enforce, written in ASD-STE100. One base principle (leave all work so that a person who never spoke to you can continue it), and agreements for starting and stopping work, continuing the work of others, records, decisions and disagreement, the shared and the personal harness, agents, mistakes, and the agreements themselves. Each agreement is Recommended or Good to know; teams select and copy them, and copy the agreements for agents into AGENTS.md. A rule that a tool can enforce cheaply is a setting, not an agreement. The document map lists the team's agreements file; the AGENTS.md template has a section for them. |
+| 2026-10-14 | Reviewed the whole playbook for conflicts, open loops, and file boundaries. Each file now has one purpose, and each rule has one place. New files: glossary.md (all terms and roles; "owner" means only the person who decides, who can name a person for an area); workflow.md (states, Definitions of Ready, Done, and Blocked, transitions, round limit, release, loop cards, closure rules, delivery health; moved from framework.md and delivery-planning.md); guardrails.md (layers of checks, Git conventions, security, logging and errors, parallel work; moved from framework.md). framework.md is now the map of the phases. Maturity is in one table in this file. Fixes: a structure change always needs an ADR; revert a failing main branch first; the planner changes acceptance tests after the owner confirms the requirement; an issue closed without verification goes back to verifying, and closing keywords are not used; only confirmed review findings send work back; a claim can be removed (in progress to ready); a rejected merge and a revert each count as a round; a release contains only closed issues or changes behind a switch that is off; an issue that is not live-verified can close when its live check is on the release smoke test list; acceptance examples that need connecting code start as pending. Checklist: verification-flow is Required and runs after integration. Social contract: D1 is limited to decisions in your role, G1 reverts first, E5 is removed (it is a setting). practices.md keeps only judgment practices. |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |

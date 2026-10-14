@@ -41,16 +41,14 @@ _Avoid_: purchase, booking (Booking is only a reserved time slot)
 
 ### What it is
 
-ASD-STE100 (Simplified Technical English) is a controlled form of English that the aerospace industry created for maintenance documentation. It has two parts: a set of writing rules, and a dictionary with a small number of words, each with one meaning. The following facts about the issue and the rule count come from third-party summaries [secondhand]: Issue 9 was released in January 2025; it has 53 writing rules in 9 sections; the dictionary has about 900 approved words. The official text is free from asd-ste100.org. (On 2026-10-13 the site returned HTTP 403, so this playbook has not read the official text.)
-
-Rules relevant to this playbook (Issue 9; rule numbers from a third-party term checker's documentation [secondhand]):
+ASD-STE100 (Simplified Technical English) is a controlled form of English that the aerospace industry created for maintenance documentation. It has writing rules and a dictionary of approved words, each with one meaning. The official text is free from asd-ste100.org. The rules that matter most here (rule numbers of Issue 9, from third-party summaries):
 
 | Rule | Content |
 |---|---|
 | 1.1–1.3 | Use only approved words, only as their approved part of speech and with their approved meaning |
 | 2.1 | Write noun clusters of no more than three nouns |
 | 3.6 | Use the active voice (in descriptive text, use the passive only when the agent is unknown) |
-| 5.1 | Write short sentences (a common summary: no more than 20 words in procedural sentences) |
+| 5.1 | Write short sentences (no more than 20 words in procedural sentences) |
 | 5.2 | Write only one instruction in each sentence, unless the actions occur at the same time |
 | 5.3 | Write instructions in the imperative |
 | 7.1–7.3 | Safety instructions: use a fixed word for the risk level (for example, WARNING, CAUTION); start with a clear command or condition; explain the risk or the result |
@@ -64,13 +62,13 @@ The principle: **procedural text** (it tells the reader what to do and in which 
 | Agent operating procedures (skills, the operating standard of a planning or implementing agent) | **Yes** | An agent executes them sentence by sentence; ambiguity becomes a wrong action |
 | The "way of working" and "rules" parts of `AGENTS.md` | **Yes** | Same reason |
 | Runbooks (deploy, release, roll back, recover, rotate secrets) | **Yes** | Mistakes are expensive, and people read them under pressure |
-| Checklists | **Yes** | Each item is one checkable action |
+| Checklists, the workflow, and team agreements | **Yes** | Each item is one checkable action |
 | The "scope" and "acceptance" sections of a story | **Yes** | Each item is one change or one checkable condition |
 | Safety warnings | **Yes** (rules in section 7 of STE) | State the risk first, and the result |
 | ADRs, vision, research notes, architecture descriptions | No | They explain trade-offs and uncertainty; use the explanatory standard |
 | The handoff document | Partly: background in explanatory style; "first steps" and "do not" lists in STE | Mixed content |
 
-**Example**: [delivery-planning.md](./delivery-planning.md), the procedure for planners, is written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
+**Examples**: [delivery-planning.md](./delivery-planning.md), [workflow.md](./workflow.md), and [review.md](./review.md) are written in ASD-STE100: each procedural sentence has one instruction, and each task ends with a completion criterion.
 
 ### How non-English documents can borrow it
 
@@ -108,6 +106,7 @@ For ADRs, the vision, architecture descriptions, research notes, the tech stack,
 
 ## 4. Dates and decision records
 
+- **Record a decision at once.** As soon as something is decided, write it where it applies: an ADR, the decision log of the issue, the glossary, the roadmap, or the standard that it changes. Commit it before you move to the next topic. Then search the related documents and update each reference.
 - **Use absolute dates only**, in the format `YYYY-MM-DD`. Do not write "yesterday", "last week", or "recently".
 - **Record the date and who confirmed each decision**, for example "(confirmed by the owner, 2026-10-13)". When the planner decides for the owner, write "planner's recommendation; the owner can change it".
 - **Revise without deleting**: add a "revised by …" note and a date to an overturned conclusion, and keep the original text.

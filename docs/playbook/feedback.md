@@ -1,10 +1,6 @@
 # Feedback Loops
 
-This file is the feedback standard for projects where several people and several agents write code in parallel. It answers four questions: what feedback is useful to an agent, where it comes from, what to do when two pieces of feedback disagree, and how feedback goes back into the work and into the harness. The checks themselves are in [testing.md](./testing.md) and in the "Layers of checks" item of Phase 3: Guardrails in [framework.md](./framework.md).
-
-Every rule here works in any language, any team size, and any domain, with common tools. Setups that only large organizations or specific vendors use are left out.
-
-Status: **researched** on 2026-10-14 (sources at the end). No project has used all of it yet.
+This file is the feedback standard. It answers four questions: what feedback is useful to an agent, where it comes from, what to do when two pieces of feedback disagree, and how feedback goes back into the work and into the harness. The checks themselves are in [testing.md](./testing.md) and [guardrails.md](./guardrails.md).
 
 ---
 
@@ -38,18 +34,18 @@ Rules:
 | Agent session hooks: lint, types, related tests | After each edit; before the agent ends its turn | Computational | Yes |
 | The one-command check, protected acceptance and gate tests | Before push; in CI | Computational | Yes |
 | The agent's own check as a user (end-to-end command, browser) | During the session | Computational, with evidence | Yes, when it is an acceptance criterion |
-| Review by a person or a second agent ([review.md](./review.md)) | Before integration | Inferential | No. It reports findings (section 2.1) |
+| Review by a person or a second agent ([review.md](./review.md)) | Before integration | Inferential | Only a confirmed blocking finding (section 2.1) |
 | Expensive checks: mutation testing, random order, scans | After integration, on a schedule | Computational | Reports first (testing.md) |
 | Production logs, errors, user reports | Continuous | Mixed | No. They become issues |
 | Signals about the harness itself (section 2.2) | Continuous | Mixed | No. They change the harness |
 
 Two rules apply to all sources:
-1. **Only a check that can fail the work is a gate.** Deterministic checks (tests, types, builds, lint) give the same answer each time, so they can block. A model or a person gives an opinion. Opinions add to the gates; they do not replace them.
-2. **The implementer does not judge its own work.** A different person or agent session, with a fresh context, judges whether the work is done (the verification flow in [delivery-planning.md](./delivery-planning.md)). A reviewer must not change the work that it reviews; it reports, and the implementer changes.
+1. **Only evidence can stop the work.** Deterministic checks (tests, types, builds, lint) give the same answer each time, so they can block. A model or a person gives an opinion. An opinion can send work back only when it is confirmed: the failure scenario is reproduced or shown in the code (section 2.1). Opinions add to the gates; they do not replace them.
+2. **The implementer does not judge its own work.** A different person or agent session, with a fresh context, judges whether the work is done ([workflow.md](./workflow.md)). A reviewer must not change the work that it reviews; it reports, and the implementer changes.
 
 ### 2.1 Review findings
 
-A model that is asked to find problems finds some, also in correct code. Research shows that repeated "fix the bugs" loops on correct code break more correct programs than they repair, and that most comments of automated reviewers are rejected by developers. So review findings need a fixed format and a check before anyone acts on them.
+A model that is asked to find problems finds some, also in correct code, and repeated fixing of correct code breaks more than it repairs. So review findings need a fixed format and a check before anyone acts on them.
 
 Each finding has:
 - **Location**: file and line, or the part of the design.
@@ -71,7 +67,7 @@ Some feedback is about the harness, not about the code. Collect it, because it s
 - A check never fires.
 - A check is skipped, bypassed, or disabled, or a test is deleted.
 - A finding is marked "not useful" (section 4.3).
-- Issues are sent back as ambiguous, or marked blocked (delivery health signals in [delivery-planning.md](./delivery-planning.md)).
+- Issues are sent back as ambiguous, or marked blocked (delivery health signals in [workflow.md](./workflow.md), section 8).
 - A person finds a problem at verification that every check missed.
 
 ### 2.3 Three loops: where a problem is stuck
@@ -106,7 +102,7 @@ Rules:
 4. **If the spec seems wrong, stop.** Mark the issue blocked. Write the spec clause, the feedback that contradicts it, and the evidence. The owner decides.
 5. **Two checks that contradict each other are a configuration error** (for example, a formatter and a lint rule that want different things). Fix the configuration at its one source. Do not work around it in the code.
 6. **Limit the attempts, and stop on oscillation.** Set a limit on attempts for the same failure. Stop and report when an edit undoes an earlier edit, or the same test goes from red to green to red. Report the attempts, the feedback, and the spec clause. Do not try again with a small variation.
-7. **Limit the rounds between review and fix.** Each move back from review or verification to the implementer is one round. At the project's round limit, the issue becomes blocked and the owner decides (section 2A of [delivery-planning.md](./delivery-planning.md)).
+7. **Limit the rounds between review and fix.** Each move back from review or verification to the implementer is one round. At the project's round limit, the issue becomes blocked and the owner decides ([workflow.md](./workflow.md), section 4.1).
 
 ---
 
@@ -131,7 +127,7 @@ One fix repairs one mistake. A change to the harness stops the same kind of mist
 
 Rules:
 1. **Prefer a check to a guide.** A check runs every time. A guide works only when the agent reads it and follows it.
-2. **Keep AGENTS.md to the minimum.** Studies of agent context files found that extra requirements make tasks harder and cost more, while agents follow what the file says. Each line in AGENTS.md is read by every session, so add only what every task needs.
+2. **Keep AGENTS.md to the minimum.** Agents follow each line, and every session reads every line. Extra requirements make tasks harder and cost more. Add only what every task needs.
 3. **When you change the harness because of an incident, add a test for the change.** For example, a new lint rule gets a test case that the old code fails.
 
 ### 4.3 Feedback on the checks

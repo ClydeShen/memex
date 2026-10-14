@@ -176,7 +176,7 @@ items:
     level: required
     weight: 1
     check: Create the open-questions list. Give each question a decision date.
-    done_when: Each open question has an owner and a decision date.
+    done_when: Each open question has the person who decides it and a decision date.
     harness: { role: foundation, control: human, timing: setup }
     why: Shows the agent which areas are not decided, so it marks work blocked instead of guessing.
     weight_reason: Supports the Definition of Blocked; little direct effect on agent output.
@@ -365,7 +365,7 @@ items:
       Git hooks run only at commit and push, but an agent edits many times per task. Session hooks give
       feedback before the agent builds on a mistake, and stop it from reporting "done" while checks fail.
     weight_reason: The earliest deterministic sensor; it removes "done" claims that the checks contradict.
-    see: [framework.md#phase-3-guardrails, testing.md, feedback.md#3-when-feedback-conflicts]
+    see: [guardrails.md#1-layers-of-checks, testing.md, feedback.md#3-when-feedback-conflicts]
     status: todo
 
   - id: boundary-check
@@ -377,7 +377,7 @@ items:
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: Agents take the shortest path, which often crosses a layer. Only a tool keeps the architecture intact over many changes.
     weight_reason: Architecture erosion is silent and hard to undo; only a computational check stops it reliably.
-    see: [framework.md#phase-3-guardrails]
+    see: [framework.md#phase-2-architect, guardrails.md#1-layers-of-checks]
     status: todo
 
   - id: test-strategy
@@ -472,7 +472,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Agents read the history to learn why the code is the way it is. Reasons in the body and issue references make it useful.
     weight_reason: Improves the project memory the agents read; does not check work.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#2-git-conventions]
     status: todo
 
   - id: commit-format-on-server
@@ -484,7 +484,7 @@ items:
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: Local hooks can be skipped.
     weight_reason: Protects history quality, not code quality.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#2-git-conventions]
     status: todo
 
   - id: git-hooks
@@ -496,7 +496,7 @@ items:
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: Covers people and every tool, not only the agent that has session hooks.
     weight_reason: Can be skipped with --no-verify; it gives earlier feedback, it is not the gate.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#1-layers-of-checks, guardrails.md#2-git-conventions]
     status: todo
 
   - id: layers-of-checks
@@ -508,7 +508,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Stops a check from living only in a layer that can be skipped, and stops copies of rules that drift apart.
     weight_reason: Keeps the layers coherent; the layers themselves carry the weight.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#1-layers-of-checks]
     status: todo
 
   - id: protect-checks
@@ -517,12 +517,12 @@ items:
     weight: 3
     check: >-
       Protect the checks. Deny agents edit access to the check configuration, the hook scripts, and the gate tests
-      (in the agent tool's permission settings). Require an owner's review for these paths.
+      (in the agent tool's permission settings). Require a review by the owner for these paths.
     done_when: An agent's attempt to edit a protected path is rejected, and a pull request that changes one needs the owner's approval.
     harness: { role: guide, control: computational, timing: in-session }
     why: A check that the checked code can change is not a check. Agents that cannot pass a rule may relax the rule.
     weight_reason: Protects every other sensor from the implementer.
-    see: [framework.md#phase-3-guardrails, testing.md]
+    see: [guardrails.md#1-layers-of-checks, testing.md]
     status: todo
 
   - id: required-check-on-server
@@ -536,7 +536,7 @@ items:
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: The only gate that runs in a clean environment and that nobody can skip.
     weight_reason: Every local layer can be bypassed; this is the gate that can be trusted.
-    see: [framework.md#phase-3-guardrails, testing.md]
+    see: [guardrails.md#1-layers-of-checks, testing.md]
     status: todo
 
   - id: lock-file
@@ -584,7 +584,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Agents do not know the threat model unless it is written down, and each requirement leads to a check.
     weight_reason: Guides risky areas; the checks derived from it carry the enforcement.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#3-security-and-data-requirements]
     status: todo
 
   - id: log-format
@@ -596,7 +596,7 @@ items:
     harness: { role: foundation, control: computational, timing: continuous }
     why: Agents debug from logs. One format and trace context let an agent follow one request across services.
     weight_reason: Makes the run-time sensor readable; the access item gives it to the agent.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#4-logging-monitoring-and-errors]
     status: todo
 
   - id: agent-log-access
@@ -608,7 +608,7 @@ items:
     harness: { role: sensor, control: computational, timing: in-session }
     why: Without access, an agent guesses at the cause of a failure, or a person copies logs by hand.
     weight_reason: The agent's only view of run-time behaviour.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#4-logging-monitoring-and-errors]
     status: todo
 
   - id: error-handling-rules
@@ -622,7 +622,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Error output is what the agent reads when something fails. Consistent errors make the failure readable.
     weight_reason: Improves the quality of a sensor's output.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#4-logging-monitoring-and-errors]
     status: todo
 
   - id: wide-events
@@ -634,7 +634,7 @@ items:
     harness: { role: foundation, control: computational, timing: continuous }
     why: An agent reads one line instead of reconstructing a story from many, and the commit leads to the issue.
     weight_reason: A convenience on top of the log format.
-    see: [framework.md#phase-3-guardrails]
+    see: [guardrails.md#4-logging-monitoring-and-errors]
     status: todo
 
   - id: env-and-gitignore
@@ -646,7 +646,7 @@ items:
     harness: { role: guide, control: computational, timing: pre-integration }
     why: Agents copy what they see, including local paths and secrets, into committed files.
     weight_reason: Prevents leaks; does not affect whether work is correct.
-    see: [practices.md]
+    see: [framework.md#phase-3-guardrails, social-contract.md]
     status: todo
 
   # ---------------------------------------------------------------- Phase 4: Plan
@@ -760,7 +760,7 @@ items:
       A person asks about a vague issue; an agent guesses. Ready keeps vague work away from agents, Done makes
       completion a verified fact, and Blocked gives the agent a legal way to stop instead of guessing.
     weight_reason: Decides what agents receive and what counts as done.
-    see: [framework.md#phase-4-plan, feedback.md#3-when-feedback-conflicts]
+    see: [workflow.md#2-states, feedback.md#3-when-feedback-conflicts]
     status: todo
 
   - id: workflow-states
@@ -769,14 +769,14 @@ items:
     weight: 2
     check: >-
       Set the workflow: the states, the owner role of each state, and the condition of each transition, with "in review",
-      "verifying", merge before verification, and a round limit (delivery-planning.md, section 2A).
+      "verifying", merge before verification, and a round limit (workflow.md).
     done_when: Each state has an owner role, each transition has a condition, and the tracker shows the states.
     harness: { role: guide+sensor, control: human, timing: feedforward }
     why: >-
       Agents move work only when the next step and its owner are clear. Without an owner for each state, work waits or two
       roles act at once; without a round limit, review and fix go back and forth with no end.
     weight_reason: Coordinates the roles and limits the loops; the checks themselves are scored separately.
-    see: [delivery-planning.md#2a-the-workflow]
+    see: [workflow.md#3-transitions]
     status: todo
 
   - id: delivery-health-signals
@@ -788,7 +788,7 @@ items:
     harness: { role: sensor, control: human, timing: continuous }
     why: Shows where the harness or the planning fails, for example issues that agents send back as ambiguous.
     weight_reason: Improves the system over time.
-    see: [framework.md#phase-4-plan]
+    see: [workflow.md#8-delivery-health, delivery-planning.md]
     status: todo
 
   # ---------------------------------------------------------------- Phase 5: Operate
@@ -825,12 +825,12 @@ items:
     phase: 5
     level: required
     weight: 2
-    check: Write down the roles. Say who plans, who implements (people or agents, how many), and the channel between them.
+    check: Write down who holds each role (glossary.md). Say who plans, who implements (people or agents, how many), who reviews, and who decides for each area.
     done_when: Each issue in progress has exactly one implementer.
     harness: { role: guide, control: human, timing: feedforward }
     why: Separates the one who implements from the one who verifies, and stops two agents from taking the same issue.
     weight_reason: Makes independent verification possible; the verification flow carries the check.
-    see: [framework.md#phase-5-operate]
+    see: [glossary.md#roles, framework.md#phase-5-operate]
     status: todo
 
   - id: parallel-work-rules
@@ -842,7 +842,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Parallel agents that touch the same files create conflicts that someone must resolve by hand.
     weight_reason: Important with many implementers; not needed with one.
-    see: [framework.md#phase-5-operate]
+    see: [guardrails.md#5-parallel-work-and-merge-conflicts, delivery-planning.md]
     status: todo
 
   - id: merge-queue
@@ -854,7 +854,7 @@ items:
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: Catches two changes that pass alone and fail together.
     weight_reason: Needed only at high merge rates.
-    see: [framework.md#phase-5-operate]
+    see: [guardrails.md#5-parallel-work-and-merge-conflicts]
     status: todo
 
   - id: hotspot-files
@@ -866,19 +866,19 @@ items:
     harness: { role: foundation, control: human, timing: setup }
     why: Fewer conflicts between parallel agents.
     weight_reason: Efficiency at scale.
-    see: [framework.md#phase-5-operate]
+    see: [guardrails.md#5-parallel-work-and-merge-conflicts]
     status: todo
 
   - id: verification-flow
     phase: 5
-    level: recommended
+    level: required
     weight: 3
-    check: Set the verification flow. A planner who is not the implementer runs the acceptance commands, closes the issue only when they pass, and then syncs the epic.
+    check: Set the verification flow. After the merge, a planner who is not the implementer runs the acceptance commands on the merged result, closes the issue only when they pass, and then syncs the epic.
     done_when: Each closed issue has the verifier's command results.
-    harness: { role: sensor, control: computational, timing: pre-integration }
+    harness: { role: sensor, control: computational, timing: post-integration }
     why: An agent's "done" is a claim. Someone else running the acceptance commands turns it into evidence.
     weight_reason: Separates the implementer from the judge of completion.
-    see: [delivery-planning.md]
+    see: [workflow.md, delivery-planning.md]
     status: todo
 
   - id: review-findings-format
@@ -903,15 +903,15 @@ items:
     weight: 2
     check: >-
       Write the release runbook: the trigger, a smoke test after each release, the rollback, the watch time, and
-      postmortems whose actions are issues with an owner and a date.
+      postmortems whose actions are issues with an assignee and a date.
     done_when: >-
-      Each release has a record with the smoke test result, and each postmortem action is an issue with an owner and a date.
+      Each release has a record with the smoke test result, and each postmortem action is an issue with an assignee and a date.
     harness: { role: sensor, control: computational, timing: post-integration }
     why: >-
       Closed issues are not released software. Build-time tests cannot see configuration, secrets, and connections of the
       released system, and an incident without owned actions happens again.
     weight_reason: Closes the loop from release to production and back; not every change is released at once.
-    see: [framework.md#phase-5-operate]
+    see: [workflow.md#6-release]
     status: todo
 
   - id: as-built-docs
@@ -947,7 +947,7 @@ items:
     harness: { role: guide, control: human, timing: feedforward }
     why: Saves repeating the same instructions in each session.
     weight_reason: AGENTS.md carries the essential part.
-    see: [practices.md]
+    see: [templates/agents-md.md]
     status: todo
 
   - id: practices
@@ -991,7 +991,7 @@ items:
       A loop with no owner, no limit, or no verifier lets work wait, go back and forth, or ship unverified. The closure
       rules make these gaps visible.
     weight_reason: A periodic check of the process; it does not check the work itself.
-    see: [framework.md#phase-5-operate]
+    see: [workflow.md#7-loop-cards-and-closure-rules]
     status: todo
 
   - id: feedback-on-checks

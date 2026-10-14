@@ -31,11 +31,12 @@ Blocked by #<prerequisite issue>, #<prerequisite issue>
 - Meet the project's Definition of Done: <link or summary>. This story also needs: <for example, a document to update, a live smoke test>.
 - Commit each story separately. Put the verification result in the commit message.
 - Report the result of each acceptance condition in this issue (command and output). Then move the issue to "in review".
-- If you cannot continue by your own actions, stop. Mark the issue blocked with the reason, the owner, and the condition to continue.
+- If you cannot continue by your own actions, stop. Mark the issue blocked with the reason, the role that can remove the cause, and the condition to continue.
+- Refer to this issue with `Refs: #<n>`. Do not use keywords that close it on merge; a planner closes it after verification.
 
 <!--
 How to use:
-- The full procedure is in ../delivery-planning.md.
+- The full procedure is in ../delivery-planning.md. The states are in ../workflow.md.
 - Keep "Part of" on the first line and "Blocked by" on the second line. If the tracker has parent links and dependency links, set them too.
 - A hard dependency exists only when B uses something that A makes. Put other ordering in the epic's suggested order.
 - Add the "ready" mark only when the story meets the project's Definition of Ready: a clear Definition of Done, no open hard dependency, testable acceptance criteria, the decisions it needs recorded, and pointers to the existing patterns and files to follow.

@@ -2,13 +2,13 @@
 
 Written in ASD-STE100 Simplified Technical English. Each procedural sentence has one instruction. Steps are in sequence. Each task ends on a completion criterion.
 
-This standard gives the content and the rules for planning delivery through an issue tracker. It does not name a tool or a platform. Use the functions of your tracker that agree with the terms in section 2. The states "ready", "blocked", "waiting", and "on hold" are defined in phase 4 of [framework.md](./framework.md). The templates are [templates/story.md](./templates/story.md) and [templates/epic.md](./templates/epic.md).
+This standard gives the tasks of a planner: write issues and epics, set dependencies and parallel work, verify results, sync status, and report to the owner. It does not name a tool or a platform. The terms are in [glossary.md](./glossary.md). The states and the transitions of an issue are in [workflow.md](./workflow.md). The templates are [templates/story.md](./templates/story.md) and [templates/epic.md](./templates/epic.md).
 
 ## 1. Scope
 
 1.1 This standard applies to planners. A planner plans work for implementers. Planners and implementers can be people or agents. There can be many of each, and they can work in parallel.
 
-1.2 Planners and implementers communicate only through issues. The tracker is the single source of truth for the plan.
+1.2 Planners and implementers communicate only through issues ([workflow.md](./workflow.md), section 1).
 
 1.3 A planner does these tasks:
 
@@ -21,79 +21,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 ## 2. Terms
 
-| Term | Meaning |
-|---|---|
-| Owner | The person who decides scope, priorities, and rules, and confirms decisions. |
-| Tracker | The system that keeps the issues and the epics. |
-| Issue | One work item in the tracker. |
-| Planner | A person or an agent that plans and verifies work. A planner does not verify an issue that it implemented. |
-| Implementer | A person or an agent that changes the product. Each implementer does one issue at a time. Several implementers can work at the same time. |
-| Claim | The act that gives an issue to one implementer (an assignment, or a move to "in progress"). An issue in progress has exactly one implementer. |
-| Ready mark | A label, a status, or a field that tells implementers that an issue meets the Definition of Ready and can be claimed. |
-| Hard dependency | Issue B cannot start before issue A is complete, because B uses something that A makes. |
-| Dependency link | The function of the tracker that records a hard dependency. If the tracker has no such function, use the text "Blocked by <issue>" in the issue. |
-| Parent link | The function of the tracker that connects an issue to its epic. If the tracker has no such function, use the text "Part of <epic>" on the first line of the issue. |
-| Suggested order | The order that the planner recommends. It is not a block. |
-| Conflict group | A set of issues that change the same files or modules. Issues of one conflict group must not be in progress at the same time. |
-| WIP limit | The maximum number of issues in progress at the same time, for the team or for one epic. |
-| Epic | An issue that tracks one theme. It contains the issues of that theme, a status table, a suggested-order table, and a dependency diagram. |
-| Theme | The leading word of an epic, with one sentence that gives the goal. A theme has an exit criterion. |
-| Leading word | One short word or term that the team already uses and understands, for example "isolation", "single writer", or "feedback". It names the one quality that all issues of the epic make better. |
-| Exit criterion | The condition that tells you that the theme is complete and the epic can close. |
-| Epic order | The sequence of the open epics. Implementers take work from the epics in this sequence. |
-| Evidence | A fact that you can find again: a file and line, a command output, a query result, a change in version control. |
-| Sync | The procedure that makes the epic agree with the real state of its issues. |
-| Reviewer | A person or an agent that reviews a change and reports findings ([review.md](./review.md)). A reviewer does not change the work that it reviews. |
-| In review | The state of an issue after the implementer reports it done, until it is merged. The reviewer owns it. |
-| Verifying | The state of an issue after its change is merged, until it is closed. A planner owns it. |
-| Round | One move back to "in progress" from "in review" or "verifying". |
-
-## 2A. The workflow
-
-2A.1 Use these states and transitions. Each state has one owner role. Move an issue only along a transition in the table, and only when its condition is satisfied. Write the evidence in the issue.
-
-| From | To | Who moves it | Condition |
-|---|---|---|---|
-| Backlog | Ready | Planner | The issue meets the Definition of Ready and has no open hard dependency. |
-| Ready | In progress | Implementer | The implementer claims it. No issue of its conflict group is in progress. The WIP limit is not reached. |
-| In progress | In review | Implementer | The one-command check passes. The report has the command and the output of each acceptance condition. The change is ready to merge (for example, a pull request). |
-| In review | In progress | Reviewer | A required check fails, or there is a confirmed blocking finding. Count one round. |
-| In review | Verifying | Reviewer | No confirmed blocking finding, and the required checks pass on the server. Then the change is merged. |
-| Verifying | In progress | Planner | An acceptance condition or the Definition of Done is not satisfied on the merged result. Count one round. |
-| Verifying | Closed | Planner | Each acceptance condition and the Definition of Done are verified on the merged result (Task 7). |
-| In progress, In review, Verifying | Blocked | The role that owns the state | The work cannot move forward by that role's own actions, the round limit is reached, or there is a conflict that the order of sources cannot settle ([feedback.md](./feedback.md), section 3). |
-| Blocked | The state before the block | The owner of the cause | The condition to continue is satisfied. |
-| Any open state | On hold | Owner | The business decided "not now" (Task 7A). |
-| On hold | Backlog | Owner | The owner decides to continue, at the latest on the revisit date. |
-
-```mermaid
-stateDiagram-v2
-    [*] --> Backlog
-    Backlog --> Ready: Definition of Ready
-    Ready --> InProgress: claim
-    InProgress --> InReview: checks pass, evidence in the issue
-    InReview --> InProgress: blocking finding (round)
-    InReview --> Verifying: no blocking finding, then merge
-    Verifying --> InProgress: acceptance fails (round)
-    Verifying --> Closed: acceptance and Done verified
-    InProgress --> Blocked: cannot continue, or round limit
-    InReview --> Blocked: conflict, or round limit
-    Verifying --> Blocked: cannot verify
-    Blocked --> InProgress: condition to continue
-    Backlog --> OnHold: owner, not now
-    OnHold --> Backlog: owner, continue
-    Closed --> [*]
-```
-
-"Waiting" is not a separate transition: it is a ready issue that nobody can claim now (Task 7A).
-
-2A.2 Set a round limit for the project, for example 3. When an issue reaches the limit, mark it blocked. Write the rounds and the open findings. The owner decides.
-
-2A.3 If the merged change makes the main branch fail, revert the change first. Then move the issue back to "in progress".
-
-2A.4 Use the tracker or the hosting platform to enforce a condition where it can (required checks, branch rules, a merge queue, workflow rules). If it cannot, the role that owns the next state checks the condition.
-
-2A.5 A project can add states. Each new state must have an owner role, a condition to enter, and a transition out. Check the workflow with the closure rules in phase 5 of [framework.md](./framework.md).
+The terms are in [glossary.md](./glossary.md). Use the functions of your tracker that agree with them (section 10).
 
 ## 3. General rules
 
@@ -105,26 +33,17 @@ stateDiagram-v2
 
 3.4 Add a new table, column, automated check, tool, or system only if the problem needs it. Write the reason in the issue. A rule that implementers must follow is such a need: prefer an automated check (a linter rule, a structural test, a hook, a CI job) to an instruction in the issue or in AGENTS.md. An instruction can be skipped; a check cannot (core idea 3 in [framework.md](./framework.md)).
 
-3.5 Add an abstraction layer only if you can name the failure or the change that it isolates. Write that name in the issue.
+3.5 Use the test strategy of the project ([testing.md](./testing.md), section 3) to decide where an issue needs a test.
 
-3.6 Use the test strategy of the project. If the project has no test strategy, use this rule. Put a test only where a failure hits what matters most in this project. Name these critical failures for the project. Typical ones are:
+3.6 Write the issue text in the documentation language of the project.
 
-- A wrong result that the product exists to get right (for example, a wrong money value in a payment product).
-- Lost data.
-- A security gap.
-- A repeat of a past incident.
+3.7 Record each decision of the owner in the issue that it affects. Write the date of the decision.
 
-3.7 Write the issue text in the documentation language of the project.
+3.8 If the owner corrects a rule, apply the correction to all open issues. If the planner keeps persistent notes, write the rule there.
 
-3.8 Record each decision of the owner in the issue that it affects. Write the date of the decision.
+3.9 Give each judgment that you put in a plan a confidence level, and look up what can be looked up before you ask the owner ([practices.md](./practices.md), sections 1 and 3).
 
-3.9 If the owner corrects a rule, apply the correction to all open issues. If the planner keeps persistent notes, write the rule there.
-
-3.10 Give each judgment that you put in a plan a confidence level and the dimensions that support it (four-dimension confidence in [practices.md](./practices.md)). At "low", ask the owner before you act. At "very low", do not act: look for something similar in the project history, research what others say, or ask the owner again from a different angle.
-
-3.11 Before you ask the owner, look the answer up: the project history, official sources, a measurement. Ask only what cannot be looked up or what is a matter of preference.
-
-3.12 Put the limits before the work. Each issue states what the implementer may change (Scope, Files), what it must not change (Out of scope), and how each limit is checked. If no tool checks a limit, write it as an acceptance condition.
+3.10 Put the limits before the work. Each issue states what the implementer may change (Scope, Files), what it must not change (Out of scope), and how each limit is checked. If no tool checks a limit, write it as an acceptance condition.
 
 > **CAUTION:** Do not send a direct message to an implementer if it did not send a message first. A direct message bypasses the plan. If you must reply to unblock it, write the same decision in the issue.
 
@@ -158,7 +77,7 @@ stateDiagram-v2
 
 4.6 If the issue needs a decision that only the owner can make, ask the owner before you add the ready mark.
 
-4.7 Add the ready mark only if the issue meets the Definition of Ready and has no open hard dependency. The Definition of Ready means that an implementer can act on the issue at "high" confidence without asking (phase 4 of [framework.md](./framework.md)). Hold agents to a stricter bar than people: a person asks about a vague issue, an agent guesses.
+4.7 Add the ready mark only if the issue meets the Definition of Ready and has no open hard dependency ([workflow.md](./workflow.md), section 2.1).
 
 4.8 Select the epic for the issue (see Task 6A).
 
@@ -196,7 +115,7 @@ stateDiagram-v2
 
 5.9 Set the WIP limit for the team or the epic. Write it in the epic.
 
-5.10 To let more issues run in parallel, divide the work so that issues change different files. Prefer this to a larger WIP limit. The other ways to reduce merge conflicts (remove hotspot files, small pull requests, one working copy per task, a merge queue) are in phase 5 of [framework.md](./framework.md).
+5.10 To let more issues run in parallel, divide the work so that issues change different files. Prefer this to a larger WIP limit. The other ways to reduce merge conflicts (remove hotspot files, small pull requests, one working copy per task, a merge queue) are in [guardrails.md](./guardrails.md), section 5.
 
 > **NOTE:** If there is only one implementer, all work is in sequence, and the conflict groups and the WIP limit have no effect. Keep them anyway, because more implementers can join later.
 
@@ -311,9 +230,9 @@ stateDiagram-v2
 
 **Completion criterion:** Each new issue is in one epic. The reason column gives the rule that selected that epic.
 
-## 7. Task: sync after implementers complete work
+## 7. Task: verify and sync
 
-7.1 Do this task when an issue enters "verifying", or when the owner asks for the status.
+7.1 Do this task when an issue enters "verifying", when an issue was closed without verification, or when the owner asks for the status.
 
 7.2 Get the real state:
 
@@ -321,7 +240,7 @@ stateDiagram-v2
 2. Get the state of the issues in the epic, including who claimed each issue in progress.
 3. Get the result of the last automated checks.
 
-7.3 For each issue that an implementer reports as done, examine the result. Do not examine an issue that you implemented; give it to another planner.
+7.3 For each issue in "verifying", examine the result on the merged change. Do not examine an issue that you implemented; give it to another planner.
 
 1. Read the last report of the implementer in the issue.
 2. Run each acceptance command yourself. Compare each acceptance condition with the code. Search for the names, interfaces, and files that the issue names.
@@ -329,13 +248,13 @@ stateDiagram-v2
 4. Check the Definition of Done: the one-command check passes on the merged result, and each document that the issue names is updated.
 5. Write down each part that you could not examine.
 
-7.4 If all the acceptance conditions and the Definition of Done are satisfied, close the issue. If it is closed already, keep it closed. If the issue needs a live smoke test that has not run, do not close it as done: mark it "not live-verified" and write the condition.
+7.4 If all the acceptance conditions and the Definition of Done are satisfied, close the issue. If the issue needs a live smoke test that cannot run now, mark it "not live-verified", write the condition, and add its live check to the smoke test list of the next release ([workflow.md](./workflow.md), section 6). Then close it.
 
-7.5 If a condition is not satisfied, write a comment in the issue. Name the condition and the evidence. Move the issue back to "in progress" and count one round (2A.2).
+7.5 If a condition is not satisfied, write a comment in the issue. Name the condition and the evidence. Move the issue back to "in progress" and count one round ([workflow.md](./workflow.md), section 4.1).
 
 7.6 If an implementer did something that the issue did not ask for, write it down. Tell the owner if it changes the behavior of the product.
 
-7.7 Examine the issues that are blocked, waiting, or on hold. Make sure that each one has the reason, the owner of the cause, and the condition to continue.
+7.7 Examine the issues that are blocked, waiting, or on hold. Make sure that each one has the reason, the role that acts, and the condition to continue ([workflow.md](./workflow.md), section 5).
 
 7.8 Update the epic:
 
@@ -349,37 +268,23 @@ stateDiagram-v2
 
 7.10 If all issues are closed, examine the exit criterion. If it is satisfied, close the epic. If it is not satisfied, write the missing work as new issues in the same epic.
 
-> **CAUTION:** Implementers and the owner can close issues and epics without you. Always get the real state before you change the epic.
+> **CAUTION:** An issue can be closed without verification, for example by a closing keyword in a merged pull request. If you find one, move it back to "verifying" and verify it. Always get the real state before you change the epic.
 
-**Completion criterion:** Each reported issue is closed or has a comment with the failed condition. Each blocked, waiting, or on-hold issue has a reason, an owner, and a condition to continue. The epic agrees with the real state of each issue.
+**Completion criterion:** Each issue in "verifying" is closed or has a comment with the failed condition. Each blocked, waiting, or on-hold issue has a reason, the role that acts, and a condition to continue. The epic agrees with the real state of each issue.
 
 ## 7A. Task: handle a stop
 
-7A.1 Do this task when an implementer stops work on an issue, or reports that it cannot continue.
-
-7A.2 Classify the stop with three questions, in this sequence (phase 4 of [framework.md](./framework.md)):
-
-1. Does the business still want this now? If no, the issue is **on hold**. Remove the claim and the ready mark. Move it back to the backlog. Write the reason and the date to revisit.
-2. Could the work move forward if someone with capacity picked it up now? If no, the issue is **blocked**. Write the reason, the owner of the cause, and the condition to continue.
-3. Is someone, or some resource, available to pick it up now? If no, the issue is **waiting**. Leave it in the queue.
-
-7A.3 If the requirement is undecided or changing, the issue is blocked: a decision is missing. If the requirement is decided but deferred, the issue is on hold.
-
-7A.4 If the gap existed before the work started, the issue was not ready. Count it as a false ready, and write the cause.
-
-7A.5 Do not stop the clock while an issue is blocked.
-
-**Completion criterion:** Each stopped issue has one state (on hold, blocked, or waiting), a reason, an owner, and a condition to continue. Each false ready is counted with its cause.
+Use the task "classify a stop" in [workflow.md](./workflow.md), section 5.
 
 ## 7B. Task: review delivery health
 
 7B.1 Do this task at each sync, or at a fixed interval that the team sets.
 
-7B.2 Measure these signals (phase 4 of [framework.md](./framework.md)):
+7B.2 Measure the signals in [workflow.md](./workflow.md), section 8:
 
 - The ready queue: the number of ready issues against how fast implementers consume them.
 - The false-ready rate: issues marked ready that implementers sent back as blocked or ambiguous.
-- The reasons for "not ready" and "blocked", by the role that can fix them: technical dependency (tech lead), architecture gap (architect), unclear story or acceptance (business analyst), missing test criteria (QA or business analyst), missing decision (owner). A role can be a person or an agent.
+- The reasons for "not ready" and "blocked", by the role that can fix them.
 - The queue of work that waits for human verification or approval.
 
 7B.3 Count blocked, waiting, and on hold separately.
@@ -421,7 +326,7 @@ stateDiagram-v2
 
 9.5 Tell the owner what you did not examine.
 
-9.6 Give the delivery health signals from Task 7B, and the issues that are blocked, waiting, or on hold, with their owners.
+9.6 Give the delivery health signals from Task 7B, and the issues that are blocked, waiting, or on hold, with the role that acts on each.
 
 **Completion criterion:** The owner can see the result, the decisions, their own next actions, the limits of your examination, and the health of delivery.
 

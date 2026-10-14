@@ -1,18 +1,14 @@
 # Testing at Scale
 
-This file is the testing standard for projects where several people and several agents write code in parallel. It says who owns which tests, the minimum practices every project follows, and the practices that are worth adding as the project grows. The layers where the checks run (agent session hooks, git hooks, CI, after integration) are in the "Layers of checks" item of Phase 3: Guardrails in [framework.md](./framework.md). Review by a person or by a second agent, and how feedback goes back into the harness, are in [feedback.md](./feedback.md).
-
-Status: **researched** on 2026-10-14 (sources at the end); parts are **designed** in one project. No project has used all of it yet.
+This file is the testing standard: why tests matter more when agents write the code, who owns which tests, where to put tests, the minimum practices, and the practices worth adding as the project grows. Where the checks run is in [guardrails.md](./guardrails.md), section 1. How feedback goes back into the harness is in [feedback.md](./feedback.md).
 
 ---
 
 ## 1. Why testing changes when agents write the code
 
-- **Agents work toward the signal they get.** An agent that is asked to make the checks pass will take the cheapest way to make them pass. Sometimes that way is to skip, weaken, or delete a test. A test that the implementer can change is a weak guardrail.
-- **Tests are the oracle.** In an agent-driven project, the tests decide whether the work is done. The planner verifies by running commands, not by reading the code line by line. So the tests must be correct, protected, and able to fail.
-- **Fast feedback is cheap; trust comes from the outermost layer.** An agent edits many times in one task. Feedback after each edit stops it from building on a mistake. But only the outermost gate, which runs everything in a clean environment, can be trusted.
-- **A test that never fails proves nothing on its own.** It can mean the code is correct, or that the test cannot see the problem. Check the tests themselves (mutation testing, negative cases).
-- **Behaviour is the hard part.** Type checks and lint are cheap and reliable. Whether the product does what the user needs is harder to check, so give agents a way to use the product as a user does, and ask for evidence.
+- **Tests are the oracle.** The planner verifies by running commands, not by reading the code line by line. So the tests must be correct, protected, and able to fail.
+- **Agents work toward the signal.** An agent that must make the checks pass takes the cheapest way, sometimes by weakening or deleting a test. A test that the implementer can change is a weak guardrail.
+- **Fast feedback guides; only the outermost gate decides.** Feedback after each edit stops an agent from building on a mistake. Only the gate that runs everything in a clean environment can be trusted.
 
 ---
 
@@ -24,20 +20,33 @@ The implementer of a change must not be the only author of the tests that decide
 |---|---|---|---|
 | Milestone gate tests (the milestone's pass criteria) | A planner or a test author, not the implementer of the milestone's stories | Before the stories that they verify start, or in a story of their own | Yes, after they are committed |
 | Acceptance tests of a story (when the acceptance needs a new test, not only a command) | A planner or a test author (person or agent), not the story's implementer. The implementer writes only the code that connects the test to the product (rule 6) | Before the story is marked ready | Yes, after they are committed |
-| Conformance suites of a port (every implementation of the port must pass) | The owner of the contract | With the contract | Yes |
+| Conformance suites of a port (every implementation of the port must pass) | The architect | With the contract | Yes |
 | Unit tests and property-based tests | The implementer | Test first: a failing test, then the code | No, but deleted or weakened tests are listed at verification |
 
 Rules:
-1. **An acceptance test is committed and fails for the right reason before the story is marked ready.** "The right reason" means it fails because the behaviour is missing, not because of a syntax error or a missing import. This is part of the Definition of Ready: the implementer gets a red test and makes it green.
-2. **Protect the protected tests with tools, not with instructions.** Deny the agent edit access to their paths in the agent tool's configuration. Require an owner's review for these paths on the server (for example, `CODEOWNERS` with a required review). A deny rule stops the agent's file tools but not a script that the agent writes, so also compare the tests with the baseline at verification (rule 4).
-3. **If the implementer thinks a protected test is wrong, the implementer stops.** Do not change the test. Mark the issue **blocked**. Write which test, why it seems wrong, and the evidence (for example, the requirement it contradicts). The owner of the test decides: fix the test in a separate change, or clarify the requirement. This follows the Definition of Blocked: a missing decision is a block, and the agent does not guess its way around it.
+1. **An acceptance test is committed before the story is marked ready, and it fails for the right reason.** "The right reason" means it fails because the behaviour is missing, not because of a syntax error or a missing import. If the test needs connecting code that does not exist yet, mark it pending; the implementer writes the connecting code first and shows that the test then fails for the right reason ([workflow.md](./workflow.md), section 2.1).
+2. **Protect the protected tests with tools, not with instructions.** Deny the agent edit access to their paths in the agent tool's configuration. Require a review by the owner for these paths on the server (for example, `CODEOWNERS` with a required review). A deny rule stops the agent's file tools but not a script that the agent writes, so also compare the tests with the baseline at verification (rule 4).
+3. **If the implementer thinks a protected test is wrong, the implementer stops.** Do not change the test. Mark the issue **blocked**. Write which test, why it seems wrong, and the evidence (for example, the requirement it contradicts). The planner decides with the owner: fix the test in a separate change, or clarify the requirement. This follows the Definition of Blocked: a missing decision is a block, and the agent does not guess its way around it.
 4. **At verification, list the test changes.** Run `git diff --name-status --diff-filter=D <baseline>..HEAD -- <test paths>` to find deleted test files, and read `git diff <baseline>..HEAD -- <test paths>` for changed assertions. Every deleted test and every changed assertion has a written reason in the issue. A cleanup or refactoring change deletes no tests and changes no assertions.
-5. **When a requirement changes, the owner changes the test first.** The new test fails, then the implementer changes the code. The test never follows the code.
+5. **When a requirement changes, the planner changes the test first**, after the owner confirms the requirement. The new test fails, then the implementer changes the code. The test never follows the code.
 6. **Write acceptance tests as examples of the requirement** (Specification by Example). Each example gives a starting state, an action, and the expected result, in words that the owner can read. A business-readable format such as Gherkin (Given / When / Then) is one way; a plain test with clear names is another. The planner owns the examples. The implementer writes the code that connects them to the product (for example, step definitions or fixtures) and the product code. The reviewer checks that this connecting code does not make an example pass without the behaviour.
 
 ---
 
-## 3. Minimum practices
+## 3. Where to put tests
+
+Write few tests, aimed at the critical points. A critical point is a place where a failure hits what matters most in this project. Name the critical failures for the project. Typical ones are:
+
+- A wrong result that the product exists to get right (for example, a wrong money value in a payment product).
+- Lost data.
+- A security gap.
+- A repeat of a past incident.
+
+Typical technical critical points: the contracts (valid input passes, invalid input is rejected), the milestone pass criteria, the invariants (with property-based tests), and the security gates. Give each port a conformance suite that every implementation must pass. Before a bug fix, write a test that reproduces the bug.
+
+---
+
+## 4. Minimum practices
 
 Every project does these. They cost little.
 
@@ -46,16 +55,16 @@ Every project does these. They cost little.
 | M1 | **One command checks everything, with short, machine-readable output.** Type checks, lint, architecture rules, tests. Use an output mode that prints only failures (some test runners have one for agents). Write JUnit XML or JSON as well when a tool needs it | Pre-push, CI | Agents read every line of output. Pages of passing tests waste context and hide the failure |
 | M2 | **Agent session hooks run a subset.** After each edit: lint and format the changed files. Before the agent ends its turn: types, lint, and the tests related to the changed files; block the end of the turn if they fail, with a guard against an endless loop. Use the test runner's own selection (by file or by coverage) | Agent session | The agent fixes a mistake in the same turn, and cannot report "done" while checks fail |
 | M3 | **Tests are deterministic.** Pass the clock, random numbers, and network access in as parameters. Ban focused and skipped tests (`.only`, `.skip`, and their equivalents) with a lint rule set to error | Every layer | An agent cannot tell a flaky failure from a real one. It "fixes" code that was not broken, or learns to run again until it passes |
-| M4 | **No retries in a gate.** A gate never runs a failing test again to make it pass. When a test is found to be flaky, quarantine it: it still runs and reports, but it does not block. Open an issue with an owner and a deadline. Quarantine is not deletion. Retries are for diagnosis only | CI, pre-push | Retries teach agents a wrong signal and hide shared state and order dependencies |
+| M4 | **No retries in a gate.** A gate never runs a failing test again to make it pass. When a test is found to be flaky, quarantine it: it still runs and reports, but it does not block. Open an issue with an assignee and a date. Quarantine is not deletion. Retries are for diagnosis only | CI, pre-push | Retries teach agents a wrong signal and hide shared state and order dependencies |
 | M5 | **Verify behaviour as a user does.** At the start of each session, run one end-to-end smoke test, so the agent knows the system works before it changes it. For a product with a user interface, give the agent a browser command-line tool that reads the accessibility tree, so it can use the product. The agent pastes evidence (command output, screenshots), not claims | Agent session | Unit tests pass while the product does not work. Evidence can be checked; a claim cannot |
 | M6 | **Tests are not owned by the implementer.** Section 2 | Agent session, verification | The oracle must not be changed by the code it judges |
-| M7 | **Enforce on the server.** The same checks are required status checks on the protected branch. Protected test paths need an owner's review | CI | Local hooks can be skipped and are not copied by a clone |
+| M7 | **Enforce on the server.** The same checks are required status checks on the protected branch. Protected test paths need a review by the owner | CI | Local hooks can be skipped and are not copied by a clone |
 | M8 | **Every new test proves it can fail.** Write the failing test first, then the code. Before a bug fix, write a test that reproduces the bug. Each conformance suite has a negative case: a deliberately wrong implementation must fail it | Agent session | A test that passes before the code exists tests nothing |
-| M9 | **No coverage threshold.** Aim tests at the critical points: contracts, milestone pass criteria, invariants (with property-based tests), security gates | — | A coverage target rewards tests that run code without checking it, which agents produce easily |
+| M9 | **No coverage threshold.** Aim tests at the critical points (section 3) | — | A coverage target rewards tests that run code without checking it, which agents produce easily |
 
 ---
 
-## 4. Nice to have
+## 5. Nice to have
 
 Medium and large projects add these when the need is real. Write the reason in the issue that adds one.
 
@@ -73,7 +82,7 @@ Medium and large projects add these when the need is real. Write the reason in t
 
 ---
 
-## 5. Copyable acceptance lines
+## 6. Copyable acceptance lines
 
 For an issue that verifies tests were not weakened:
 
@@ -89,11 +98,11 @@ For an issue that adds mutation testing:
 
 ---
 
-## 6. Common mistakes
+## 7. Common mistakes
 
 - The implementer writes the test and the code from the same misunderstanding, so both are wrong together and the test passes.
 - A gate retries failing tests until they pass.
-- A test is deleted or skipped "for now", with no issue and no owner.
+- A test is deleted or skipped "for now", with no issue and no assignee.
 - A coverage threshold, met with tests that assert nothing.
 - Expensive checks (mutation testing, random order, full end-to-end runs) in the everyday check, so the check becomes too slow and people and agents start to avoid it.
 - A deny rule treated as complete protection, with no comparison against the baseline at verification.

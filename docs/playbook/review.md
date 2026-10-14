@@ -2,7 +2,7 @@
 
 Written in ASD-STE100 Simplified Technical English. Each procedural sentence has one instruction. Steps are in sequence. Each task ends on a completion criterion.
 
-This standard gives the procedure for reviewers. A reviewer can be a person or an agent. The workflow states ("in review", "verifying") are in section 2A of [delivery-planning.md](./delivery-planning.md). The format of findings and the order of sources in a conflict are in [feedback.md](./feedback.md).
+This standard gives the procedure for reviewers. A reviewer can be a person or an agent. The workflow states ("in review", "verifying") are in [workflow.md](./workflow.md). The format of findings and the order of sources in a conflict are in [feedback.md](./feedback.md).
 
 ## 1. Scope
 
@@ -12,7 +12,7 @@ This standard gives the procedure for reviewers. A reviewer can be a person or a
 
 1.3 A reviewer is not the implementer of the change. Review in a new session or with a fresh context.
 
-1.4 The review is not the gate. The required checks on the server are the gate. The review adds the parts that tools cannot check: design, behaviour against the requirement, security judgment, and the quality of the tests.
+1.4 The required checks on the server are the gate. The review adds the parts that tools cannot check: design, behaviour against the requirement, security judgment, and the quality of the tests. A finding can send the work back only when it is confirmed (3.7).
 
 > **CAUTION:** Do not change the code, the tests, or the check configuration of a change that you review. If you change them, the review is not independent.
 
@@ -37,7 +37,7 @@ This standard gives the procedure for reviewers. A reviewer can be a person or a
 
 3.4 Examine the change in this sequence:
 
-1. **Design**: the change fits the architecture. It obeys the dependency rules and the constraint table. A change to the structure or to a contract has an ADR or a reason in the issue.
+1. **Design**: the change fits the architecture. It obeys the dependency rules and the constraint table. A change to the structure has an ADR. A change to a contract has the reason in the issue and an updated contract document (phase 6 of [framework.md](./framework.md)).
 2. **Behaviour**: the change does what the acceptance asks. It does not change what "out of scope" names.
 3. **Security and data**: the change obeys the security and data requirements. External content is treated as data. No secret or machine detail is committed.
 4. **Tests**: the protected tests are not deleted or weakened (compare with the baseline, [testing.md](./testing.md)). Each new test can fail. The code that connects an acceptance scenario to the product does not make the scenario pass without the behaviour.
@@ -52,9 +52,9 @@ This standard gives the procedure for reviewers. A reviewer can be a person or a
 
 3.8 Select one decision:
 
-- **Approve**: there is no confirmed blocking finding. Approve a change that makes the code better, also if it is not perfect. Write the suggestions as non-blocking.
+- **Approve**: there is no confirmed blocking finding. Approve a change that makes the code better, also if it is not perfect. Write the suggestions as non-blocking. After the merge, the issue moves to "verifying". If the merge queue rejects the change, the issue moves back to "in progress" and counts one round.
 - **Request changes**: there is a confirmed blocking finding. Move the issue back to "in progress". Count one round.
-- **Blocked**: a finding conflicts with the spec, the order of sources cannot settle a conflict, or the issue reached the round limit. Mark the issue blocked. Write the reason, the owner of the decision, and the open findings.
+- **Blocked**: a finding conflicts with the spec, the order of sources cannot settle a conflict, or the issue reached the round limit. Mark the issue blocked. Write the reason, who decides (the owner, or the person that the owner named for the area), and the open findings.
 
 3.9 Write the review result in the issue: the decision, the findings, and each part that you did not examine.
 
@@ -75,7 +75,7 @@ This standard gives the procedure for reviewers. A reviewer can be a person or a
 
 4.4 If the disagreement is still open, mark the issue blocked and give it to the owner or the tech lead. Do not wait without an end.
 
-**Completion criterion:** The disagreement is settled by a named rule, or the issue is blocked with an owner.
+**Completion criterion:** The disagreement is settled by a named rule, or the issue is blocked with the person who decides.
 
 ## 5. Task: review at the end of a milestone
 

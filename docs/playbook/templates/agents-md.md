@@ -27,7 +27,7 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 5. Do not change the plan documents, the ADRs, or the epics. If the plan is wrong, write it in the issue.
 6. If you must change a contract (`<path of the contracts>`), give the reason in the issue and update the contract document.
 7. In a cleanup story, refactor only. Do not add features.
-8. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the owner, and what would unblock it. Do not guess your way around the block.
+8. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the role that can remove the cause, and what would unblock it. Do not guess your way around the block. If you stop for another reason, write what is done and the next step, and remove your claim.
 9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue. After <round limit> rounds of review or verification, the issue is blocked; the owner decides.
 10. If two pieces of feedback disagree (for example, a review and the spec), follow the order of sources in `<path of feedback rules>`. Write the conflict and the decision in the issue. Do not weaken a check to settle it.
 
@@ -40,7 +40,7 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 - `<architecture check tool>` checks the dependency direction. Do not add an exception to make the check pass. If an exception is necessary, write the reason.
 - Do not put machine details or secrets in the repository.
 - Do not skip hooks with `--no-verify` unless a person asks you to.
-- In each commit message, write why in the body, and end with the issue reference (`Refs: #<n>`) and your attribution trailer.
+- In each commit message, write why in the body, and end with the issue reference (`Refs: #<n>`) and your attribution trailer. Do not use keywords that close the issue on merge (for example, `Fixes #<n>`).
 ```
 
 ---
