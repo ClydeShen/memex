@@ -31,6 +31,9 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue. After <round limit> rounds of review or verification, the issue is blocked; the owner decides.
 10. If two pieces of feedback disagree (for example, a review and the spec), follow the order of sources in `<path of feedback rules>`. Write the conflict and the decision in the issue. Do not weaken a check to settle it.
 
+## Team agreements
+- `<the agreements from docs/team-agreements.md that apply to agents, with their IDs>`
+
 ## Rules
 - Use the terms in `GLOSSARY.md`. Do not use the words in its `_Avoid_` lines.
 - If a merge conflict touches a contract or core logic, do not pick a side. Mark the issue blocked and ask a person.
