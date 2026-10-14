@@ -29,7 +29,7 @@ Confidence markers:
 ## Not verified
 - <Items that were not verified. Do not state them as conclusions.>
 
-## Decisions for the user
+## Decisions for the owner
 - <Only questions that cannot be looked up and are a matter of preference. Do not ask what can be looked up.>
 
 ## Sources

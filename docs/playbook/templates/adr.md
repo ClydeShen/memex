@@ -4,7 +4,7 @@ status: accepted
 
 # <One sentence that states the decision: what was chosen and, if useful, what was not>
 
-<Context: why must this be decided now, and what goes wrong without it? One or two paragraphs. Write the date and who confirmed it (for example, "confirmed by the user, YYYY-MM-DD").>
+<Context: why must this be decided now, and what goes wrong without it? One or two paragraphs. Write the date and who confirmed it (for example, "confirmed by the owner, YYYY-MM-DD").>
 
 ## Decision
 

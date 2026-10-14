@@ -39,6 +39,6 @@ How to use:
 - Keep "Part of" on the first line and "Blocked by" on the second line. If the tracker has parent links and dependency links, set them too.
 - A hard dependency exists only when B uses something that A makes. Put other ordering in the epic's suggested order.
 - Add the "ready" mark only when the story meets the project's Definition of Ready: a clear Definition of Done, no open hard dependency, testable acceptance criteria, the decisions it needs recorded, and pointers to the existing patterns and files to follow.
-- If the story needs a decision that only the user can make, ask the user before you add the "ready" mark.
+- If the story needs a decision that only the owner can make, ask the owner before you add the "ready" mark.
 - For user interface work, add a "Design rules" section: the design guideline source, the copy-language rule, and the component rules.
 -->

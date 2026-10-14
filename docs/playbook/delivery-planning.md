@@ -23,6 +23,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 | Term | Meaning |
 |---|---|
+| Owner | The person who decides scope, priorities, and rules, and confirms decisions. |
 | Tracker | The system that keeps the issues and the epics. |
 | Issue | One work item in the tracker. |
 | Planner | A person or an agent that plans and verifies work. A planner does not verify an issue that it implemented. |
@@ -49,20 +50,20 @@ This standard gives the content and the rules for planning delivery through an i
 
 3.2 Examine the code before you write a claim about the code. If you cannot examine it, write "not verified" in the issue.
 
-3.3 Use the standard practice of the industry. Solve the problem with code logic and code structure.
+3.3 Use an established practice of the industry before you make a new one.
 
 3.4 Add a new table, column, automated check, tool, or system only if the problem needs it. Write the reason in the issue. A rule that implementers must follow is such a need: prefer an automated check (a linter rule, a structural test, a hook, a CI job) to an instruction in the issue or in AGENTS.md. An instruction can be skipped; a check cannot (core idea 3 in [framework.md](./framework.md)).
 
 3.5 Add an abstraction layer only if you can name the failure or the change that it isolates. Write that name in the issue.
 
-3.6 Use the test strategy of the project. If the project has no test strategy, use this rule. Put a test only where a failure can cause one of these results:
+3.6 Use the test strategy of the project. If the project has no test strategy, use this rule. Put a test only where a failure hits what matters most in this project. Name these critical failures for the project. Typical ones are:
 
-- Wrong money values.
+- A wrong result that the product exists to get right (for example, a wrong money value in a payment product).
 - Lost data.
 - A security gap.
 - A repeat of a past incident.
 
-3.7 Write the issue text in the language of the project.
+3.7 Write the issue text in the documentation language of the project.
 
 3.8 Record each decision of the owner in the issue that it affects. Write the date of the decision.
 
@@ -325,7 +326,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 - The ready queue: the number of ready issues against how fast implementers consume them.
 - The false-ready rate: issues marked ready that implementers sent back as blocked or ambiguous.
-- The reasons for "not ready" and "blocked", by the role that can fix them: technical dependency (tech lead), architecture gap (architect), unclear story or acceptance (BA), missing test criteria (QA or BA), missing decision (owner).
+- The reasons for "not ready" and "blocked", by the role that can fix them: technical dependency (tech lead), architecture gap (architect), unclear story or acceptance (business analyst), missing test criteria (QA or business analyst), missing decision (owner). A role can be a person or an agent.
 - The queue of work that waits for human verification or approval.
 
 7B.3 Count blocked, waiting, and on hold separately.

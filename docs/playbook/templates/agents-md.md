@@ -28,6 +28,8 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 6. If you must change a contract (`<path of the contracts>`), give the reason in the issue and update the contract document.
 7. In a cleanup story, refactor only. Do not add features.
 8. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the owner, and what would unblock it. Do not guess your way around the block.
+9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue.
+10. If two pieces of feedback disagree (for example, a review and the spec), follow the order of sources in `<path of feedback rules>`. Write the conflict and the decision in the issue. Do not weaken a check to settle it.
 
 ## Rules
 - Use the terms in `GLOSSARY.md`. Do not use the words in its `_Avoid_` lines.
@@ -45,4 +47,4 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 - Replace the commands and paths for your project. The agent must be able to run or follow each line directly.
 - If a rule can become an automatic check, make it one and remove it from this file.
 - If the file grows beyond about 60 lines, move the extra content to `HANDOFF.md` or a dedicated document, and keep only a pointer here.
-- Official guidance on context files like this one: write only what the agent cannot learn by reading the code; do not write file-by-file descriptions.
+- Write only what every task needs and what the agent cannot learn by reading the code. Agents follow every line, so each extra requirement makes tasks harder and costs more. Do not write file-by-file descriptions.

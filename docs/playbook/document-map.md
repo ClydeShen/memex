@@ -3,7 +3,7 @@
 This file lists the standard documents of an agent-driven project. For each it gives the purpose, the main audience, the owner, when to create it, when to update it, and the writing standard. The paths are suggestions; adjust them to the project, then keep them fixed. Writing standards are in [writing-standards.md](./writing-standards.md); templates are in [templates/](./templates/).
 
 **Owners**:
-- **User**: the project owner. Decides and confirms changes.
+- **Owner**: decides scope, priorities, and rules, and confirms changes.
 - **Planner**: a person or an agent. Writes plans and design documents, verifies results, syncs status.
 - **Implementer**: a person or an agent; there can be many. Writes code and updates the as-built docs in cleanup stories.
 
@@ -18,22 +18,24 @@ This file lists the standard documents of an agent-driven project. For each it g
 | File | Purpose | Main audience | Owner | Create | Update | Standard |
 |---|---|---|---|---|---|---|
 | `README.md` | Entry point: one-sentence definition, current status, document index, environment requirements | People | Planner | Phase 0 | When the status or the document structure changes | Explanatory |
-| `VISION.md` | Purpose, first principles, scope, what is proven and what is to be tested | People, agents | Planner (user confirms) | Phase 0 | When a principle or the direction changes (with an ADR) | Explanatory |
+| `VISION.md` | Purpose, first principles, scope, what is proven and what is to be tested | People, agents | Planner (owner confirms) | Phase 0 | When a principle or the direction changes (with an ADR) | Explanatory |
 | `GLOSSARY.md` | The single source of terms | People, agents | Planner | Phase 0 | When a new concept appears or inconsistent wording is found | Explanatory (fixed entry format) |
 | `HANDOFF.md` | Where a new session starts: what to read, do, watch out for, and not do | Agents | Planner | End of phase 1 | End of each milestone; after important decisions | Mixed: background explanatory; steps and prohibitions in STE |
 | `AGENTS.md` | Entry point for implementing agents: commands, way of working, where to read first (about 60 lines at most) | Agents | Planner | Before the first story starts | When commands or the way of working change | STE |
 | `.env.example` | Keys to fill in on each machine (no values) | People, agents | Planner | Phase 1 | When an environment requirement is added | — |
 | `.gitattributes`, `.editorconfig`, `.gitignore` | Line endings, encoding, indentation, ignore rules | Tools | Planner | Phase 0 | Rarely | — |
-| `LICENSE` | License | People | User | Before the repository goes public | Rarely | — |
+| `LICENSE` | License | People | Owner | Before the repository goes public | Rarely | — |
 
 ## 2. Decisions and plans (`docs/`)
 
 | File | Purpose | Main audience | Owner | Create | Update | Standard |
 |---|---|---|---|---|---|---|
-| `docs/adr/NNNN-*.md` | One file per important decision | People, agents | Planner (user confirms) | Phase 1 | Never edited; revised by a new ADR, with a note on the old one | Explanatory |
+| `docs/adr/NNNN-*.md` | One file per important decision | People, agents | Planner (owner confirms) | Phase 1 | Never edited; revised by a new ADR, with a note on the old one | Explanatory |
 | `docs/roadmap.md` | Global constraint table; milestones with entry and exit criteria | People, agents | Planner | Phase 1 | When a milestone completes or the plan changes | Explanatory; one constraint per row |
 | `docs/open-questions.md` | Open questions, each with a decision date | People | Planner | Phase 1 | When a question is decided (moved into an ADR) or added | Explanatory |
 | `docs/plans/<milestone>-integration.md` | Milestone integration design: components, seams, gates, stories | People, agents | Planner | At the start of each milestone | Reviewed once after the thinnest end-to-end path; when contracts change during implementation | Explanatory; the story table in STE |
+| `docs/setup-checklist.yaml` | The project's copy of the playbook checklist, with status, dates, and the score | People, agents | Planner | Phase 0 | When an item is done; at the end of each milestone (score) | Structured data |
+| `docs/feedback-log.md` | Lessons: symptom, root cause, fix, prevention, count ([feedback.md](./feedback.md)) | People, agents | Planner | When the first lesson is recorded | When a problem is seen again, or its prevention is in place | Explanatory; one entry per kind of problem |
 | `docs/research/*-YYYY-MM-DD.md` | Research notes with confidence markers and sources | People, agents | Planner (a background agent may draft) | When facts must be verified | Conclusions are not edited; when overturned, add a correction note at the top | Explanatory |
 
 ## 3. Architecture and standards (`docs/`)

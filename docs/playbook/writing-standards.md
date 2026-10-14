@@ -109,7 +109,7 @@ For ADRs, the vision, architecture descriptions, research notes, the tech stack,
 ## 4. Dates and decision records
 
 - **Use absolute dates only**, in the format `YYYY-MM-DD`. Do not write "yesterday", "last week", or "recently".
-- **Record the date and who confirmed each decision**, for example "(confirmed by the user, 2026-10-13)". When the planner decides on the user's behalf, write "planner's recommendation; the user can change it".
+- **Record the date and who confirmed each decision**, for example "(confirmed by the owner, 2026-10-13)". When the planner decides for the owner, write "planner's recommendation; the owner can change it".
 - **Revise without deleting**: add a "revised by …" note and a date to an overturned conclusion, and keep the original text.
 
 ---

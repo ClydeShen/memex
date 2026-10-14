@@ -23,14 +23,14 @@ project:
   size: ""          # small | medium | large
   start_date: ""
   score:
-    value: ""       # for example "61/126 = 48%"
+    value: ""       # for example "64/132 = 48%"
     core: ""        # for example "9/14"
     scored_on: ""
 
 fields:
   id: Stable identifier. Never reuse or renumber.
   phase: "0 Define, 1 Decide, 2 Architect, 3 Guardrails, 4 Plan, 5 Operate, 6 Maintain (framework.md)."
-  level: "required: do it even in a small project. recommended: for medium and large projects."
+  level: "required: every project, even a small one. recommended: medium and large projects; mark it n/a with a reason when it does not fit."
   weight: "How much the item adds to the harness: 3, 2, or 1 (see `weights`). Separate from `level`."
   check: What to do.
   done_when: The observable condition that makes the item done.
@@ -226,7 +226,7 @@ items:
     level: required
     weight: 3
     check: Write the contracts between the main components (interface and data types).
-    done_when: Each port has explicit inputs and outputs, and each data type is serializable.
+    done_when: Each port has explicit inputs and outputs, and each data type that crosses a process or network boundary is serializable.
     harness: { role: guide+sensor, control: computational, timing: feedforward }
     why: >-
       Contracts are what several implementers build against in parallel, and the type checker and schema
@@ -337,14 +337,17 @@ items:
     phase: 3
     level: required
     weight: 2
-    check: Make the check output short and machine-readable.
+    check: Make the check output short and machine-readable, and write the messages of your own checks for the reader.
     done_when: >-
       A failing run prints only the failures and their errors (the test runner's agent-oriented output,
       or an equivalent), and a tool can read the result (the exit code, plus JUnit XML or JSON where a tool needs it).
+      Each custom lint rule, structure test, or check script says what is wrong, what to do instead, and where to read more.
     harness: { role: sensor, control: computational, timing: in-session }
-    why: Agents read every line. Pages of passing output waste context and hide the failure.
+    why: >-
+      Agents read every line. Pages of passing output waste context and hide the failure. A message that says
+      what to do at the moment of the mistake works better than a rule the agent read long before.
     weight_reason: Makes the sensors more useful; the sensors work without it.
-    see: [testing.md]
+    see: [testing.md, feedback.md#1-what-useful-feedback-is]
     status: todo
 
   - id: agent-session-hooks
@@ -354,13 +357,15 @@ items:
     check: Add agent session hooks.
     done_when: >-
       After each edit, the agent gets lint feedback for the changed files in the same turn; the agent cannot
-      end its turn while types, lint, or the related tests fail; a guard stops an endless loop.
+      end its turn while types, lint, or the related tests fail; a guard stops an endless loop. AGENTS.md sets a limit
+      on attempts for the same failure, and says to stop and report when an edit undoes an earlier edit. If the agent
+      tool has no hooks, a file watcher or a wrapper command gives the same feedback, and the gap is written down.
     harness: { role: sensor, control: computational, timing: in-session }
     why: >-
       Git hooks run only at commit and push, but an agent edits many times per task. Session hooks give
       feedback before the agent builds on a mistake, and stop it from reporting "done" while checks fail.
     weight_reason: The earliest deterministic sensor; it removes "done" claims that the checks contradict.
-    see: [framework.md#phase-3-guardrails, testing.md]
+    see: [framework.md#phase-3-guardrails, testing.md, feedback.md#3-when-feedback-conflicts]
     status: todo
 
   - id: boundary-check
@@ -421,8 +426,9 @@ items:
     weight: 3
     check: Give agents a way to verify behaviour as a user does, and require evidence.
     done_when: >-
-      Each session starts with one end-to-end smoke test; a product with a user interface has a browser
-      command-line tool that the agent can use; AGENTS.md says that the agent pastes command output or screenshots, not claims.
+      Each session starts with one end-to-end smoke test that uses the product as a user does (its command line, API,
+      or user interface); a product with a browser interface has a browser command-line tool that the agent can use;
+      AGENTS.md says that the agent pastes command output or screenshots, not claims.
     harness: { role: sensor, control: computational, timing: in-session }
     why: Unit tests pass while the product does not work. Behaviour is the hardest thing to check, and a claim cannot be checked.
     weight_reason: The main sensor for behaviour, the gap that type checks and lint cannot cover.
@@ -509,7 +515,9 @@ items:
     phase: 3
     level: recommended
     weight: 3
-    check: Protect the checks. Deny agents edit access to the check configuration, the hook scripts, and the gate tests. Require an owner's review for these paths.
+    check: >-
+      Protect the checks. Deny agents edit access to the check configuration, the hook scripts, and the gate tests
+      (in the agent tool's permission settings). Require an owner's review for these paths.
     done_when: An agent's attempt to edit a protected path is rejected, and a pull request that changes one needs the owner's approval.
     harness: { role: guide, control: computational, timing: in-session }
     why: A check that the checked code can change is not a check. Agents that cannot pass a rule may relax the rule.
@@ -581,7 +589,7 @@ items:
 
   - id: log-format
     phase: 3
-    level: required
+    level: recommended
     weight: 2
     check: Set the log format. Use the OpenTelemetry log data model with trace context on every record, and the same field names in every service.
     done_when: A log record from any service can be joined to its trace by `trace_id`.
@@ -595,7 +603,7 @@ items:
     phase: 3
     level: required
     weight: 3
-    check: Give agents read access to logs, traces, and errors (files, a command-line tool, or an MCP server), read-only.
+    check: Give agents read-only access to logs, traces, errors, and CI results (files, a command-line tool, or an MCP server).
     done_when: AGENTS.md says where and how to read them.
     harness: { role: sensor, control: computational, timing: in-session }
     why: Without access, an agent guesses at the cause of a failure, or a person copies logs by hand.
@@ -743,24 +751,26 @@ items:
     phase: 4
     level: required
     weight: 3
-    check: Write the Definition of Ready (ready for agent), the Definition of Done, and the Definition of Blocked for the project.
-    done_when: The "ready" mark is added only to tickets that meet the Definition of Ready.
+    check: >-
+      Write the Definition of Ready (ready for agent), the Definition of Done, and the Definition of Blocked for the project.
+      Blocked includes a conflict between the spec and a test or other feedback that the order of sources cannot settle.
+    done_when: The "ready" mark is added only to issues that meet the Definition of Ready.
     harness: { role: guide+sensor, control: human, timing: feedforward }
     why: >-
-      A person asks about a vague ticket; an agent guesses. Ready keeps vague work away from agents, Done makes
+      A person asks about a vague issue; an agent guesses. Ready keeps vague work away from agents, Done makes
       completion a verified fact, and Blocked gives the agent a legal way to stop instead of guessing.
     weight_reason: Decides what agents receive and what counts as done.
-    see: [framework.md#phase-4-plan]
+    see: [framework.md#phase-4-plan, feedback.md#3-when-feedback-conflicts]
     status: todo
 
   - id: delivery-health-signals
     phase: 4
     level: recommended
     weight: 1
-    check: Track the delivery health signals. Track the ready queue, the false-ready rate, and the reasons for "not ready" and "blocked" by owner.
+    check: Track the delivery health signals. Track the ready queue, the false-ready rate, and the reasons for "not ready" and "blocked" by the role that can fix them.
     done_when: The signals are reviewed at least once per milestone.
     harness: { role: sensor, control: human, timing: continuous }
-    why: Shows where the harness or the planning fails, for example tickets that agents send back as ambiguous.
+    why: Shows where the harness or the planning fails, for example issues that agents send back as ambiguous.
     weight_reason: Improves the system over time.
     see: [framework.md#phase-4-plan]
     status: todo
@@ -771,12 +781,16 @@ items:
     phase: 5
     level: required
     weight: 3
-    check: Write `AGENTS.md` with the commands, the way of working, and where to read first. Do not describe the current state of the codebase.
-    done_when: The file has about 60 lines or fewer.
+    check: >-
+      Write `AGENTS.md` with the commands, the way of working, and where to read first. Write only what every task needs.
+      Do not describe the current state of the codebase.
+    done_when: The file has about 60 lines or fewer, and each line applies to every task.
     harness: { role: guide, control: human, timing: feedforward }
-    why: Every agent session reads it first. It is the entry point to every other guide and sensor.
+    why: >-
+      Every agent session reads it first. It is the entry point to every other guide and sensor. Agents follow what it
+      says, so extra requirements make tasks harder and cost more.
     weight_reason: The guide that every agent meets, every time.
-    see: [templates/agents-md.md]
+    see: [templates/agents-md.md, feedback.md#42-later-into-the-harness]
     status: todo
 
   - id: handoff-document
@@ -796,9 +810,9 @@ items:
     level: required
     weight: 2
     check: Write down the roles. Say who plans, who implements (people or agents, how many), and the channel between them.
-    done_when: Each ticket in progress has exactly one implementer.
+    done_when: Each issue in progress has exactly one implementer.
     harness: { role: guide, control: human, timing: feedforward }
-    why: Separates the one who implements from the one who verifies, and stops two agents from taking the same ticket.
+    why: Separates the one who implements from the one who verifies, and stops two agents from taking the same issue.
     weight_reason: Makes independent verification possible; the verification flow carries the check.
     see: [framework.md#phase-5-operate]
     status: todo
@@ -807,7 +821,7 @@ items:
     phase: 5
     level: recommended
     weight: 2
-    check: Set the rules for parallel work. Tickets in progress at the same time do not change the same files. Limit the tickets in progress. Use one working copy per task. Keep pull requests small.
+    check: Set the rules for parallel work. Issues in progress at the same time do not change the same files. Limit the issues in progress. Use one working copy per task. Keep pull requests small.
     done_when: The rules are in AGENTS.md or the delivery procedure, and each issue lists the files it changes.
     harness: { role: guide, control: human, timing: feedforward }
     why: Parallel agents that touch the same files create conflicts that someone must resolve by hand.
@@ -851,6 +865,22 @@ items:
     see: [delivery-planning.md]
     status: todo
 
+  - id: review-findings-format
+    phase: 5
+    level: recommended
+    weight: 2
+    check: >-
+      Set the format of review findings, for people and agents. Each finding has a location, a problem, a failure
+      scenario, a basis, and a severity. "No findings" is a valid result. A finding is confirmed before code changes.
+    done_when: The format is in the review instructions or the review template, and each review in the tracker follows it.
+    harness: { role: sensor, control: inferential, timing: pre-integration }
+    why: >-
+      A reviewer that is asked to find problems finds some, also in correct code, and fixing them breaks correct code.
+      A failure scenario and a confirmation step separate defects from opinions.
+    weight_reason: Makes the inferential sensor trustworthy; the computational gates work without it.
+    see: [feedback.md#21-review-findings]
+    status: todo
+
   - id: as-built-docs
     phase: 5
     level: recommended
@@ -879,7 +909,7 @@ items:
     phase: 5
     level: recommended
     weight: 1
-    check: Record the way of working and the roles in the agent's persistent memory.
+    check: If the agent tool has persistent memory, record the way of working and the roles in it.
     done_when: A new session follows the way of working without being told again.
     harness: { role: guide, control: human, timing: feedforward }
     why: Saves repeating the same instructions in each session.
@@ -908,11 +938,46 @@ items:
     level: recommended
     weight: 1
     check: Do a consistency review at the end of each milestone.
-    done_when: The review is recorded and its findings are fixed or ticketed.
+    done_when: The review is recorded and its findings are fixed or have an issue.
     harness: { role: sensor, control: inferential, timing: post-integration }
     why: Docs and code drift apart a little with each change.
     weight_reason: Periodic and slow to pay off.
     see: [framework.md#phase-6-maintain]
+    status: todo
+
+  - id: feedback-on-checks
+    phase: 6
+    level: recommended
+    weight: 2
+    check: >-
+      Let anyone mark a check result "not useful" with a reason. Review the checks at least once per milestone: the checks
+      often marked "not useful", the checks that never fire, and the rules that are often bypassed.
+    done_when: >-
+      Each milestone has a record of the reviewed checks and a decision for each (rewrite the message, change the rule,
+      remove the check, or keep it with a reason).
+    harness: { role: sensor, control: human, timing: continuous }
+    why: >-
+      A noisy check teaches people and agents to ignore it, and then they also ignore its true findings. A check that never
+      fires is either good news or a blind spot.
+    weight_reason: Keeps the sensors trusted over time; the sensors work without it.
+    see: [feedback.md#43-feedback-on-the-checks]
+    status: todo
+
+  - id: feedback-log
+    phase: 6
+    level: recommended
+    weight: 2
+    check: >-
+      Keep a feedback log (symptom, root cause, fix, prevention, count). When a kind of problem repeats, make it a check if a
+      tool can detect it, otherwise a short guide where it applies; add to AGENTS.md only what every task needs.
+      Add and merge entries; do not rewrite the log.
+    done_when: Each problem seen more than once has a prevention in place, or an entry that says why there is none yet.
+    harness: { role: guide+sensor, control: human, timing: post-integration }
+    why: >-
+      One fix repairs one mistake; a change to the harness stops the same kind of mistake in every later task.
+      Without a log, the same lesson is learned again in each session.
+    weight_reason: The way the harness improves; the harness works without it, but does not get better.
+    see: [feedback.md#42-later-into-the-harness, feedback.md#44-the-feedback-log]
     status: todo
 
   - id: change-process
