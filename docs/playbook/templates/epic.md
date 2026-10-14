@@ -23,7 +23,7 @@ Title: `Epic: <leading word>: <goal>`
 | #<n> | <title> | story | 🔵 ready |
 | #<n> | <title> | story | ⚫ blocked by #<n> |
 
-Status values: 🟢 closed (date) · 🟡 in progress (claimed by …) · 🔵 ready · ⚫ blocked by #n or reason · ⚪ waiting (capacity) · ⏸ on hold (reason, revisit date) · 🟠 done in part and kept open (reason)
+Status values: 🟢 closed (date) · 🟡 in progress (claimed by …) · 🔵 ready · ⚫ blocked by #n or reason · ⚪ waiting (capacity) · ⏸ on hold (reason, revisit date) · 🟣 in review (reviewer, round n) · 🔍 verifying (round n) · 🟠 done in part and kept open (reason)
 
 ## Suggested order (YYYY-MM-DD)
 

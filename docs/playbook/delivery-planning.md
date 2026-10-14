@@ -17,7 +17,7 @@ This standard gives the content and the rules for planning delivery through an i
 - It sets dependencies, the suggested order, and the rules for parallel work.
 - It verifies the result of each issue and syncs the status.
 
-1.4 A planner does not change the product. It does not change source code, configuration, or data.
+1.4 A planner does not change the product. It does not change source code, configuration, or data. Exception: a planner can write acceptance scenarios and acceptance tests in the protected test paths ([testing.md](./testing.md), section 2). They state the requirement; they are not product code.
 
 ## 2. Terms
 
@@ -43,6 +43,57 @@ This standard gives the content and the rules for planning delivery through an i
 | Epic order | The sequence of the open epics. Implementers take work from the epics in this sequence. |
 | Evidence | A fact that you can find again: a file and line, a command output, a query result, a change in version control. |
 | Sync | The procedure that makes the epic agree with the real state of its issues. |
+| Reviewer | A person or an agent that reviews a change and reports findings ([review.md](./review.md)). A reviewer does not change the work that it reviews. |
+| In review | The state of an issue after the implementer reports it done, until it is merged. The reviewer owns it. |
+| Verifying | The state of an issue after its change is merged, until it is closed. A planner owns it. |
+| Round | One move back to "in progress" from "in review" or "verifying". |
+
+## 2A. The workflow
+
+2A.1 Use these states and transitions. Each state has one owner role. Move an issue only along a transition in the table, and only when its condition is satisfied. Write the evidence in the issue.
+
+| From | To | Who moves it | Condition |
+|---|---|---|---|
+| Backlog | Ready | Planner | The issue meets the Definition of Ready and has no open hard dependency. |
+| Ready | In progress | Implementer | The implementer claims it. No issue of its conflict group is in progress. The WIP limit is not reached. |
+| In progress | In review | Implementer | The one-command check passes. The report has the command and the output of each acceptance condition. The change is ready to merge (for example, a pull request). |
+| In review | In progress | Reviewer | A required check fails, or there is a confirmed blocking finding. Count one round. |
+| In review | Verifying | Reviewer | No confirmed blocking finding, and the required checks pass on the server. Then the change is merged. |
+| Verifying | In progress | Planner | An acceptance condition or the Definition of Done is not satisfied on the merged result. Count one round. |
+| Verifying | Closed | Planner | Each acceptance condition and the Definition of Done are verified on the merged result (Task 7). |
+| In progress, In review, Verifying | Blocked | The role that owns the state | The work cannot move forward by that role's own actions, the round limit is reached, or there is a conflict that the order of sources cannot settle ([feedback.md](./feedback.md), section 3). |
+| Blocked | The state before the block | The owner of the cause | The condition to continue is satisfied. |
+| Any open state | On hold | Owner | The business decided "not now" (Task 7A). |
+| On hold | Backlog | Owner | The owner decides to continue, at the latest on the revisit date. |
+
+```mermaid
+stateDiagram-v2
+    [*] --> Backlog
+    Backlog --> Ready: Definition of Ready
+    Ready --> InProgress: claim
+    InProgress --> InReview: checks pass, evidence in the issue
+    InReview --> InProgress: blocking finding (round)
+    InReview --> Verifying: no blocking finding, then merge
+    Verifying --> InProgress: acceptance fails (round)
+    Verifying --> Closed: acceptance and Done verified
+    InProgress --> Blocked: cannot continue, or round limit
+    InReview --> Blocked: conflict, or round limit
+    Verifying --> Blocked: cannot verify
+    Blocked --> InProgress: condition to continue
+    Backlog --> OnHold: owner, not now
+    OnHold --> Backlog: owner, continue
+    Closed --> [*]
+```
+
+"Waiting" is not a separate transition: it is a ready issue that nobody can claim now (Task 7A).
+
+2A.2 Set a round limit for the project, for example 3. When an issue reaches the limit, mark it blocked. Write the rounds and the open findings. The owner decides.
+
+2A.3 If the merged change makes the main branch fail, revert the change first. Then move the issue back to "in progress".
+
+2A.4 Use the tracker or the hosting platform to enforce a condition where it can (required checks, branch rules, a merge queue, workflow rules). If it cannot, the role that owns the next state checks the condition.
+
+2A.5 A project can add states. Each new state must have an owner role, a condition to enter, and a transition out. Check the workflow with the closure rules in phase 5 of [framework.md](./framework.md).
 
 ## 3. General rules
 
@@ -190,6 +241,8 @@ This standard gives the content and the rules for planning delivery through an i
 | Blocked | ⚫ blocked by <issue or reason> |
 | Waiting | ⚪ waiting (capacity) |
 | On hold | ⏸ on hold (reason, revisit date) |
+| In review | 🟣 in review (reviewer, round <n>) |
+| Verifying | 🔍 verifying (round <n>) |
 | Done in part and kept open | 🟠 reason |
 
 6.5 In the order table, put ✅ before the short name of each closed issue.
@@ -260,7 +313,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 ## 7. Task: sync after implementers complete work
 
-7.1 Do this task when the owner asks for the status, or when an implementer reports that an issue is done.
+7.1 Do this task when an issue enters "verifying", or when the owner asks for the status.
 
 7.2 Get the real state:
 
@@ -278,7 +331,7 @@ This standard gives the content and the rules for planning delivery through an i
 
 7.4 If all the acceptance conditions and the Definition of Done are satisfied, close the issue. If it is closed already, keep it closed. If the issue needs a live smoke test that has not run, do not close it as done: mark it "not live-verified" and write the condition.
 
-7.5 If a condition is not satisfied, write a comment in the issue. Name the condition and the evidence. Keep the issue open.
+7.5 If a condition is not satisfied, write a comment in the issue. Name the condition and the evidence. Move the issue back to "in progress" and count one round (2A.2).
 
 7.6 If an implementer did something that the issue did not ask for, write it down. Tell the owner if it changes the behavior of the product.
 

@@ -38,7 +38,7 @@ Rules:
 | Agent session hooks: lint, types, related tests | After each edit; before the agent ends its turn | Computational | Yes |
 | The one-command check, protected acceptance and gate tests | Before push; in CI | Computational | Yes |
 | The agent's own check as a user (end-to-end command, browser) | During the session | Computational, with evidence | Yes, when it is an acceptance criterion |
-| Review by a person or a second agent | Before integration | Inferential | No. It reports findings (section 2.1) |
+| Review by a person or a second agent ([review.md](./review.md)) | Before integration | Inferential | No. It reports findings (section 2.1) |
 | Expensive checks: mutation testing, random order, scans | After integration, on a schedule | Computational | Reports first (testing.md) |
 | Production logs, errors, user reports | Continuous | Mixed | No. They become issues |
 | Signals about the harness itself (section 2.2) | Continuous | Mixed | No. They change the harness |
@@ -106,6 +106,7 @@ Rules:
 4. **If the spec seems wrong, stop.** Mark the issue blocked. Write the spec clause, the feedback that contradicts it, and the evidence. The owner decides.
 5. **Two checks that contradict each other are a configuration error** (for example, a formatter and a lint rule that want different things). Fix the configuration at its one source. Do not work around it in the code.
 6. **Limit the attempts, and stop on oscillation.** Set a limit on attempts for the same failure. Stop and report when an edit undoes an earlier edit, or the same test goes from red to green to red. Report the attempts, the feedback, and the spec clause. Do not try again with a small variation.
+7. **Limit the rounds between review and fix.** Each move back from review or verification to the implementer is one round. At the project's round limit, the issue becomes blocked and the owner decides (section 2A of [delivery-planning.md](./delivery-planning.md)).
 
 ---
 

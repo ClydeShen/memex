@@ -763,6 +763,22 @@ items:
     see: [framework.md#phase-4-plan, feedback.md#3-when-feedback-conflicts]
     status: todo
 
+  - id: workflow-states
+    phase: 4
+    level: required
+    weight: 2
+    check: >-
+      Set the workflow: the states, the owner role of each state, and the condition of each transition, with "in review",
+      "verifying", merge before verification, and a round limit (delivery-planning.md, section 2A).
+    done_when: Each state has an owner role, each transition has a condition, and the tracker shows the states.
+    harness: { role: guide+sensor, control: human, timing: feedforward }
+    why: >-
+      Agents move work only when the next step and its owner are clear. Without an owner for each state, work waits or two
+      roles act at once; without a round limit, review and fix go back and forth with no end.
+    weight_reason: Coordinates the roles and limits the loops; the checks themselves are scored separately.
+    see: [delivery-planning.md#2a-the-workflow]
+    status: todo
+
   - id: delivery-health-signals
     phase: 4
     level: recommended
@@ -870,15 +886,32 @@ items:
     level: recommended
     weight: 2
     check: >-
-      Set the format of review findings, for people and agents. Each finding has a location, a problem, a failure
+      Adopt review.md as the review procedure, for people and agents. Each finding has a location, a problem, a failure
       scenario, a basis, and a severity. "No findings" is a valid result. A finding is confirmed before code changes.
-    done_when: The format is in the review instructions or the review template, and each review in the tracker follows it.
+    done_when: Each review in the tracker has a decision, and its findings follow the format.
     harness: { role: sensor, control: inferential, timing: pre-integration }
     why: >-
       A reviewer that is asked to find problems finds some, also in correct code, and fixing them breaks correct code.
       A failure scenario and a confirmation step separate defects from opinions.
     weight_reason: Makes the inferential sensor trustworthy; the computational gates work without it.
-    see: [feedback.md#21-review-findings]
+    see: [review.md, feedback.md#21-review-findings]
+    status: todo
+
+  - id: release-loop
+    phase: 5
+    level: recommended
+    weight: 2
+    check: >-
+      Write the release runbook: the trigger, a smoke test after each release, the rollback, the watch time, and
+      postmortems whose actions are issues with an owner and a date.
+    done_when: >-
+      Each release has a record with the smoke test result, and each postmortem action is an issue with an owner and a date.
+    harness: { role: sensor, control: computational, timing: post-integration }
+    why: >-
+      Closed issues are not released software. Build-time tests cannot see configuration, secrets, and connections of the
+      released system, and an incident without owned actions happens again.
+    weight_reason: Closes the loop from release to production and back; not every change is released at once.
+    see: [framework.md#phase-5-operate]
     status: todo
 
   - id: as-built-docs
@@ -945,6 +978,22 @@ items:
     see: [framework.md#phase-6-maintain]
     status: todo
 
+  - id: workflow-closure-check
+    phase: 6
+    level: recommended
+    weight: 1
+    check: >-
+      Write a loop card for each loop (trigger, who acts, verifier and evidence, done when, limit, escalation, record), and
+      check the workflow with the closure rules.
+    done_when: Each loop card has all seven fields, and the check is recorded at the end of each milestone.
+    harness: { role: sensor, control: human, timing: post-integration }
+    why: >-
+      A loop with no owner, no limit, or no verifier lets work wait, go back and forth, or ship unverified. The closure
+      rules make these gaps visible.
+    weight_reason: A periodic check of the process; it does not check the work itself.
+    see: [framework.md#phase-5-operate]
+    status: todo
+
   - id: feedback-on-checks
     phase: 6
     level: recommended
@@ -984,7 +1033,7 @@ items:
     phase: 6
     level: required
     weight: 2
-    check: Set the change process. Write an ADR before you break a constraint.
+    check: Set the change process. Write an ADR before you break a constraint or change the structure. Give the reason in the issue when you change a contract.
     done_when: The rule is in AGENTS.md, and each broken constraint has an ADR.
     harness: { role: guide, control: human, timing: feedforward }
     why: Stops agents from breaking a constraint silently to finish a task.

@@ -23,12 +23,12 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 1. Take work from an issue that has the ready mark. Claim it before you start (assign it to yourself, or move it to "in progress"). Do one issue at a time.
 2. Work in your own working copy (for example, a git worktree for each task). Keep the change small. Rebase on the latest main branch before you open the pull request.
 3. Commit each issue separately. Use `<commit message format>`. Put the verification result in the commit message.
-4. In the issue, report the result of each acceptance condition. Paste the command and its output. Do not write only "done".
+4. In the issue, report the result of each acceptance condition. Paste the command and its output. Do not write only "done". Then move the issue to "in review".
 5. Do not change the plan documents, the ADRs, or the epics. If the plan is wrong, write it in the issue.
 6. If you must change a contract (`<path of the contracts>`), give the reason in the issue and update the contract document.
 7. In a cleanup story, refactor only. Do not add features.
 8. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the owner, and what would unblock it. Do not guess your way around the block.
-9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue.
+9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue. After <round limit> rounds of review or verification, the issue is blocked; the owner decides.
 10. If two pieces of feedback disagree (for example, a review and the spec), follow the order of sources in `<path of feedback rules>`. Write the conflict and the decision in the issue. Do not weaken a check to settle it.
 
 ## Rules

@@ -36,6 +36,8 @@ This file lists the standard documents of an agent-driven project. For each it g
 | `docs/plans/<milestone>-integration.md` | Milestone integration design: components, seams, gates, stories | People, agents | Planner | At the start of each milestone | Reviewed once after the thinnest end-to-end path; when contracts change during implementation | Explanatory; the story table in STE |
 | `docs/setup-checklist.yaml` | The project's copy of the playbook checklist, with status, dates, and the score | People, agents | Planner | Phase 0 | When an item is done; at the end of each milestone (score) | Structured data |
 | `docs/feedback-log.md` | Lessons: symptom, root cause, fix, prevention, count ([feedback.md](./feedback.md)) | People, agents | Planner | When the first lesson is recorded | When a problem is seen again, or its prevention is in place | Explanatory; one entry per kind of problem |
+| `docs/release.md` | Release runbook: trigger, smoke test after release, rollback, watch time, incident steps | People, agents | Planner | Before the first release | When the release process changes | STE |
+| `docs/postmortems/YYYY-MM-DD-*.md` | One postmortem per incident: impact, actions taken, root cause, actions with owner and date | People, agents | The on-call role; a planner verifies | After each incident | Actions are tracked as issues; the text is not edited later | Explanatory |
 | `docs/research/*-YYYY-MM-DD.md` | Research notes with confidence markers and sources | People, agents | Planner (a background agent may draft) | When facts must be verified | Conclusions are not edited; when overturned, add a correction note at the top | Explanatory |
 
 ## 3. Architecture and standards (`docs/`)

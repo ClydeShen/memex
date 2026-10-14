@@ -23,7 +23,7 @@ The implementer of a change must not be the only author of the tests that decide
 | Kind of test | Written by | When | Protected? |
 |---|---|---|---|
 | Milestone gate tests (the milestone's pass criteria) | A planner or a test author, not the implementer of the milestone's stories | Before the stories that they verify start, or in a story of their own | Yes, after they are committed |
-| Acceptance tests of a story (when the acceptance needs a new test, not only a command) | A planner or a test-writing agent, not the story's implementer | Before the story is marked ready | Yes, after they are committed |
+| Acceptance tests of a story (when the acceptance needs a new test, not only a command) | A planner or a test author (person or agent), not the story's implementer. The implementer writes only the code that connects the test to the product (rule 6) | Before the story is marked ready | Yes, after they are committed |
 | Conformance suites of a port (every implementation of the port must pass) | The owner of the contract | With the contract | Yes |
 | Unit tests and property-based tests | The implementer | Test first: a failing test, then the code | No, but deleted or weakened tests are listed at verification |
 
@@ -33,6 +33,7 @@ Rules:
 3. **If the implementer thinks a protected test is wrong, the implementer stops.** Do not change the test. Mark the issue **blocked**. Write which test, why it seems wrong, and the evidence (for example, the requirement it contradicts). The owner of the test decides: fix the test in a separate change, or clarify the requirement. This follows the Definition of Blocked: a missing decision is a block, and the agent does not guess its way around it.
 4. **At verification, list the test changes.** Run `git diff --name-status --diff-filter=D <baseline>..HEAD -- <test paths>` to find deleted test files, and read `git diff <baseline>..HEAD -- <test paths>` for changed assertions. Every deleted test and every changed assertion has a written reason in the issue. A cleanup or refactoring change deletes no tests and changes no assertions.
 5. **When a requirement changes, the owner changes the test first.** The new test fails, then the implementer changes the code. The test never follows the code.
+6. **Write acceptance tests as examples of the requirement** (Specification by Example). Each example gives a starting state, an action, and the expected result, in words that the owner can read. A business-readable format such as Gherkin (Given / When / Then) is one way; a plain test with clear names is another. The planner owns the examples. The implementer writes the code that connects them to the product (for example, step definitions or fixtures) and the product code. The reviewer checks that this connecting code does not make an example pass without the behaviour.
 
 ---
 

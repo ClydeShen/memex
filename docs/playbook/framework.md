@@ -53,7 +53,7 @@ Seven phases. A small project does only the Required items of each phase (see se
 | 2 Architect | Fix boundaries, interfaces, and the directory structure | Architecture diagrams, contracts, dependency classes, structure and naming rules, tech stack |
 | 3 Guardrails | Turn rules into tools and checks | Code style, test strategy, security and data requirements, Git conventions, hooks, CI |
 | 4 Plan | Break goals into executable, trackable work | Roadmap, milestone integration design, epics and stories |
-| 5 Operate | Let planners and implementers (people or agents) work together | AGENTS.md, handoff document, verification flow, cleanup stories, as-built docs |
+| 5 Operate | Let planners, implementers, and reviewers (people or agents) work together, and release the result | AGENTS.md, handoff document, workflow and loop cards, verification flow, cleanup stories, as-built docs, release runbook |
 | 6 Maintain | Keep docs and code consistent over time | Consistency reviews, change process, evidence refresh |
 
 ---
@@ -226,10 +226,10 @@ The full procedure for writing issues and epics, setting dependencies and parall
 ### Phase 5: Operate
 
 **What to do**
-1. **Roles**: planners (people or agents) read code, write plans and docs, verify results, and sync status. Implementers (people or agents, any number) write code from stories and report results in the issue. They communicate only through the tracker; decisions go into the issue, not into direct messages. Each issue has exactly one implementer at a time: claim it before starting (assign it, or move it to "in progress"), so that two implementers never work on the same issue.
+1. **Roles**: planners (people or agents) read code, write plans and docs, verify results, and sync status. Implementers (people or agents, any number) write code from stories and report results in the issue. Reviewers (people or agents) review changes by [review.md](./review.md) and do not change them. Roles such as business analyst, architect, and QA can be people or agents, and one person or agent can hold several roles. A change to the structure or to a contract needs an ADR or the reason in the issue, whoever makes it. They communicate only through the tracker; decisions go into the issue, not into direct messages. Each issue has exactly one implementer at a time: claim it before starting (assign it, or move it to "in progress"), so that two implementers never work on the same issue.
 2. **AGENTS.md**: a thin entry point for implementing agents, about 60 lines at most: common commands, the way of working (take work from issues; report against the acceptance criteria with commands and output; do not change plans or ADRs; give the reason when you change a contract), and where to read first. **Do not describe the current state of the codebase here** (that belongs in the as-built docs, and it goes stale). Template: [templates/agents-md.md](./templates/agents-md.md).
 3. **Handoff document**: where a new session starts. Cover: what to read, what to do, what to verify, what to watch out for, working habits, and what not to do.
-4. **Verification flow**: when an implementer reports a story done, a planner who is not that implementer checks each acceptance criterion and **runs the commands itself**. Only then does the planner close the issue and sync the epic's table, order table, diagram, and status paragraph. Review findings, by people or agents, follow a fixed format and are confirmed before code changes; when feedback conflicts, a fixed order of sources settles it. Both are in [feedback.md](./feedback.md).
+4. **Verification flow**: the workflow states, who owns each state, and the condition of each transition are in section 2A of [delivery-planning.md](./delivery-planning.md): in progress, in review (the reviewer), merge, verifying (a planner), closed. After the merge, a planner who is not the implementer checks each acceptance criterion and **runs the commands itself**. Only then does the planner close the issue and sync the epic's table, order table, diagram, and status paragraph. Review findings, by people or agents, follow a fixed format and are confirmed before code changes; when feedback conflicts, a fixed order of sources settles it. Both are in [feedback.md](./feedback.md).
 5. **Cleanup story**: every epic that produces code ends with one. Steps: record a baseline (commit, check result, and a hash or output that represents behavior) → architecture review → classify findings (severe or not) → fix severe ones (refactor only) → re-index the codebase → update the as-built docs → run all checks again. Write the severity criteria so they can be checked: breaking a dependency rule, code that disagrees with the contract, anything that would force rework in the next epic, and coupling that prevents testing core logic on its own are severe.
 6. **As-built docs**: describe what the code **is now**, as opposed to design docs (what we intend). One page per package, from a fixed template. Link to code by path and symbol name, never by line number. Record in the front matter the paths the page covers and the commit it was verified against. Put generated content (package list, dependency graph, export list) in a separate directory marked "generated, do not edit". Check pages with a script: complete front matter, paths and symbols exist, no line-number references. Detect stale pages with `git diff --name-only <verified commit>..HEAD -- <covered paths>`.
 7. **Parallel work, pull requests, and merge conflicts**: a person opens one or two pull requests at a time, and that pace was a built-in throttle. Agents remove it and can open dozens in a short time, so the throttle must be designed. The number of conflicts depends mostly on how much concurrent changes overlap and how big they are, not on the number of pull requests: in a study of over 100,000 agent pull requests on GitHub, about 28% had merge conflicts, and small pull requests conflicted far less often. Act in this order, from the most leverage to the least:
@@ -239,9 +239,47 @@ The full procedure for writing issues and epics, setting dependencies and parall
    4. **Merge**: use a merge queue. It merges pull requests one at a time onto the latest main branch and runs the checks on the combined result. This turns pairwise conflicts into one integration per pull request, and it catches semantic conflicts that Git does not report (two changes that pass alone and fail together).
    5. **Resolution**: an implementer rebases and resolves its own conflicts, with the tests as the judge, and regenerates generated files. If a conflict touches a contract or core logic, so that the resolution changes behavior, escalate it to a person.
 
-**Outputs**: `AGENTS.md`, `HANDOFF.md`, `docs/as-built/`, check scripts, merge queue configuration.
+8. **Release**: closing an issue does not put the change in front of users. Define the release loop:
+   1. **Trigger**: what starts a release (for example, a version tag, a merge to a release branch, or a schedule). For a library, a release is a published package.
+   2. **Smoke test after release**: a short test of the released system or package, in minutes, that touches each main part once (for example, sign-in, the database, the main API call; for a library, install the published package in a clean project and run one example). It checks what build-time tests cannot see: configuration, secrets, routing, connections. It does not use real user data. A failure stops the release; do not continue because the test "is probably flaky".
+   3. **Rollback**: write how to undo a release (a feature flag or a new deployment of the previous version). A feature flag does not undo a database migration or a change of data format; give such changes their own plan (for example, changes that the previous version can still read).
+   4. **Watch**: for a fixed time after the release, the release role reads the logs and the errors.
+   5. **Incidents**: after an incident, write a postmortem: the impact, what was done, the root cause, and the actions to prevent a repeat. Each action is an issue with an owner, a result that can be checked, and a date ("improve monitoring" is too vague; "alert when the error rate is above 2% for 5 minutes" is not). Record the lesson in the feedback log ([feedback.md](./feedback.md)).
+   A release that passes its smoke test is the "live-done" tier of the live verification tiers ([practices.md](./practices.md)).
+9. **Workflow closure**: the work moves through several loops: the agent session, review, verification, release, incidents, the improvement of the harness, and delivery health. Describe each loop with one loop card:
 
-**Done when**: a new agent with no background can start work by reading `AGENTS.md` and a story; every close by a planner rests on command output; no two issues in progress change the same file.
+   | Field | Content |
+   |---|---|
+   | Trigger | The event or the time that starts the loop |
+   | Who acts | The role (a person or an agent) |
+   | Verifier and evidence | Who decides that it worked, and with which evidence from outside the loop (a command, a test, monitoring) |
+   | Done when | The result that ends the loop. Output that nobody uses does not count |
+   | Limit | The maximum number of rounds, the time, or the budget |
+   | Escalation | Who gets the work at the limit, or when a decision is missing |
+   | Record | Where the result and the lesson are written (the issue, the feedback log, a postmortem) |
+
+   The loops of this playbook:
+
+   | Loop | Trigger | Who acts | Verifier and evidence | Done when | Limit | Escalation | Record |
+   |---|---|---|---|---|---|---|---|
+   | Agent session | Each edit; the end of each turn | Implementer | Session hooks: lint, types, related tests | The checks pass | Attempts for the same failure (AGENTS.md) | Blocked; the owner | The issue |
+   | Review | The issue enters "in review" | Reviewer, then implementer | Required checks; confirmed findings ([review.md](./review.md)) | No confirmed blocking finding; merged | Round limit | Blocked; the owner | The issue |
+   | Verification | The issue enters "verifying" | Planner | The acceptance commands, run on the merged result | Closed | Round limit | Blocked; the owner | The issue; the epic |
+   | Release | The release trigger | The release role | Smoke test after release; logs and errors during the watch time | Released, and the smoke test passed | One rollback, then stop | The owner | The release record |
+   | Incident | An alert or a user report | The on-call role | Monitoring shows the service is restored | Restored; each postmortem action is an issue | The actions' dates | The owner | The postmortem; the feedback log |
+   | Harness | The end of a milestone; a problem seen again | Reviewer, planner | The review of the checks; the feedback log | Each repeated problem has a prevention or a reason | Once per milestone | The owner approves changes to protected paths | The feedback log |
+   | Delivery health | Each sync, or a fixed interval | Planner | The signals, measured with a date | Each recurring cause has an issue | Once per interval | The owner | The report to the owner |
+
+   **Closure rules**: check the workflow and the loop cards against these rules when you set them up, and at each milestone:
+   1. Each state that is not final has at least one way out.
+   2. Each transition has a condition: who moves the work, and with which evidence.
+   3. Each way back (a round) has a limit, and the limit leads to escalation to the owner.
+   4. Each final state has a verifier that uses evidence from outside the loop.
+   5. Each loop card has all seven fields. An empty field is a gap; fix it, or write why it is not needed.
+
+**Outputs**: `AGENTS.md`, `HANDOFF.md`, `docs/as-built/`, check scripts, merge queue configuration, the release runbook (`docs/release.md`), postmortems.
+
+**Done when**: a new agent with no background can start work by reading `AGENTS.md` and a story; every close by a planner rests on command output; no two issues in progress change the same file; every loop card is complete and the workflow passes the closure rules.
 
 **Common mistakes**
 - An implementer's own report is taken as fact.
@@ -249,13 +287,15 @@ The full procedure for writing issues and epics, setting dependencies and parall
 - As-built docs that restate the code, or cite line numbers, and go stale quickly.
 - Adding features during cleanup, which breaks the "refactor only" boundary.
 - An AGENTS.md that keeps growing until it becomes another design document.
+- An open loop: a state with no owner, a way back with no limit, or a release that nobody verifies after it ships.
+- Postmortem actions with no owner or date, so the same incident happens again.
 
 
 ### Phase 6: Maintain
 
 **What to do**
 1. **Consistency review**: at the end of every milestone, and whenever the docs grow noticeably. Check counts (constraints, ADRs), IDs, terms, cross-references, and differences between defaults and reality.
-2. **Change process**: breaking a constraint requires a new ADR first. Changing a contract requires the reason in the issue and an update to the contract doc. Only planners change the plan.
+2. **Change process**: breaking a constraint requires a new ADR first. Changing the structure (the directory structure or the dependency rules) requires an ADR first. Changing a contract requires the reason in the issue and an update to the contract doc. Only planners change the plan.
 3. **Evidence refresh**: check tool versions and capabilities every quarter, or whenever you need them, and write the date. Mark conclusions that no longer hold; do not delete them silently.
 4. **Review this framework regularly**: write practices the project has validated back into this framework. When a practice is rejected, change its status and give the reason.
 5. **Feedback loop**: keep a feedback log. When a kind of problem repeats, make it a check, or else a short guide where it applies. Once per milestone, review the checks that are marked "not useful", never fire, or are often bypassed. The standard is in [feedback.md](./feedback.md).
@@ -291,6 +331,7 @@ Mark a Recommended item that does not fit as "n/a" with the reason. Required ite
 11. **Dropping review altogether.** Tools enforce style, not correctness or security. Keep behavior and security verification, and review the guardrails themselves.
 12. **Rules that live only in agent instructions.** A rule in AGENTS.md or a prompt can be skipped. If a tool can check it, make the tool check it.
 13. **Designing for the simple case.** A rule that works for one person and one agent working in sequence can fail for a team with many agents in parallel. Write the standard for the complex case, and let simple projects drop what they do not need.
+14. **Open loops.** A state with no owner, a way back with no limit, or a release that nobody checks. Describe each loop with a loop card and check the closure rules.
 
 ---
 
