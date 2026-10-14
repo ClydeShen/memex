@@ -42,7 +42,10 @@ Project: ＿＿＿＿＿＿　Language: ＿＿＿＿＿＿　Size (small/medium/
 - [ ] **[Required]** Make one command check everything. Done when: after a clean clone, one command runs type checking, lint, and tests, and it passes.
 - [ ] **[Required]** Add an architecture boundary check. Done when: an import that breaks a dependency rule makes the check fail.
 - [ ] **[Recommended]** Write the test strategy: the list of critical points (contracts, milestone pass criteria, invariants, security gates). Write a failing test before each bug fix. Do not set a coverage threshold.
-- [ ] **[Recommended]** Write a conformance suite for each port.
+- [ ] **[Recommended]** Write a conformance suite for each port. Give each suite a negative case: a deliberately wrong implementation must fail it.
+- [ ] **[Required]** Write who owns which tests ([testing.md](./testing.md)). Done when: gate tests and acceptance tests are written by someone other than the implementer, are protected after they are committed, and an implementer who thinks a protected test is wrong marks the issue blocked.
+- [ ] **[Required]** Make tests deterministic and keep retries out of gates. Done when: the clock, random numbers, and the network are passed in as parameters; a lint rule rejects focused and skipped tests; no gate retries a failing test.
+- [ ] **[Recommended]** Run the expensive test checks after integration (mutation testing report only, tests in random order with recorded seeds).
 - [ ] **[Required]** Set the commit message format (for example, Conventional Commits). Done when: the header format, the body rule (why, not what), and the trailers (issue reference, breaking change, attribution) are written down.
 - [ ] **[Recommended]** Enforce the commit message format on the server (a rule on the protected branch), and check pull request titles with a required status check if you squash merge.
 - [ ] **[Required]** Add three tiers of git hooks: a light check before commit, a commit message check, and the full check before push. Done when: a bad commit message is rejected, and a deliberate check failure stops a push.

@@ -8,6 +8,7 @@ This playbook is a language-agnostic framework and checklist for software projec
 |---|---|
 | [framework.md](./framework.md) | The framework: core ideas, seven phases (define, decide, architect, guardrails, plan, operate, maintain), how to scale it, common pitfalls |
 | [delivery-planning.md](./delivery-planning.md) | The delivery planning standard: how planners write issues and epics, set dependencies, the suggested order, and the rules for parallel work, verify results, and sync status |
+| [testing.md](./testing.md) | Testing at scale: who owns which tests, minimum practices, nice-to-have practices, copyable acceptance lines |
 | [checklist.md](./checklist.md) | A checklist. Each item has a done criterion and is marked "required" or "recommended" |
 | [document-map.md](./document-map.md) | Which standard documents to prepare: purpose, audience, owner, when to create, when to update, writing standard |
 | [writing-standards.md](./writing-standards.md) | Writing standards: a single glossary, which documents use ASD-STE100, explanatory writing, dates and evidence |
@@ -22,7 +23,7 @@ This playbook is a language-agnostic framework and checklist for software projec
 3. Select your language in [language-profiles.md](./language-profiles.md). Select one tool for each role (package manager, formatter, tests, and so on).
 4. Work through [checklist.md](./checklist.md). Tick each item when it is done and write the date.
 5. Create the documents from [document-map.md](./document-map.md). Write them to [writing-standards.md](./writing-standards.md).
-6. Plan delivery with [delivery-planning.md](./delivery-planning.md).
+6. Plan delivery with [delivery-planning.md](./delivery-planning.md). Set the test rules with [testing.md](./testing.md).
 7. Copy a template from [templates/](./templates/) when you write an ADR, a story, an epic, an AGENTS.md, or a research note.
 
 ## Maintenance rules
@@ -54,4 +55,5 @@ This playbook is a language-agnostic framework and checklist for software projec
 | 2026-10-14 | Cross-checked the delivery planning standard against the framework and the practices: confidence levels, search before asking, front-loaded limits, tools before instructions, Definition of Ready as high confidence, Definition of Done in verification, live verification tiers, thinnest end-to-end first, cleanup stories, handling a stop (on hold, blocked, waiting), and delivery health signals. |
 | 2026-10-14 | Made the playbook a team standard for the complex case (several people and agents in parallel). Generalized roles to planners and implementers. Added parallel work, pull requests, and merge conflicts. Removed the language-policy section (English is the default). Section references now use section names, not numbers. Removed every reference to the source project, its files, and its domain terms, so that the playbook can be shared on its own. Added the delivery planning standard, adapted for several implementers working in parallel (claims, conflict groups, WIP limits, more status values). |
 | 2026-10-14 | Added the layers of checks (agent session hooks, git hooks, CI and server rules, after integration): when each runs, what it runs, who passes through it, whether it can be skipped, and its job. Rules: an inner layer runs a subset of the next, the outermost gate runs everything, one source for each rule, say which layer is the gate, expensive checks report before they block, protect the checks from the code they check. |
+| 2026-10-14 | Added testing.md: test ownership (gate and acceptance tests written by someone other than the implementer and protected; a wrong protected test makes the issue blocked), minimum practices (short machine-readable output, agent session hooks, deterministic tests, no retries in gates, verify behaviour as a user, server enforcement, tests that prove they can fail, no coverage threshold), and nice-to-have practices (mutation testing report only, random order, test impact analysis, flaky platforms, hermetic tests, contract tests, visual regression, LLM evaluations, harness review). Added role 14 (mutation testing) to the language matrix. |
 | 2026-10-13 | Translated the playbook into English. Added the language matrix (Node/TypeScript, Python, C#), with versions checked against npm, PyPI, and NuGet on that date. |

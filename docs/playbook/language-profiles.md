@@ -2,7 +2,7 @@
 
 This file maps each tooling **role** to concrete tools for each language. The roles are the same for every language; only the tools change. Pick one tool per role for your project, write the choice in the project's tech stack document, and record the date.
 
-- **Versions**: checked on **2026-10-13** against the package registries (npm, PyPI, NuGet); role 13 on **2026-10-14**. They will go stale. Check them again before you use them (see "How to check a version" below).
+- **Versions**: checked on **2026-10-13** against the package registries (npm, PyPI, NuGet); roles 13 and 14 on **2026-10-14**. They will go stale. Check them again before you use them (see "How to check a version" below).
 - **Status**: the Node/TypeScript column is a stack chosen for a real project; most of it is **designed**, not yet built. The Python and C# columns are **researched** only; no project has used them yet. In the Python column, a minimal project ran Ruff, ty, and import-linter on the check date; the other Python tools and all C# tools were read from their docs, not run.
 
 ---
@@ -24,6 +24,7 @@ This file maps each tooling **role** to concrete tools for each language. The ro
 | 11 | Code security scanning | CodeQL or an equivalent |
 | 12 | Structure and naming | Official guidance on directory layout and naming |
 | 13 | Telemetry and logging | The OpenTelemetry API and SDK; a structured logger that writes the OpenTelemetry log data model with trace context |
+| 14 | Mutation testing | Change the code on purpose and check that a test fails; incremental or by diff, so it can run in cleanup stories; report only (see [testing.md](./testing.md)) |
 
 ---
 
@@ -46,6 +47,7 @@ Format: **first choice** / alternatives. Versions as checked on 2026-10-13.
 | 11. Security scanning | CodeQL (JavaScript/TypeScript) | CodeQL; officially lists Python up to 3.14 | CodeQL; C# up to 14 and .NET up to 10; default setup uses build mode `none` |
 | 12. Structure and naming | Project rules (see the code style and project structure docs) | PEP 8; the src layout from the Python Packaging User Guide; PEP 735 dependency groups | Framework Design Guidelines; C# identifier naming rules; `.editorconfig` |
 | 13. Telemetry and logging | **@opentelemetry/api 1.9.1**, **@opentelemetry/sdk-node 0.223.0** (the logs API and SDK are still 0.x) / a thin JSON writer of the log data model, or **pino 10.4** with field mapping | **opentelemetry-api / opentelemetry-sdk 1.45.1** with the standard `logging` module / **structlog 26.1** | **OpenTelemetry 1.19.1** with `OpenTelemetry.Extensions.Hosting` and `Microsoft.Extensions.Logging` (fills `TraceId` and `SpanId` from the current activity) / **Serilog 4.4** |
+| 14. Mutation testing | **StrykerJS 10.0** + `@stryker-mutator/vitest-runner` (`incremental: true`; `thresholds.break` defaults to no failure) | **mutmut 3.8** (incremental by changed function; on Windows runs only in WSL) / **cosmic-ray 8.7** (native Windows, any test command, `cr-filter-git` for changed lines) | **Stryker.NET 5.0** (`--with-baseline` or `--since`) |
 
 `core.hooksPath` works the same in every language: put the hook scripts in `.githooks/` and run `git config core.hooksPath .githooks` once per clone. Node runs it from the root `prepare` script. Python and C# have no root lifecycle script, so put it in a setup command (for example, `just setup`) and say so in the README.
 
