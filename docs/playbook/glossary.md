@@ -59,6 +59,8 @@ The states and the transitions are in [workflow.md](./workflow.md).
 | **Logic-done** | Correct by tests alone: the result does not depend on the environment ([practices.md](./practices.md), section 4). |
 | **Live-done** | Verified once against the real boundary (network, operating system, external service, deployment). |
 | **Loop card** | A description of one feedback loop with seven fields ([workflow.md](./workflow.md), section 7). |
+| **Comprehension debt** | The gap between the code that agents produced and the code that the team has read and can explain. It grows when people accept agent output without reading it ([social-contract.md](./social-contract.md), F8 and F9). |
+| **Low-load proposal** | A plan or report that asks the least of the owner to read, decide, watch, and maintain ([practices.md](./practices.md), section 9). |
 
 ## Harness and tests
 
@@ -67,7 +69,7 @@ The states and the transitions are in [workflow.md](./workflow.md).
 | **Harness** | Everything around the agent that guides it before it acts and checks its work after: instructions, tools, checks, tests, and the workflow. |
 | **Guide** | A part of the harness that acts before the agent acts (an instruction, a template, a type). |
 | **Sensor** | A part of the harness that checks the work after the agent acts (a test, a lint rule, a review). |
-| **Gate** | A check that can stop the work. The required checks on the server are the last gate. |
+| **Gate** | A check that can stop the work. The **last gate** is the outermost layer that everyone passes: the required checks on the server where CI exists, or else the pre-push hook or the agent session gate. |
 | **Protected tests** | Gate tests and acceptance tests. The implementer cannot change them ([testing.md](./testing.md), section 2). |
 | **Acceptance example** | One example of a requirement: a starting state, an action, and the expected result. The planner owns it. |
 | **Connecting code** | The code that connects an acceptance example to the product (for example, step definitions or fixtures). The implementer writes it. |

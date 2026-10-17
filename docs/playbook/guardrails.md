@@ -19,7 +19,7 @@ Rules:
 1. **An inner layer runs a subset of the next layer out.** An inner layer that runs everything is slow, and people and agents start to avoid it.
 2. **The outermost gate runs everything.** Never put a check only in an inner layer. A rule only in the agent's hooks does not apply to people or other tools; a rule only in local git hooks can be skipped.
 3. **One source for each rule.** Every layer calls the same commands and the same tool configuration. Do not copy a rule into a hook script; two copies drift apart.
-4. **Say which layer is the gate.** Before CI exists, the pre-push hook is the last gate, and it can be skipped. Write this gap down (for example, in the tech stack document) and say when CI will close it.
+4. **Say which layer is the last gate.** Not every project has CI or a hosting server. Without one, the pre-push hook or the agent session gate is the last gate, and it can be skipped. Write the layer in `project.last_gate` of the checklist, write the gap down (for example, in the tech stack document), and say what would close it.
 5. **Expensive checks report before they block.** Collect results first, then decide whether to set a threshold.
 6. **Protect the checks from the code they check.** The implementer must not be able to change the check configuration, the hook scripts, or the gate tests in the change that they check. Deny the agent edit access to these paths, and require a review by the owner for them (for example, `CODEOWNERS`). A deny rule does not stop an agent that writes a script to change a file, so compare the tests with the baseline at verification ([testing.md](./testing.md), section 2).
 

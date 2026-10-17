@@ -30,6 +30,7 @@ Put this file at the repository root for implementing agents (one or many). **Ke
 8. If you cannot move forward by your own actions, stop. Mark the issue blocked. Write the reason, the role that can remove the cause, and what would unblock it. Do not guess your way around the block. If you stop for another reason, write what is done and the next step, and remove your claim.
 9. If the same failure stays after <N> attempts, or an edit undoes an earlier edit, stop and report the attempts in the issue. After <round limit> rounds of review or verification, the issue is blocked; the owner decides.
 10. If two pieces of feedback disagree (for example, a review and the spec), follow the order of sources in `<path of feedback rules>`. Write the conflict and the decision in the issue. Do not weaken a check to settle it.
+11. When you plan or report, follow the low-load rule in `<path of practices>`, section 9: one recommendation, at most three questions with defaults, and the option that is cheapest to maintain.
 
 ## Team agreements
 - `<the agreements from docs/team-agreements.md that apply to agents, with their IDs>`

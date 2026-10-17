@@ -21,10 +21,14 @@ project:
   name: ""
   language: ""
   size: ""          # small | medium | large
+  type: ""          # what the project produces, for example "frontend app", "backend service", "library", "CLI"
+  last_gate: ""     # the outermost check layer that everyone passes, for example "CI required check" or "pre-push hook (no CI)"
+  throughput: ""    # tolerant | strict (testing.md, M4; workflow.md, section 4.2)
   start_date: ""
   score:
     value: ""       # for example "64/132 = 48%"
     core: ""        # for example "9/14"
+    autonomy: ""    # the highest level in `scoring.autonomy` whose items are all done
     scored_on: ""
 
 fields:
@@ -63,8 +67,26 @@ scoring:
   score: The sum of the weights of the done items, divided by the sum of the weights of the items that apply, times 100.
   core: The number of done weight-3 items, divided by the number of weight-3 items that apply.
   rule: >-
-    Read the two numbers together. Agents can work on their own when the core is complete, whatever the
-    score. If a weight-3 item is not done, a person watches the agents' work closely, even if the score is high.
+    Read the two numbers together, then read the autonomy level. Autonomy is a design decision, not a reward
+    for a high score: give agents only the level whose items are all done. Below the first level, a person
+    watches the agents' work closely, even if the score is high. Items marked n/a with a reason count as done.
+  autonomy:
+    - level: supervised
+      means: A person watches the session and approves the result.
+      needs: []
+    - level: unattended-task
+      means: An agent takes one task to the end without a person watching. A person checks the evidence afterwards.
+      needs: [one-command-check, agent-session-hooks, protect-checks, test-ownership, deterministic-tests]
+    - level: unattended-backlog
+      means: An agent takes issues from the tracker one after another.
+      needs: [required-check-on-server, verify-as-user, verification-flow, story-spec, ready-done-blocked]
+    - level: parallel
+      means: Several implementers work at the same time.
+      needs: [contracts, boundary-check, parallel-work-rules, merge-queue]
+  autonomy_note: >-
+    Each level needs the items of the levels before it. The levels follow the idea that autonomy is a design
+    decision separate from capability (Feng, McDonald, Zhang, "Levels of Autonomy for AI Agents", 2025). The item
+    sets are a first proposal; change them only with the reason in the change log of README.md.
   general: >-
     The weights are a general standard from harness practice. Do not change a weight for one project.
     A project's situation shows in its own score and in its n/a items.
@@ -223,9 +245,11 @@ items:
 
   - id: contracts
     phase: 2
-    level: required
+    level: recommended
     weight: 3
-    check: Write the contracts between the main components (interface and data types).
+    check: >-
+      Write the contracts between the main components (interface and data types). A project with one package
+      and no seam between processes marks this n/a.
     done_when: Each port has explicit inputs and outputs, and each data type that crosses a process or network boundary is serializable.
     harness: { role: guide+sensor, control: computational, timing: feedforward }
     why: >-
@@ -370,9 +394,9 @@ items:
 
   - id: boundary-check
     phase: 3
-    level: required
+    level: recommended
     weight: 3
-    check: Add an architecture boundary check.
+    check: Add an architecture boundary check. A project with one package and no dependency rules marks this n/a.
     done_when: An import that breaks a dependency rule makes the check fail.
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: Agents take the shortest path, which often crosses a layer. Only a tool keeps the architecture intact over many changes.
@@ -426,9 +450,10 @@ items:
     weight: 3
     check: Give agents a way to verify behaviour as a user does, and require evidence.
     done_when: >-
-      Each session starts with one end-to-end smoke test that uses the product as a user does (its command line, API,
-      or user interface); a product with a browser interface has a browser command-line tool that the agent can use;
-      AGENTS.md says that the agent pastes command output or screenshots, not claims.
+      A session that changes run-time behaviour starts with one end-to-end smoke test that uses the product as a user
+      does: its command line, API, or user interface; for a library, an install of the package and one example. A product
+      with a browser interface has a browser command-line tool that the agent can use. AGENTS.md says that the agent
+      pastes command output or screenshots, not claims.
     harness: { role: sensor, control: computational, timing: in-session }
     why: Unit tests pass while the product does not work. Behaviour is the hardest thing to check, and a claim cannot be checked.
     weight_reason: The main sensor for behaviour, the gap that type checks and lint cannot cover.
@@ -439,10 +464,10 @@ items:
     phase: 3
     level: required
     weight: 3
-    check: Make tests deterministic and keep retries out of gates.
+    check: Keep the test signal trustworthy, and write the project's throughput policy.
     done_when: >-
-      The clock, random numbers, and the network are passed in as parameters; a lint rule rejects focused
-      and skipped tests; no gate retries a failing test.
+      A lint rule rejects focused and skipped tests; `project.throughput` is set; the gate handles a failing test as
+      that policy says (testing.md, M4), and every re-run that passes is recorded as a flaky test with an issue.
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: >-
       An agent cannot tell a flaky failure from a real one. It "fixes" code that is not broken, or learns
@@ -513,12 +538,15 @@ items:
 
   - id: protect-checks
     phase: 3
-    level: recommended
+    level: required
     weight: 3
     check: >-
       Protect the checks. Deny agents edit access to the check configuration, the hook scripts, and the gate tests
       (in the agent tool's permission settings). Require a review by the owner for these paths.
-    done_when: An agent's attempt to edit a protected path is rejected, and a pull request that changes one needs the owner's approval.
+    done_when: >-
+      An agent's attempt to edit a protected path is rejected. Where a hosting platform exists, a pull request that
+      changes a protected path needs the owner's approval; without one, verification compares the protected paths with
+      the baseline (testing.md, section 2, rule 4).
     harness: { role: guide, control: computational, timing: in-session }
     why: A check that the checked code can change is not a check. Agents that cannot pass a rule may relax the rule.
     weight_reason: Protects every other sensor from the implementer.
@@ -527,12 +555,16 @@ items:
 
   - id: required-check-on-server
     phase: 3
-    level: recommended
+    level: required
     weight: 3
-    check: Make the full check required on the server.
+    check: >-
+      Make the full check required at the last gate: the outermost layer that everyone passes. Where CI exists, this
+      is a required check on the protected branch. Where no CI or hosting server exists, it is the pre-push hook or the
+      agent session gate.
     done_when: >-
-      The protected branch requires the full check to pass in CI before each merge, and nobody (person or agent)
-      can merge without it. Until CI exists, write down that the pre-push hook is the last gate, and when CI will close the gap.
+      The last gate runs the full check, and nobody (person or agent) gets work past it while the check fails.
+      `project.last_gate` names the layer. If the last gate can be skipped (a local hook), the gap is written down,
+      with the condition that closes it (for example, "when the project gets CI").
     harness: { role: sensor, control: computational, timing: pre-integration }
     why: The only gate that runs in a clean environment and that nobody can skip.
     weight_reason: Every local layer can be bypassed; this is the gate that can be trusted.
@@ -602,12 +634,13 @@ items:
   - id: agent-log-access
     phase: 3
     level: required
-    weight: 3
+    weight: 2
     check: Give agents read-only access to logs, traces, errors, and CI results (files, a command-line tool, or an MCP server).
-    done_when: AGENTS.md says where and how to read them.
+    done_when: AGENTS.md says where and how to read them. A project with no running service names only where to read check and CI results.
     harness: { role: sensor, control: computational, timing: in-session }
     why: Without access, an agent guesses at the cause of a failure, or a person copies logs by hand.
-    weight_reason: The agent's only view of run-time behaviour.
+    weight_reason: >-
+      The agent's only view of run-time behaviour, but the item is done by a line in AGENTS.md, which is a guide.
     see: [guardrails.md#4-logging-monitoring-and-errors]
     status: todo
 
@@ -690,12 +723,14 @@ items:
   - id: story-spec
     phase: 4
     level: required
-    weight: 3
+    weight: 2
     check: Write each story with a parent epic, background (with evidence), scope, acceptance (with a command or a value), out of scope, and a decision log.
     done_when: The implementer can read only the story and know what to do and when it is done.
     harness: { role: guide, control: human, timing: feedforward }
     why: The story is the agent's whole task. Acceptance with commands is the agent's definition of done and the planner's verification.
-    weight_reason: An agent guesses where a story is vague; executable acceptance turns the story into a sensor.
+    weight_reason: >-
+      An agent guesses where a story is vague, but the story is a guide that a person writes. Keep it short for a small
+      change: spec tools that turn a small fix into many stories add review work without control (Böckeler, 2025).
     see: [delivery-planning.md, templates/story.md]
     status: todo
 
@@ -750,7 +785,7 @@ items:
   - id: ready-done-blocked
     phase: 4
     level: required
-    weight: 3
+    weight: 2
     check: >-
       Write the Definition of Ready (ready for agent), the Definition of Done, and the Definition of Blocked for the project.
       Blocked includes a conflict between the spec and a test or other feedback that the order of sources cannot settle.
@@ -759,7 +794,7 @@ items:
     why: >-
       A person asks about a vague issue; an agent guesses. Ready keeps vague work away from agents, Done makes
       completion a verified fact, and Blocked gives the agent a legal way to stop instead of guessing.
-    weight_reason: Decides what agents receive and what counts as done.
+    weight_reason: Decides what agents receive and what counts as done, but it is a definition that people apply, not a check.
     see: [workflow.md#2-states, feedback.md#3-when-feedback-conflicts]
     status: todo
 
@@ -796,7 +831,7 @@ items:
   - id: agents-md
     phase: 5
     level: required
-    weight: 3
+    weight: 2
     check: >-
       Write `AGENTS.md` with the commands, the way of working, and where to read first. Write only what every task needs.
       Do not describe the current state of the codebase.
@@ -805,7 +840,9 @@ items:
     why: >-
       Every agent session reads it first. It is the entry point to every other guide and sensor. Agents follow what it
       says, so extra requirements make tasks harder and cost more.
-    weight_reason: The guide that every agent meets, every time.
+    weight_reason: >-
+      The guide that every agent meets, every time. Weight 2, not 3: it is a guide, and context files did not raise task
+      success in an evaluation while they raised cost by over 20% (arXiv 2602.11988). Its value is in being short.
     see: [templates/agents-md.md, feedback.md#42-later-into-the-harness]
     status: todo
 
@@ -873,8 +910,12 @@ items:
     phase: 5
     level: required
     weight: 3
-    check: Set the verification flow. After the merge, a planner who is not the implementer runs the acceptance commands on the merged result, closes the issue only when they pass, and then syncs the epic.
-    done_when: Each closed issue has the verifier's command results.
+    check: >-
+      Set the verification flow. A verifier who is not the implementer runs the acceptance commands, closes the issue
+      only when they pass, and then syncs the epic. The verifier can be a planner, or an agent in a new session with a
+      fresh context. A small project can verify before the merge; a project with several implementers verifies on the
+      merged result.
+    done_when: Each closed issue has the verifier's command results, and the verifier is not the implementer.
     harness: { role: sensor, control: computational, timing: post-integration }
     why: An agent's "done" is a claim. Someone else running the acceptance commands turns it into evidence.
     weight_reason: Separates the implementer from the judge of completion.
@@ -956,12 +997,31 @@ items:
     weight: 2
     check: >-
       Adopt the practices in practices.md. At minimum, give each important judgment a confidence level and its
-      supporting dimensions, agree on a plan before you change code, and mark work that is only logic-done as "not live-verified".
+      supporting dimensions, agree on a plan before you change code, mark work that is only logic-done as "not live-verified",
+      and keep plans and reports low-load (practice 9).
     done_when: The practices are in AGENTS.md or the agent's memory, and agents follow them.
     harness: { role: guide, control: inferential, timing: in-session }
     why: Makes the agent say how sure it is and stop when it is not, instead of acting on guesses.
     weight_reason: Guides judgment; depends on the agent following it.
     see: [practices.md]
+    status: todo
+
+  - id: review-sampling
+    phase: 5
+    level: recommended
+    weight: 2
+    check: >-
+      Read the agents' changes to contracts, core logic, security, and data, and a sample of the other changes.
+      Measure the share of agent changes that a person read, and the cost per closed issue.
+    done_when: >-
+      Each milestone report gives the share of agent changes that a person read and the cost per closed issue
+      (workflow.md, section 8), and each change to a contract, core logic, security, or data names the person who read it.
+    harness: { role: sensor, control: human, timing: continuous }
+    why: >-
+      Checks prove that code passes; they do not make the team understand it. Without reading, the team owns more and
+      more code that it cannot explain (comprehension debt), and the owner can no longer judge what the agents do.
+    weight_reason: A human sensor for what no tool measures; it strengthens the harness but does not stop wrong work by itself.
+    see: [social-contract.md, workflow.md#8-delivery-health, practices.md]
     status: todo
 
   # ---------------------------------------------------------------- Phase 6: Maintain

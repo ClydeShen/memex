@@ -10,7 +10,7 @@ This standard gives the procedure for reviewers. A reviewer can be a person or a
 
 1.3 A reviewer is not the implementer of the change. Review in a new session or with a fresh context.
 
-1.4 The required checks on the server are the gate. The review adds the parts that tools cannot check: design, behaviour against the requirement, security judgment, and the quality of the tests. A finding can send the work back only when it is confirmed (3.7).
+1.4 The full check at the last gate ([glossary.md](./glossary.md)) is the gate. The review adds the parts that tools cannot check: design, behaviour against the requirement, security judgment, and the quality of the tests. A finding can send the work back only when it is confirmed (3.7).
 
 > **CAUTION:** Do not change the code, the tests, or the check configuration of a change that you review. If you change them, the review is not independent.
 

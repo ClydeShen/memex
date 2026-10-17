@@ -326,6 +326,8 @@ Use the task "classify a stop" in [workflow.md](./workflow.md), section 5.
 
 9.6 Give the delivery health signals from Task 7B, and the issues that are blocked, waiting, or on hold, with the role that acts on each.
 
+9.7 Keep the report low-load ([practices.md](./practices.md), section 9): one recommendation for each decision, at most three questions with a default for each, and what the owner must do in a separate list.
+
 **Completion criterion:** The owner can see the result, the decisions, their own next actions, the limits of your examination, and the health of delivery.
 
 ## 10. Reference: what the tracker must give

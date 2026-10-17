@@ -194,3 +194,14 @@ The rules are written for several people and several agents working in parallel.
 | Large (many people and agents, long-lived) | The full checklist. Set up CI early. Implement every security requirement. Give the as-built docs and the consistency reviews a fixed maintainer and cadence |
 
 Mark a Recommended item that does not fit as "n/a" with the reason. Required items apply to every project.
+
+Size is one axis. The kind of project is another, and it decides which items fit:
+
+| Kind of project | What changes |
+|---|---|
+| Frontend application | verify-as-user uses a browser tool; the last gate is often a hosting platform's checks or the pre-push hook |
+| Backend service | verify-as-user calls the API; logs and traces matter most (agent-log-access) |
+| Library or command-line tool | verify-as-user installs the package and runs one example; no running service, so logs mean check and CI results |
+| No CI or hosting server | The last gate is the pre-push hook or the agent session gate. Write the gap down ([guardrails.md](./guardrails.md), section 1, rule 4) |
+
+How much an agent may do alone is a third axis. It follows the autonomy levels in `scoring.autonomy` of [checklist.yaml](./checklist.yaml), not the score.

@@ -66,7 +66,7 @@ When an issue is blocked, stop. Write the reason, the role that can remove the c
 | In progress | Ready | Implementer | The implementer removes its claim. The issue says what is done and the next step. |
 | In progress | In review | Implementer | The one-command check passes. The report in the issue has the command and the output of each acceptance condition. The change is ready to merge (for example, a pull request). |
 | In review | In progress | Reviewer | A required check fails, the merge queue rejects the change, or there is a confirmed blocking finding. Count one round. |
-| In review | Verifying | Reviewer approves; the implementer or the merge queue merges | No confirmed blocking finding. The required checks pass on the server. The change is merged. |
+| In review | Verifying | Reviewer approves; the implementer or the merge queue merges | No confirmed blocking finding. The full check passes at the last gate ([guardrails.md](./guardrails.md), section 1). The change is merged. |
 | Verifying | In progress | Planner | An acceptance condition or the Definition of Done is not satisfied on the merged result. Count one round. |
 | Verifying | Closed | Planner | The Definition of Done is satisfied (section 2.2). |
 | Closed | Verifying | Planner | The issue was closed without verification (for example, by a closing keyword in a merged pull request). |
@@ -109,7 +109,7 @@ The table is the source. The diagram shows the table.
 
 4.1 **Round limit.** Set a round limit for the project, for example 3. Count one round for each move back to "in progress" from "in review" or "verifying", and for each revert after a merge. At the limit, mark the issue blocked. Write the rounds and the open findings. The owner decides.
 
-4.2 **A failing main branch.** If a merged change makes the main branch fail, revert the change first. Then move the issue back to "in progress" and count one round. Do not fix forward while the main branch fails.
+4.2 **A failing main branch.** If a merged change makes the main branch fail, revert the change first. Then move the issue back to "in progress" and count one round. Do not fix forward while the main branch fails. Exception: a project with `throughput: tolerant` can fix forward when the fix is ready within a time limit that the project writes down (for example, 30 minutes); after the limit, revert. Write each fix forward in the issue.
 
 4.3 **Closing keywords.** Do not use the keywords that close an issue on merge (for example, `Fixes #12` on some hosting platforms). Refer to the issue with a trailer such as `Refs: #12`. A closing keyword moves the issue to "closed" without verification.
 
@@ -199,5 +199,8 @@ The states of the issues show the health of the whole delivery system. A planner
 | False-ready rate: issues marked ready that implementers send back as blocked or ambiguous | The quality of the Definition of Ready itself. |
 | Reasons for "not ready" and "blocked", by the role that can fix them | Technical dependency (tech lead), architecture gap (architect), unclear story or acceptance (business analyst), missing test criteria (QA or business analyst), missing decision (owner). A cause that recurs needs a fix of the system, not only of the issue. |
 | Work that waits for human verification or approval | In an agent-driven project, capacity is often not coding speed. It is the attention of the people who verify and approve, environment slots (a GPU, rate limits, token budgets), and file conflicts. A queue of ready work is normal. A growing queue of work that waits for people is the signal. |
+
+| Review sampling: the share of agent changes that a person read, and whether a person read each change to a contract, core logic, security, or data | Comprehension debt ([glossary.md](./glossary.md)). A share that falls while the output grows means that the team owns more code that it cannot explain. |
+| Cost per closed issue (tokens or money), with the number of agent sessions and rounds | Whether the loops converge. A cost that grows for issues of the same size shows a stuck loop or a vague issue ([feedback.md](./feedback.md), section 2.3). |
 
 Count blocked, waiting, and on hold separately. If waiting is counted as blocked, the block signal is too high and a capacity problem is hidden. If on-hold work stays in progress, the cycle time and the work in progress are wrong.

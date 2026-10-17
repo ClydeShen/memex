@@ -105,6 +105,8 @@ Each agreement has one of two levels:
 | F5 | If two agents disagree, give the question to a person. | Good to know | Agents can argue without an end. |
 | F6 | Do not send more agent work for review than other people can review. | Good to know | The attention of reviewers is the limit, not the speed of agents. |
 | F7 | Give your agent only the access that its task needs. | Good to know | A mistake or an attack does less damage. |
+| F8 | Read the changes that your agents make to contracts, core logic, security, and data before you accept them. Read a sample of the other changes. | Recommended | Code that nobody read is comprehension debt: the team owns code that it cannot explain. |
+| F9 | Do not accept an agent change that you cannot explain: what changed, why it is safe, and how to undo it. | Good to know | A person is accountable for agent output (F1), and accountability needs understanding. |
 
 ### G. Mistakes and incidents
 
