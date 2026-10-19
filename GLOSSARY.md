@@ -132,6 +132,14 @@ _Avoid_: double check, audit call
 Intuition 判断当前情况不适合走 Fast Path，转交给 Reasoning。
 _Avoid_: fallback, retry
 
+**Counterfactual Probe**:
+为了检验一个判断依赖哪些条件，一次只换掉其中一个条件，再让 Intuition 判断一次。多个探测可以并行。可以换哪些条件、换了之后预期怎样，按 Ontology 类型预先定义。候选设计，验证阶段之后决定是否采用（open-questions 第 5 条）。中文称"反事实探测"。
+_Avoid_: mutation（Mutation 不用作术语，见 Action 的 _Avoid_）, perturbation test, ablation
+
+**Surprise**:
+探测结果或实际 Observation 与预期的条件关系不符。分两类：条件不成立、结论却成立，说明存在**替代原因**；条件成立、结论却不成立，说明存在**阻断条件**。Surprise 是 Escalation 的一种触发信号。中文称"意外"。
+_Avoid_: anomaly, error, conflict（两条 Claim 互相矛盾不叫 Surprise）
+
 **Verification**:
 在采取行动或接受结论之前，对候选结论做的检查。能用确定性方法检查的，就不用模型检查。
 _Avoid_: validation（英文 validation 指验证阶段，见 ADR 0020）。中文单独说"验证"容易和验证阶段混淆，指本术语时写 Verification
@@ -151,6 +159,30 @@ _Avoid_: tool, function, skill（Skill 指外部的 Agent Skills 格式）
 **Self-Evolution**:
 Memex 逐步积累关于自身构成、能力、限制、运行原理和升级历史的 Claim，并据此给出有依据的改进计划。它不包括未经授权修改自身。
 _Avoid_: self-modification, self-improvement
+
+## 发散与重组
+
+这一组术语描述 System 3：在空闲时离线运行的发散过程。它们都是候选设计，验证阶段之后决定是否采用（open-questions 第 6 条）。
+
+**Recombination**:
+即 System 3。在 Offline Phase 里，把不同领域的 Experience 和 Claim 按关系结构重新组合，产出 Conjecture。随机程度是配置参数。中文称"重组"。
+_Avoid_: dreaming, brainstorming, creativity（这些是比喻，不是名字）
+
+**Conjecture**:
+Recombination 的产出：两个领域之间的一个结构对应或组合。它还不是 Claim，放在 Sandbox 里，通过 Verification 之后才能成为低 Confidence 的 Claim 或新的 Pattern，并标明来源。它和 Hypothesis 不同：Hypothesis 是为解释某个 Observation 而提出的，Conjecture 不是。中文称"猜想"。
+_Avoid_: idea, insight, hypothesis
+
+**Sandbox**:
+存放 Conjecture 的隔离区。里面的内容不属于 Worldview，不能被当作 Claim 使用，也不能触发 Action。中文称"猜想区"。
+_Avoid_: virtual memory, scratchpad
+
+**Offline Phase**:
+Recombination 运行的时段：Agent 空闲时，不和 Reasoning 争用资源。它的成本计入 Cognitive Budget。中文称"离线期"。
+_Avoid_: sleep, idle time
+
+**Open Puzzle**:
+Reasoning 没能解释的 Surprise，留给 Recombination 处理。中文称"悬案"。
+_Avoid_: backlog, unsolved problem
 
 ## 语义结构
 
