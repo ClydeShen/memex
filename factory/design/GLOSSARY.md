@@ -266,10 +266,6 @@ _Avoid_: contract test, TCK
 描述代码**现在**实际是什么样的文档：职责、公开入口、内部构成、依赖、关键不变量、与设计的偏差、已知缺口。区别于设计文档（ADR、factory/records/plans/、contracts.md 写的是打算怎么做）。放在 `factory/as-built/`，每个包一页；页首的 `covers` 和 `verified-at` 用来检测是否过期；每个 epic 的整理 story 更新一次（ADR 0026）。
 _Avoid_: 实现文档, 技术文档
 
-**Implementation Note**:
-`factory/records/implementation-notes.md` 中的一条记录：实现 agent 遇到 spec 和 ticket 都没写到的情况、自己做了决定、并且重要到用户应该知道时追加。默认不写。
-_Avoid_: 实现日志, worklog, 开发日志
-
 **Fake Provider**:
 按 Cognitive Contract 实现、行为由种子和配置确定的假组件，例如可以设定准确率的 FakeIntuition。用于在不接真实模型的情况下验证运行时和 Lab。
 _Avoid_: mock, stub

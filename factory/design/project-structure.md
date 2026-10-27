@@ -26,7 +26,7 @@
 │  └─ apps/                  产品的可执行程序：`memex` 命令行、以后的 Web 界面（P1 起）
 ├─ factory/                  车间：只对 Memex 有意义，不发布；由 agent 按 harness 自治管理
 │  ├─ design/                设计文档，只写当前状态：VISION、GLOSSARY、HANDOFF、roadmap、架构、契约和各份规范
-│  ├─ records/               累积的记录，写完不再改：decisions/（ADR）、research/、plans/；implementation-notes.md（一个文件，只追加）
+│  ├─ records/               累积的记录，写完不再改：decisions/（ADR）、research/、plans/、implementation-notes.md
 │  ├─ validation/            验证工具，决策关卡时整体删除或改成回归评测
 │  │  ├─ lab/                @memex/lab：Runner、Worker、`pnpm lab`
 │  │  ├─ worlds/             @memex/worlds：Micro World、Ground Truth 与 Oracle、污染 Provider

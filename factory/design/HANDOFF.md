@@ -28,7 +28,7 @@
 | 4 | `factory/design/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `factory/design/architecture/contracts.md` | 集成契约 v0 草案。**V0.2 按它实现** |
 | 6 | `factory/design/dependencies.md`、`factory/design/tech-stack.md`、`factory/design/code-style.md`、`factory/design/security-and-data.md`、`factory/design/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `factory/records/decisions/` | 已确认的决策。改动其中任何一条之前必须先写新的 ADR。**写代码之前必读 0028**：仓库分三区，`memex/` 是孤立的成品，里面的注释、提示词和错误信息不写 ADR 编号、不提实验和版本沿革。另外，spec 和 ticket 没写到、你自己做了决定、并且重要到用户应该知道的事，在 `factory/records/implementation-notes.md` 末尾追加一条，默认不写 |
+| 7 | `factory/records/decisions/` | 已确认的决策。改动其中任何一条之前必须先写新的 ADR。**写代码之前必读 0028**：仓库分三区，`memex/` 是孤立的成品，里面的注释、提示词和错误信息不写 ADR 编号、不提实验和版本沿革。另外，自己做了用户应该知道的决定时，偶尔在 `factory/records/implementation-notes.md` 里记一条 |
 | 0 | GitHub #93 | 每次会话开始先看：Codex 的独立检查有没有新评论。有问题就修掉或开 issue，需要用户决定的就问用户 |
 | 7a | `harness/README.md` | deliver agent 的配置区。根目录 `AGENTS.md` 和 `harness/agents/` 由 V0-28 建立，在那之前以本文件为准 |
 | 8 | `factory/design/open-questions.md` | 待决问题，每个都标明了在什么时候决定 |
