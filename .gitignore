@@ -18,9 +18,12 @@ coverage/
 *.gguf
 *.safetensors
 
-# Instance data: event logs, snapshots, recordings, reports (docs/project-structure.md section 4).
+# Product instance data (factory/design/project-structure.md section 4).
 # Synthetic test fixtures live in each package's fixtures/ and are committed.
 .memex/
+
+# Experiment output: event logs, snapshots, recordings, reports
+factory/validation/runs/
 
 # Logs
 *.log

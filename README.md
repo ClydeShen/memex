@@ -13,27 +13,37 @@ Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Age
 ## 现状
 
 - **设计阶段已完成，还没有代码。** 下一个里程碑是 V0：产品核心（契约、Event Log、Action、运行时）加上验证工具（Lab、Fake Provider、最简单的 Micro World）。
-- 路线：验证阶段 V0 骨架 → V1 基线 → V2 双系统 → **决策关卡** → 产品阶段 P1 第一个可用版本 → P2 学习闭环 → P3 对外扩展 → P4 分发，以及 P5 跨领域迁移。详见 [docs/roadmap.md](docs/roadmap.md)。
+- 路线：验证阶段 V0 骨架 → V1 基线 → V2 双系统 → **决策关卡** → 产品阶段 P1 第一个可用版本 → P2 学习闭环 → P3 对外扩展 → P4 分发，以及 P5 跨领域迁移。详见 [factory/design/roadmap.md](factory/design/roadmap.md)。
+
+## 仓库结构
+
+仓库分三个区（[ADR 0028](factory/records/decisions/0028-harness-factory-product.md)）：
+
+| 目录 | 是什么 |
+|---|---|
+| `product/` | 成品：只有这个目录会发布，只写当前状态（V0 起建立） |
+| [factory/](factory/) | 生产 Memex 的车间：设计文档、决策和调研记录、验证工具、as-built 文档。由 agent 按 harness 自治管理 |
+| [harness/](harness/) | 驱动：deliver agent 怎样工作的配置，Codex 和 Claude Code 共用 |
+| [playbook/](playbook/) | 从本项目提取的通用工程范式（英文），可以复制到其他项目 |
 
 ## 文档
 
 | 文档 | 内容 |
 |---|---|
-| [VISION.md](VISION.md) | 目的、中心假设、第一性原则、核心模块 |
-| [GLOSSARY.md](GLOSSARY.md) | 领域术语（写代码和文档时统一使用） |
-| [docs/roadmap.md](docs/roadmap.md) | 全局约束、里程碑和当前任务分解 |
-| [docs/architecture/](docs/architecture/) | C4 架构图和集成契约 |
-| [docs/adr/](docs/adr/) | 已确认的架构决策 |
-| [docs/tech-stack.md](docs/tech-stack.md) | 技术栈：作用、分类、引入时机 |
-| [docs/code-style.md](docs/code-style.md) | 统一的代码风格与约束 |
-| [docs/project-structure.md](docs/project-structure.md) | 目录结构与命名规范 |
-| [docs/security-and-data.md](docs/security-and-data.md) | 安全与数据要求 |
-| [docs/dependencies.md](docs/dependencies.md) | 依赖分类 |
-| [docs/plans/](docs/plans/) | 每个里程碑的集成设计：组件、接缝、关卡和 story |
-| [docs/playbook/](docs/playbook/) | 从本项目提取的通用工程范式（英文）：agent 驱动项目的框架、清单、文档地图、写作规范、协作做法、多语言工具矩阵和模板；可复制到其他项目 |
-| [docs/open-questions.md](docs/open-questions.md) | 待决问题 |
-| [docs/research/](docs/research/) | 调研与核对的依据（选型、标准、算法、实测） |
-| [HANDOFF.md](HANDOFF.md) | 新的开发会话从这里开始 |
+| [VISION.md](factory/design/VISION.md) | 目的、中心假设、第一性原则、核心模块 |
+| [GLOSSARY.md](factory/design/GLOSSARY.md) | 领域术语（写代码和文档时统一使用） |
+| [HANDOFF.md](factory/design/HANDOFF.md) | 新的开发会话从这里开始 |
+| [roadmap.md](factory/design/roadmap.md) | 全局约束、里程碑和当前任务分解 |
+| [architecture/](factory/design/architecture/) | C4 架构图和集成契约 |
+| [tech-stack.md](factory/design/tech-stack.md) | 技术栈：作用、分类、引入时机 |
+| [code-style.md](factory/design/code-style.md) | 统一的代码风格与约束 |
+| [project-structure.md](factory/design/project-structure.md) | 目录结构与命名规范 |
+| [security-and-data.md](factory/design/security-and-data.md) | 安全与数据要求 |
+| [dependencies.md](factory/design/dependencies.md) | 依赖分类 |
+| [open-questions.md](factory/design/open-questions.md) | 待决问题 |
+| [decisions/](factory/records/decisions/) | 已确认的架构决策（ADR） |
+| [plans/](factory/records/plans/) | 每个里程碑的集成设计：组件、接缝、关卡和 story |
+| [research/](factory/records/research/) | 调研与核对的依据（选型、标准、算法、实测） |
 
 ## 环境要求
 
