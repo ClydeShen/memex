@@ -12,11 +12,11 @@
 
 ## 一、仓库顶层
 
-仓库分三个区（ADR 0028）：`harness/` 驱动 agent 怎样工作，`factory/` 是生产 Memex 的车间，`product/` 是发布出去的成品。另外，`playbook/` 是跨团队通用的标准，不属于 Memex。
+仓库分三个区（ADR 0028）：`harness/` 驱动 agent 怎样工作，`factory/` 是生产 Memex 的车间，`memex/` 是发布出去的成品。另外，`playbook/` 是跨团队通用的标准，不属于 Memex。
 
 ```
-memex/
-├─ product/                  成品：只有这个目录会发布
+（仓库根目录）
+├─ memex/                  成品：只有这个目录会发布
 │  ├─ packages/
 │  │  ├─ contracts/          @memex/contracts：契约、schema、Result、pipe
 │  │  ├─ runtime/            @memex/runtime：Event Log、Composition Root、认知循环、Projector
@@ -57,37 +57,37 @@ memex/
 └─ .gitignore  .gitattributes  .editorconfig  .nvmrc  .env.example
 ```
 
-判断一个文件放在哪里：换一个产品它还用得上，放 `harness/`；只对 Memex 有意义但不发布，放 `factory/`；发布出去的，放 `product/`。根目录只放工具规定了位置的文件，并且保持很薄。
+判断一个文件放在哪里：换一个产品它还用得上，放 `harness/`；只对 Memex 有意义但不发布，放 `factory/`；发布出去的，放 `memex/`。根目录只放工具规定了位置的文件，并且保持很薄。
 
-pnpm workspaces 包含 `product/packages/*`、`product/providers/*`、`product/apps/*` 和 `factory/validation/*`。
+pnpm workspaces 包含 `memex/packages/*`、`memex/providers/*`、`memex/apps/*` 和 `factory/validation/*`。
 
 ### 三个区之间的边界
 
-1. **依赖只能单向**：`factory` 可以引用 `product`；`product` 不能引用 `factory` 和 `harness`，既不 import，也不写它们的路径。
-2. **只发布 `product/`**：打包测试列出发布产物的全部文件，不在 `product/` 下的一律报错；`product/packages/fakes` 也被排除。
-3. **产品不引用开发记录**：`product/` 里的注释、提示词、错误信息不写 ADR 编号，不提实验、Baseline 和版本沿革（code-style 第十节）。
+1. **依赖只能单向**：`factory` 可以引用 `memex/`；`memex/` 不能引用 `factory` 和 `harness`，既不 import，也不写它们的路径。
+2. **只发布 `memex/`**：打包测试列出发布产物的全部文件，不在 `memex/` 下的一律报错；`memex/packages/fakes` 也被排除。
+3. **产品不引用开发记录**：`memex/` 里的注释、提示词、错误信息不写 ADR 编号，不提实验、Baseline 和版本沿革（code-style 第十节）。
 4. **生成的副本不手改**：`.agents/skills/` 和 `.claude/skills/` 由同步脚本从 `harness/skills/` 生成，检查确认两边一致。
 
 ### 包与依赖方向
 
 | 目录 | 是什么 | 可以依赖 | 不能依赖 |
 |---|---|---|---|
-| `product/packages/contracts` | 唯一稳定的边界（Cognitive Contract） | 只有 Zod 等少量登记过的库 | 其他所有包 |
-| `product/packages/runtime` | Framework 的核心组件，包括 Composition Root 的注册表和装配逻辑 | `contracts` | 其他所有包 |
-| `product/packages/fakes`、`product/providers/*` | Provider 实现（端口与适配器中的"适配器"） | `contracts` | 其他 Provider、`runtime`、`apps/*`、`factory` 下的一切 |
-| `product/apps/*` | 产品的装配入口（P1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | `product/` 下除 `fakes` 以外的全部 | `fakes`、`factory` 下的一切 |
+| `memex/packages/contracts` | 唯一稳定的边界（Cognitive Contract） | 只有 Zod 等少量登记过的库 | 其他所有包 |
+| `memex/packages/runtime` | Framework 的核心组件，包括 Composition Root 的注册表和装配逻辑 | `contracts` | 其他所有包 |
+| `memex/packages/fakes`、`memex/providers/*` | Provider 实现（端口与适配器中的"适配器"） | `contracts` | 其他 Provider、`runtime`、`apps/*`、`factory` 下的一切 |
+| `memex/apps/*` | 产品的装配入口（P1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | `memex/` 下除 `fakes` 以外的全部 | `fakes`、`factory` 下的一切 |
 | `factory/validation/worlds` | 实验用的 Environment 和 Provider：Micro World、Oracle、污染 Provider | `contracts` | `runtime`、`lab`、`apps/*` |
 | `factory/validation/lab` | 验证工具（Runner、Worker） | `contracts`、`runtime`；**只有 Worker 的启动文件**（验证阶段的装配入口）可以 import `fakes`、`worlds` 和 `providers/*` | `apps/*` |
 
 说明：
 - **每个真实的 Provider 单独成包。** 它自己声明需要的依赖，这些依赖不会进入核心。替换一个 Provider，就是换掉一个包（ADR 0008）。
-- **Fake 分两处**：产品自己的测试需要的 Fake 在 `product/packages/fakes`；只为实验存在的 Micro World、Oracle 和污染 Provider 在 `factory/validation/worlds`。这样产品的测试不需要引用车间。
-- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。整个验证阶段（V0–V2），Lab Worker 的启动文件都是装配入口：V0 中由它 import Fake Provider 和 Micro World 并登记，V1 起再加上 `product/providers/*` 中的真实 Provider。P1 起，产品的装配入口在 `product/apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
+- **Fake 分两处**：产品自己的测试需要的 Fake 在 `memex/packages/fakes`；只为实验存在的 Micro World、Oracle 和污染 Provider 在 `factory/validation/worlds`。这样产品的测试不需要引用车间。
+- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。整个验证阶段（V0–V2），Lab Worker 的启动文件都是装配入口：V0 中由它 import Fake Provider 和 Micro World 并登记，V1 起再加上 `memex/providers/*` 中的真实 Provider。P1 起，产品的装配入口在 `memex/apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
 
 ## 二、包的内部结构
 
 ```
-product/packages/runtime/
+memex/packages/runtime/
 ├─ package.json              用 "exports" 只公开 ./src/index.ts
 ├─ tsconfig.json             继承 ../../../tsconfig.base.json
 └─ src/
@@ -139,12 +139,12 @@ product/packages/runtime/
 
 | 目录 | 何时建立 |
 |---|---|
-| `product/packages/contracts`、`runtime`、`fakes`，`factory/validation/lab`、`worlds`，以及根目录的配置文件 | V0.1 |
+| `memex/packages/contracts`、`runtime`、`fakes`，`factory/validation/lab`、`worlds`，以及根目录的配置文件 | V0.1 |
 | `factory/validation/experiments/` | V0.5（第一个示例 Experiment） |
 | `harness/sensors/`、根目录 `AGENTS.md`、`harness/agents/`、`factory/as-built/TEMPLATE.md` 和 `index.md` | V0-28 |
 | `factory/as-built/` 的各包页面 | V0-29（第一次整理） |
 | `harness/skills/` 和同步脚本 | 第一个共享 skill 出现时 |
-| `product/providers/` | V1（第一个真实 Provider） |
-| `product/apps/` | P1（产品命令在决策关卡后设计） |
+| `memex/providers/` | V1（第一个真实 Provider） |
+| `memex/apps/` | P1（产品命令在决策关卡后设计） |
 
 不要为了"以后可能会用"提前建立空目录。

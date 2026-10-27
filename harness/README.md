@@ -2,7 +2,7 @@
 
 harness 驱动 agent 怎样工作：它们读什么指令、用什么 skill、按什么规范和工作流做事、产出要通过哪些检查。它独立于产品，Codex 和 Claude Code 共用同一份。仓库三个区的划分见 [ADR 0028](../factory/records/decisions/0028-harness-factory-product.md)。
 
-判断一样东西是否属于这里：换一个产品，它还用得上。只对 Memex 有意义的内容放在 `factory/`，发布出去的内容放在 `product/`。
+判断一样东西是否属于这里：换一个产品，它还用得上。只对 Memex 有意义的内容放在 `factory/`，发布出去的内容放在 `memex/`。
 
 ## 子目录
 
@@ -15,7 +15,7 @@ harness 驱动 agent 怎样工作：它们读什么指令、用什么 skill、�
 | `standards/` | 可以带到其他产品的规范 |
 | `workflow/` | 从 playbook 挑选的 checklist 副本、团队约定、状态与关卡、发布流程 |
 | `templates/` | issue、PR、ADR、调研、as-built、交接的模板 |
-| `sensors/` | 检查脚本和检查规则：三区边界、打包内容、`product/` 的标记词、front matter、as-built 新鲜度、生成副本是否一致 |
+| `sensors/` | 检查脚本和检查规则：三区边界、打包内容、`memex/` 的标记词、front matter、as-built 新鲜度、生成副本是否一致 |
 
 ## 谁能改
 

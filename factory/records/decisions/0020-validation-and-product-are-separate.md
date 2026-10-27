@@ -4,7 +4,7 @@ status: accepted
 
 # 验证和产品分开：实验用来确定方向，实验工具不是产品
 
-（**ADR 0028 修订**：Lab 和 Micro World 放在 `factory/validation/`，实验输出放在 `factory/validation/runs/`，产品只包含 `product/`。）
+（**ADR 0028 修订**：Lab 和 Micro World 放在 `factory/validation/`，实验输出放在 `factory/validation/runs/`，产品只包含 `memex/`。）
 
 此前的文档把"做实验"当成了产品本身：roadmap 把 MVP 定义为 M0–M2，内容全是实验平台、Micro World 和对照组；VISION 把 Lab 列为四个核心模块之一；C4 图把 Lab Runner 和 Experiment Worker 画在 Memex Instance 里面；`memex lab run` 和 `doctor`、`up` 等命令放在一起。
 

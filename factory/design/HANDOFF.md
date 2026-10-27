@@ -55,7 +55,7 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（factory/design/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里目前没有 CLAUDE.md；根目录 `AGENTS.md` 由 V0-28（#69）创建。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：28 份 ADR 已确认。**ADR 0028：仓库分三区**——`harness/` 驱动 agent，`factory/` 是车间，`product/` 是孤立的成品。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：28 份 ADR 已确认。**ADR 0028：仓库分三区**——`harness/` 驱动 agent，`factory/` 是车间，`memex/` 是孤立的成品。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `factory/records/research/`。
 
@@ -112,7 +112,7 @@
 **分支**：从 `main` 开一个实验分支，例如 `exp/v0-skeleton`。通过 V0 关卡之后，用普通 merge 合并进 `main`，不开 PR（ADR 0012）。
 
 **顺序和产出**：
-1. **V0.1 Monorepo 骨架**：pnpm workspaces（见 factory/design/tech-stack.md）、TypeScript、测试框架、lint，建五个包：`product/packages/` 下的 `@memex/contracts`、`@memex/runtime`、`@memex/fakes`，`factory/validation/` 下的 `@memex/lab`、`@memex/worlds`（ADR 0028）。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
+1. **V0.1 Monorepo 骨架**：pnpm workspaces（见 factory/design/tech-stack.md）、TypeScript、测试框架、lint，建五个包：`memex/packages/` 下的 `@memex/contracts`、`@memex/runtime`、`@memex/fakes`，`factory/validation/` 下的 `@memex/lab`、`@memex/worlds`（ADR 0028）。验证：一条命令跑完全部包的类型检查、lint、架构检查和测试（没有构建步骤）。
 2. **V0.2 契约**：按 `factory/design/architecture/contracts.md` 实现。资源 schema 用 Zod 编写，并通过 `z.toJSONSchema()` 导出 JSON Schema；导出功能 Zod 4 已内置，已经核实过。
 3. **V0.3 运行时**：JSONL Event Log（追加和重放）、Composition Root（注册表、overlay、能力检查）、认知循环（每个 Action 都经过 Policy 检查并写入日志）、Projector、运维日志、录制与回放（按 ADR 0024：在不确定性进入系统的边缘录制，大内容按哈希存在外面）。
 4. **V0.4 Fake Provider**：都可以设定种子。其中包含一个专门写全局状态的"污染 Provider"，用来验证隔离。

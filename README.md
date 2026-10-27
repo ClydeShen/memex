@@ -21,7 +21,7 @@ Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Age
 
 | 目录 | 是什么 |
 |---|---|
-| `product/` | 成品：只有这个目录会发布，只写当前状态（V0 起建立） |
+| `memex/` | 成品：只有这个目录会发布，只写当前状态（V0 起建立） |
 | [factory/](factory/) | 生产 Memex 的车间：设计文档、决策和调研记录、验证工具、as-built 文档。由 agent 按 harness 自治管理 |
 | [harness/](harness/) | 驱动：deliver agent 怎样工作的配置，Codex 和 Claude Code 共用 |
 | [playbook/](playbook/) | 从本项目提取的通用工程范式（英文），可以复制到其他项目 |

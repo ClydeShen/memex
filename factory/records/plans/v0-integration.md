@@ -44,7 +44,7 @@
 - **关卡**：[S] 每种 `kind` 的 schema 测试；导出的 JSON Schema 能校验 `factory/validation/experiments/` 中的全部文件。[C] 加载器拒绝自定义 YAML 标签、超出允许目录的路径、疑似明文密钥（security-and-data.md C2、C3）。
 
 ### I2 Composition Root → Provider
-- **产出方**：K5。**消费方**：每个 Provider（K11–K13，以后的 `product/providers/*`）。
+- **产出方**：K5。**消费方**：每个 Provider（K11–K13，以后的 `memex/providers/*`）。
 - **交付**：注册表条目 `{ kind, type, configSchema, capabilities, create(config, ctx) → Promise<Provider> }`。
 - **要点**：配置通过工厂函数的参数传入，**去掉契约 v0 中的 `init`**，保留 `dispose`。这样和 code-style.md 第一节的工厂函数风格一致，Provider 也不需要可变状态（contracts.md 第六节的待定项，在这里定下）。`ctx` 只包含核心提供的服务：时钟、运维日志、录制层、Instance 标识。启动时把配置要求的能力与 `capabilities` 比对，不匹配就报 `CapabilityMismatch`。
 - **关卡**：[S] 注册表条目的类型检查。[C] 未登记的 `type` 被拒绝；能力不匹配时立即失败，并说明缺少哪项能力。
@@ -131,7 +131,7 @@
 
 | ID | Story | 依赖 | 验收标准 | 对应 |
 |---|---|---|---|---|
-| V0-01 | 建立 Monorepo 骨架 | V0-02 | 五个包（`product/packages/` 下的 `contracts`、`runtime`、`fakes`，`factory/validation/` 下的 `lab`、`worlds`）加上根目录配置；`pnpm check` 一条命令跑完类型检查、lint、架构检查和测试，结果为通过 | V0.1 |
+| V0-01 | 建立 Monorepo 骨架 | V0-02 | 五个包（`memex/packages/` 下的 `contracts`、`runtime`、`fakes`，`factory/validation/` 下的 `lab`、`worlds`）加上根目录配置；`pnpm check` 一条命令跑完类型检查、lint、架构检查和测试，结果为通过 | V0.1 |
 | V0-02 | 实测 tech-stack 中"尚未核实"的几项 | — | TS 7 下 dependency-cruiser 和 knip 能否工作（不能就启用 TS 6 退路）；pnpm 12 的安全设置名；Vitest 5 的变化；结论写回 tech-stack.md | V0.1 |
 | V0-03 | Git hooks | V0-01 | pre-commit 运行 `biome check --staged`；commit-msg 拒绝不符合 Conventional Commits 的提交信息；pre-push 运行 `pnpm check`；在 Windows 上实测通过 | V0.1 |
 

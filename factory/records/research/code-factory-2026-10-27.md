@@ -1,6 +1,6 @@
 # 软件工厂（code factory）的概念：前人怎么做，和 ADR 0028 的三区有什么异同
 
-日期：2026-10-27。起因：ADR 0028 把仓库分成 `harness/`（驱动）、`factory/`（车间，由 agent 自治管理）和 `product/`（孤立的成品）。负责人想知道"软件工厂"这个概念有没有前人的研究和实践。
+日期：2026-10-27。起因：ADR 0028 把仓库分成 `harness/`（驱动）、`factory/`（车间，由 agent 自治管理）和 `memex/`（孤立的成品）。负责人想知道"软件工厂"这个概念有没有前人的研究和实践。
 
 可信度标记沿用仓库约定：**[官方/原文]**、**[官方/原文·摘要]**、**[二手]**、**[推断]**。
 
@@ -43,7 +43,7 @@ Greenfield 和 Short 在 2004 年的书和白皮书中提出：
 | schema 加 template | `harness/`（规范、工作流、模板、skill、检查） |
 | environment | agent 工具本身（Codex、Claude Code），由 `AGENTS.md` 和生成的 skill 目录配置 |
 | 一类产品 | 换一个产品，harness 基本可以带走 |
-| 一个产品变体 | `product/` |
+| 一个产品变体 | `memex/` |
 
 微软的方案后来没有流行起来。这次没有查到它失败的一手分析，所以不下结论。
 
@@ -107,7 +107,7 @@ Greenfield 和 Short 在 2004 年的书和白皮书中提出：
 | 编号 | 做法 | 来源 | 放在哪里 | 建议时机 |
 |---|---|---|---|---|
 | F1 | **验收场景放在实现 agent 看不到的地方**。playbook 现在只规定"实现者不能改受保护的测试"，StrongDM 更进一步，让实现 agent 根本看不到。和 Harness² 调研里的 Oracle 守卫是同一个思路 | StrongDM | 决定放在哪里：独立仓库，或者只有 CI 能读的位置 | V1（和 Oracle 守卫一起） |
-| F2 | **持续运行的清理 agent**：定期扫描 `factory/design/` 和 `product/` 中过期的文档、偏离规范的代码和标记词，开小的修复 PR。现在的整理 story 每个 epic 做一次，可以作为补充 | OpenAI | `harness/workflow/`；factory 自治的一部分 | V0 结束后，看整理 story 的实际负担再定 |
+| F2 | **持续运行的清理 agent**：定期扫描 `factory/design/` 和 `memex/` 中过期的文档、偏离规范的代码和标记词，开小的修复 PR。现在的整理 story 每个 epic 做一次，可以作为补充 | OpenAI | `harness/workflow/`；factory 自治的一部分 | V0 结束后，看整理 story 的实际负担再定 |
 | F3 | **检查的报错里写修复方法**：自定义检查失败时，告诉 agent 该怎么改，而不只是哪里错了 | OpenAI | `harness/sensors/` 的写法规范 | V0-01 起 |
 | F4 | **工厂观察自己**：把事故、审查意见、检查失败关联到引起它们的提交，反馈到 feedback 记录和 harness | Factory.ai | `factory/records/`；playbook 的 feedback 流程 | 有真实使用之后（P1 起） |
 | F5 | **按概率衡量的验收**：对没有确定答案的行为，用多次运行中满足要求的比例代替一次通过或失败 | StrongDM | 产品的验收方式；和 Memex 的 Calibration 思路接近 | 决策关卡讨论 |
@@ -120,7 +120,7 @@ Greenfield 和 Short 在 2004 年的书和白皮书中提出：
 
 ## 六、可以考虑写进 playbook 的（先和负责人对齐）
 
-- 三区模型：驱动（harness）、车间（factory）、成品（product），以及"换一个产品还用得上吗"这条判断规则。
+- 三区模型：驱动（harness）、车间（factory）、成品（memex/），以及"换一个产品还用得上吗"这条判断规则。
 - 验收场景对实现 agent 不可见（F1），作为"受保护的测试"的加强版。
 - 检查报错写修复方法（F3）。
 
