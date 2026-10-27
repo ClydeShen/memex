@@ -267,7 +267,7 @@ _Avoid_: contract test, TCK
 _Avoid_: 实现文档, 技术文档
 
 **Implementation Note**:
-实现 agent 遇到 spec 和 ticket 都没写到的情况、自己做了决定、并且这个决定重要到负责人应该知道时，写下的一条短记录：情况、决定、理由、怎么撤回。默认不写。放在 `factory/records/implementation-notes/`，负责人看过后只改它的 `status`（ADR 0029）。
+`factory/records/implementation-notes.md` 中的一条记录：实现 agent 遇到 spec 和 ticket 都没写到的情况、自己做了决定、并且重要到用户应该知道时追加。默认不写。
 _Avoid_: 实现日志, worklog, 开发日志
 
 **Fake Provider**:
