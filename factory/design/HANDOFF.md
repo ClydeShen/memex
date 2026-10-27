@@ -47,7 +47,8 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 
 | Branch | Purpose | Rule |
 |---|---|---|
-| `main` | The only baseline of the new system, starting from an empty initial commit | Experiment branches merge into it after they pass validation (ADR 0012) |
+| `main` | The only baseline of the new system, starting from an empty initial commit | Epic branches merge into it through a pull request (ADR 0030) |
+| `epic/*` | One branch per epic, for example `epic/v0-foundation` | Created when the epic starts; the owner deletes it after the merge (ADR 0030) |
 | `master` | The old system (old Memex / graph-engineering) | **Do not touch** |
 | `archive/memex-v1` | Archive of the old code, same content as `master` | **Do not touch** |
 | `ccr-80206efd-fwc2s7` | Working branch of the cloud session, currently the same as `main` | Not used after the handoff |
@@ -112,7 +113,7 @@ Known risks:
 
 **V0 follows `factory/records/plans/v0-integration.md`** (ADR 0025): components, seams, gates, and 27 stories in five phases A–E, plus the three cleanup stories of ADR 0026 (V0-28 to V0-30), 30 in total. Each epic that produces code ends with a cleanup story: architecture review, fix serious problems, re-index, update `factory/as-built/`. First connect the thinnest end-to-end path (phase B), then contract first (phases C and D). V0.1–V0.6 below are the milestone-level overview, with only the notes on execution added.
 
-**Branch**: open an experiment branch from `main`, for example `exp/v0-skeleton`. After it passes the V0 gate, merge it into `main` with a normal merge, without a PR (ADR 0012).
+**Branch**: each epic has its own branch from `main`: `epic/v0-foundation` (#38), `epic/v0-end-to-end` (#39), `epic/v0-contracts` (#40), `epic/v0-gates` (#41). Each story is one commit on it. When the epic is done, it merges into `main` through a pull request. Do not open other branches, and do not delete branches; the owner deletes them (ADR 0030).
 
 **Order and outputs**:
 1. **V0.1 Monorepo skeleton**: pnpm workspaces (see factory/design/tech-stack.md), TypeScript, test framework, lint; five packages: `@memex/contracts`, `@memex/runtime` and `@memex/fakes` under `memex/packages/`, and `@memex/lab` and `@memex/worlds` under `factory/validation/` (ADR 0028). Verification: one command runs the type check, lint, architecture check and tests of all packages (no build step).

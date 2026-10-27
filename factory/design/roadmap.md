@@ -53,7 +53,7 @@ All stages and all branches must follow the constraints below. To break any of t
 ### Process
 | # | Constraint | Source |
 |---|---|---|
-| P1 | Validation stage: one branch for each experiment or module (V0 as a whole is one experiment). A branch merges into `main` only after it passes observable criteria written in advance | ADR 0012 |
+| P1 | Validation stage: one `epic/*` branch for each epic. It merges into `main` through a pull request when all stories of the epic pass their acceptance criteria | ADR 0012, 0030 |
 | P2 | The product stage starts at the decision gate: Q1–Q3 all have answers, and the contract is frozen as v1. From then on, all changes go through PRs and CI | ADR 0012, 0020 |
 | P3 | Keep the experiment matrix minimal, advance by the convergence rules, and do not add control groups at will | ADR 0010 |
 | P4 | Experiment results drive changes to cognitive components and the ontology. Engineering infrastructure follows engineering needs | VISION principle 8 |
@@ -115,7 +115,7 @@ All stages and all branches must follow the constraints below. To break any of t
 
 **The executable story-level breakdown is in [plans/v0-integration.md](../records/plans/v0-integration.md)** (ADR 0025): the component list, the seams and gates, and 27 stories in five phases A–E, plus the 3 cleanup stories of ADR 0026 (V0-28 to V0-30). The table below is the milestone-level overview. The "maps to" column in the story table points to the numbers here.
 
-The working branch starts from `main` (for example `exp/v0-skeleton`). V0 as a whole is one experiment with one branch, as ADR 0012 says: "one branch for each experiment or module". Commit after each item, with its verification result.
+Each epic has its own branch from `main` (for example `epic/v0-foundation`) and merges into `main` through a pull request (ADR 0030). Commit after each story, with its verification result.
 
 The "Category" column: **product core** is built to product standard and goes directly into the product after validation; **validation only** needs to be good enough and can be thrown away after validation (ADR 0020).
 

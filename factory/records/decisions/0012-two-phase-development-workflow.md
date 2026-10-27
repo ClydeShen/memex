@@ -2,6 +2,8 @@
 status: accepted
 ---
 
+Revised by ADR 0030 (branches of the validation stage).
+
 # 开发分两个阶段：先轻量实验，定型后再走正式流程
 
 `main` 是新系统唯一的基线。旧的 `master` 保持原样，不再处理；旧代码已归档在 `archive/memex-v1`。
