@@ -1,0 +1,67 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": [
+      "**",
+      "!**/*.md",
+      "!pnpm-lock.yaml",
+      "!harness",
+      "!playbook",
+      "!factory/design",
+      "!factory/records"
+    ]
+  },
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineEnding": "lf", "lineWidth": 100 },
+  "plugins": ["./harness/sensors/no-function-declaration.grit"],
+  "linter": {
+    "rules": {
+      "complexity": {
+        "useArrowFunction": "error",
+        "noExcessiveCognitiveComplexity": "error"
+      },
+      "nursery": {
+        "useExplicitType": "error",
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error"
+      },
+      "style": {
+        "noParameterAssign": "error",
+        "noUselessElse": "error",
+        "noNestedTernary": "error",
+        "noProcessEnv": "error",
+        "noEnum": "error",
+        "noNamespace": "error",
+        "noParameterProperties": "error",
+        "noNonNullAssertion": "error",
+        "noDefaultExport": "error",
+        "noCommonJs": "error",
+        "useNamingConvention": "error",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": { "filenameCases": ["kebab-case"] }
+        },
+        "noMagicNumbers": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noFocusedTests": "error",
+        "noSkippedTests": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["memex/packages/runtime/src/composition-root/**"],
+      "linter": { "rules": { "style": { "noProcessEnv": "off" } } }
+    },
+    {
+      "includes": ["*.config.ts"],
+      "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
+    },
+    {
+      "includes": [".dependency-cruiser.cjs"],
+      "linter": { "rules": { "style": { "noCommonJs": "off" } } }
+    }
+  ]
+}

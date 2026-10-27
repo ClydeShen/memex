@@ -1,0 +1,22 @@
+{
+  "name": "memex-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "check": "pnpm run lint && pnpm run arch && pnpm run markers && pnpm run typecheck && pnpm run unused && pnpm run test",
+    "lint": "biome check .",
+    "arch": "depcruise memex factory/validation",
+    "markers": "node harness/sensors/marker-words.mjs memex",
+    "typecheck": "pnpm --recursive --no-bail run typecheck",
+    "unused": "knip",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.3",
+    "dependency-cruiser": "18.7.0",
+    "knip": "6.43.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

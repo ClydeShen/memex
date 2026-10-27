@@ -1,0 +1,12 @@
+language js(typescript)
+
+// Function declarations are reported; arrow functions are the default style.
+// For an overloaded function or a case that needs hoisting, suppress it in place:
+// biome-ignore lint/plugin/no-function-declaration: <reason>
+JsFunctionDeclaration() as $declaration where {
+  register_diagnostic(
+    span = $declaration,
+    message = "Use an arrow function (const name = (...) => ...) instead of a function declaration.",
+    severity = "error"
+  )
+}

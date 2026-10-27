@@ -12,7 +12,7 @@ This hypothesis is not yet verified. The roadmap has two stages (ADR 0020). Firs
 
 ## Status
 
-- **The design stage is complete. There is no code yet.** The next milestone is V0: the product core (contracts, Event Log, Action, runtime) and the validation tools (Lab, Fake Provider, the simplest Micro World).
+- **V0 is in progress.** The monorepo skeleton exists: five empty packages and one command that checks them all. V0 builds the product core (contracts, Event Log, Action, runtime) and the validation tools (Lab, Fake Provider, the simplest Micro World).
 - Roadmap: validation stage V0 skeleton → V1 baseline → V2 dual system → **decision gate** → product stage P1 first usable version → P2 learning loop → P3 external extension → P4 distribution, and P5 cross-domain transfer. See [factory/design/roadmap.md](factory/design/roadmap.md).
 
 ## Repository layout
@@ -50,6 +50,7 @@ The repository has three zones ([ADR 0028](factory/records/decisions/0028-harnes
 - Node.js 26 (see `.nvmrc`)
 - pnpm 12
 - Machine-specific settings go in `.env`, which is not committed. See `.env.example` for the keys to fill in.
+- Install with `pnpm install`. `pnpm check` runs lint, the architecture check, the marker word scan, the type check, the unused code check and the tests of all packages.
 - After you clone, run `git config core.hooksPath .githooks` once. This turns on the pre-commit check that rejects CJK text. CI runs the same check on every push to `main` and every pull request.
 
 ## License

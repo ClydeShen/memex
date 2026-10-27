@@ -8,6 +8,7 @@ build/
 
 # Test and coverage output
 coverage/
+.vitest/
 
 # Secrets: keys are referenced via ${env:NAME} and never committed or snapshotted
 .env
