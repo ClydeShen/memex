@@ -178,8 +178,10 @@ Tested in a throwaway pnpm workspace outside the repository, with Node 26.12.1, 
 
 ## Not verified yet
 
-1. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
-2. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
+The numbers continue from the original list, because issues refer to them.
+
+5. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
+6. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
 
 ## Sources
 
