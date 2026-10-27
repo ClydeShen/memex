@@ -1,4 +1,4 @@
-只有同时满足以下两条时，才在 `factory/records/implementation-notes.md` 中新增或更新记录：
+Create or update an entry in `factory/records/implementation-notes.md` only when both conditions apply:
 
-- 改动涉及重要的设计决定，或者偏离了已约定的设计或预期行为。
-- 用户需要知道这个决定或偏离，以及它的影响。
+- The change involves a significant design decision, or deviates from the agreed design or expected behavior.
+- The user needs to know the decision or deviation and its impact.

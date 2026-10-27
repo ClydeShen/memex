@@ -1,0 +1,2 @@
+#!/bin/sh
+exec node harness/sensors/no-cjk.mjs --staged

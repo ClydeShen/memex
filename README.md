@@ -1,56 +1,57 @@
 # Memex
 
-> **给它一个目标，让它自己去完成。**
+> **Give it a goal, and let it get there on its own.**
 
-Memex 是一个认知 Agent 的 Framework。接入某个领域的数据后，Agent 会在该领域中建立并不断修正自己的 Worldview（由带溯源和时间的 Claim 组成），用快慢两种思考（Intuition 和 Reasoning）配合现成的模型解决问题，并从经过验证的经验中持续学习。
+Memex is a framework for cognitive agents. After it connects to the data of a domain, the agent builds and keeps correcting its own Worldview of that domain (made of Claims with provenance and time). It uses two speeds of thinking (Intuition and Reasoning) together with off-the-shelf models to solve problems, and keeps learning from verified experience.
 
-这是一个个人研究和学习项目，不用于商业目的。
+This is a personal research and learning project. It is not for commercial use.
 
-> **中心假设**：一个长期运行的 Agent，变得更有效的主要途径，是改进它关注什么、相信什么、归纳出什么，以及什么时候选择深入推理；而不是不断往推理上下文里塞更多信息。
+> **Central hypothesis**: for a long-running agent, the main way to become more effective is to improve what it attends to, what it believes, what it generalizes, and when it chooses to reason deeply, rather than to keep putting more information into the reasoning context.
 
-这是一个待验证的假设。路线分两段（ADR 0020）：先在**验证阶段**用实验回答它，并确定产品的方向和核心能力；验证完成后，再做**真正的产品**。实验工具不是产品。
+This hypothesis is not yet verified. The roadmap has two stages (ADR 0020). First, the **validation stage** answers the hypothesis with experiments and sets the direction and core capabilities of the product. After validation, we build **the real product**. The experiment tools are not the product.
 
-## 现状
+## Status
 
-- **设计阶段已完成，还没有代码。** 下一个里程碑是 V0：产品核心（契约、Event Log、Action、运行时）加上验证工具（Lab、Fake Provider、最简单的 Micro World）。
-- 路线：验证阶段 V0 骨架 → V1 基线 → V2 双系统 → **决策关卡** → 产品阶段 P1 第一个可用版本 → P2 学习闭环 → P3 对外扩展 → P4 分发，以及 P5 跨领域迁移。详见 [factory/design/roadmap.md](factory/design/roadmap.md)。
+- **The design stage is complete. There is no code yet.** The next milestone is V0: the product core (contracts, Event Log, Action, runtime) and the validation tools (Lab, Fake Provider, the simplest Micro World).
+- Roadmap: validation stage V0 skeleton → V1 baseline → V2 dual system → **decision gate** → product stage P1 first usable version → P2 learning loop → P3 external extension → P4 distribution, and P5 cross-domain transfer. See [factory/design/roadmap.md](factory/design/roadmap.md).
 
-## 仓库结构
+## Repository layout
 
-仓库分三个区（[ADR 0028](factory/records/decisions/0028-harness-factory-product.md)）：
+The repository has three zones ([ADR 0028](factory/records/decisions/0028-harness-factory-product.md)):
 
-| 目录 | 是什么 |
+| Directory | What it is |
 |---|---|
-| `memex/` | 成品：只有这个目录会发布，只写当前状态（V0 起建立） |
-| [factory/](factory/) | 生产 Memex 的车间：设计文档、决策和调研记录、验证工具、as-built 文档。由 agent 按 harness 自治管理 |
-| [harness/](harness/) | 驱动：deliver agent 怎样工作的配置，Codex 和 Claude Code 共用 |
-| [playbook/](playbook/) | 从本项目提取的通用工程范式（英文），可以复制到其他项目 |
+| `memex/` | The product. Only this directory is shipped, and it contains only the current state (created from V0). |
+| [factory/](factory/) | The workshop that builds Memex: design documents, decision and research records, validation tools, as-built documents. Agents manage it on their own, as the harness directs. |
+| [harness/](harness/) | The driver: configuration for how the delivery agents work, shared by Codex and Claude Code. |
+| [playbook/](playbook/) | General engineering patterns extracted from this project. You can copy them to other projects. |
 
-## 文档
+## Documents
 
-| 文档 | 内容 |
+| Document | Content |
 |---|---|
-| [VISION.md](factory/design/VISION.md) | 目的、中心假设、第一性原则、核心模块 |
-| [GLOSSARY.md](factory/design/GLOSSARY.md) | 领域术语（写代码和文档时统一使用） |
-| [HANDOFF.md](factory/design/HANDOFF.md) | 新的开发会话从这里开始 |
-| [roadmap.md](factory/design/roadmap.md) | 全局约束、里程碑和当前任务分解 |
-| [architecture/](factory/design/architecture/) | C4 架构图和集成契约 |
-| [tech-stack.md](factory/design/tech-stack.md) | 技术栈：作用、分类、引入时机 |
-| [code-style.md](factory/design/code-style.md) | 统一的代码风格与约束 |
-| [project-structure.md](factory/design/project-structure.md) | 目录结构与命名规范 |
-| [security-and-data.md](factory/design/security-and-data.md) | 安全与数据要求 |
-| [dependencies.md](factory/design/dependencies.md) | 依赖分类 |
-| [open-questions.md](factory/design/open-questions.md) | 待决问题 |
-| [decisions/](factory/records/decisions/) | 已确认的架构决策（ADR） |
-| [plans/](factory/records/plans/) | 每个里程碑的集成设计：组件、接缝、关卡和 story |
-| [research/](factory/records/research/) | 调研与核对的依据（选型、标准、算法、实测） |
+| [VISION.md](factory/design/VISION.md) | Purpose, central hypothesis, first principles, core modules |
+| [GLOSSARY.md](factory/design/GLOSSARY.md) | Domain terms (use them consistently in code and documents) |
+| [HANDOFF.md](factory/design/HANDOFF.md) | Start here for a new development session |
+| [roadmap.md](factory/design/roadmap.md) | Global constraints, milestones and the current task breakdown |
+| [architecture/](factory/design/architecture/) | C4 architecture diagrams and integration contracts |
+| [tech-stack.md](factory/design/tech-stack.md) | Tech stack: role, category, when each part is introduced |
+| [code-style.md](factory/design/code-style.md) | Shared code style and constraints |
+| [project-structure.md](factory/design/project-structure.md) | Directory layout and naming rules |
+| [security-and-data.md](factory/design/security-and-data.md) | Security and data requirements |
+| [dependencies.md](factory/design/dependencies.md) | Dependency categories |
+| [open-questions.md](factory/design/open-questions.md) | Open questions |
+| [decisions/](factory/records/decisions/) | Accepted architecture decisions (ADRs) |
+| [plans/](factory/records/plans/) | Integration design for each milestone: components, seams, gates and stories |
+| [research/](factory/records/research/) | Evidence from research and checks (selection, standards, algorithms, measurements) |
 
-## 环境要求
+## Requirements
 
-- Node.js 26（见 `.nvmrc`）
+- Node.js 26 (see `.nvmrc`)
 - pnpm 12
-- 本机的环境信息写在 `.env` 中，不提交；需要填写的键见 `.env.example`。
+- Machine-specific settings go in `.env`, which is not committed. See `.env.example` for the keys to fill in.
+- After you clone, run `git config core.hooksPath harness/sensors/git-hooks` once. This turns on the pre-commit check that rejects CJK text. CI runs the same check on every push to `main` and every pull request.
 
-## 许可证
+## License
 
-尚未确定。
+Not decided yet.
