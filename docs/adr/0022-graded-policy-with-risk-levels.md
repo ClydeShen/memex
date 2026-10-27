@@ -20,6 +20,8 @@ status: accepted
    - 验证阶段：Policy 默认全部放行（V0.4 的 Fake Policy）。这时没有修改自身的 Action，也不接触真实世界。
    - 产品阶段：默认档位以谨慎为主，随着功能完善逐步放开。有几档、默认是哪一档、是否用快速分类模型判断哪些 Action 需要审批，在决策关卡确定（open-questions.md 第 4 条）。分类模型只是一种 Policy Provider（例如 `policy.classifier`），在配置中引用一个模型即可，不需要另外的接口。
 
+- **补充（2026-10-27，负责人确认）：harness 类的修改也算"修改自身"。** Agent 自动产生的对自身工作方式的修改，包括 Capability、脚本、提示词模板、guardrails、workflow，以及评分和检测代码，风险等级都是"修改自身"，因为 workflow 或行为可能因此改变，适用第 4 条。依据：Harness² 会自动改写自己的 harness；误演化研究发现，workflow 和工具的自我演化会引入漏洞和偏离（docs/research/harness2-2026-10-27.md）。Pattern 是否属于这一类还没定，见 open-questions.md 第 9 条。
+
 ## Considered Options
 
 - **只把默认 Policy 改成"修改自身需要用户，其余放行"**：S3 仍然只靠配置保障，换一个 Policy 实现就丢了；执行者自己填写的漏洞也还在。被否决。
