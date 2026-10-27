@@ -23,13 +23,13 @@
 | 顺序 | 文件 | 读它要得到什么 |
 |---|---|---|
 | 1 | `factory/design/VISION.md` | 项目目的、中心假设、12 条第一性原则、核心模块、验证之后的产品方向、跨领域迁移的设想 |
-| 2 | `factory/design/roadmap.md` | **执行计划**：31 条全局约束（S/A/E/P）、验证阶段 V0–V2 和产品阶段 P1–P5 的进入和退出条件、V0 的任务分解 |
+| 2 | `factory/design/roadmap.md` | **执行计划**：全局约束（S/A/E/P）、验证阶段 V0–V2 和产品阶段 P1–P5 的进入和退出条件、V0 的任务分解 |
 | 3 | `factory/design/GLOSSARY.md` | 领域术语。**写代码、写文档时一律使用这里的术语**，`_Avoid_` 列出的词不要用 |
 | 4 | `factory/design/architecture/c4.md` | C4 架构图：上下文、容器、组件，以及一次认知步骤的时序图 |
 | 5 | `factory/design/architecture/contracts.md` | 集成契约 v0 草案。**V0.2 按它实现** |
 | 6 | `factory/design/dependencies.md`、`factory/design/tech-stack.md`、`factory/design/code-style.md`、`factory/design/security-and-data.md`、`factory/design/project-structure.md` | 每个依赖属于哪一类（硬依赖、可配依赖、可选依赖），以及默认值在哪个里程碑确定；工程技术栈和具体的 npm 包；**写代码之前必读**的统一代码风格与约束、安全与数据要求，以及目录结构与命名规范 |
-| 7 | `factory/records/decisions/0001`–`0028` | 28 份已确认的决策。改动其中任何一条之前必须先写新的 ADR |
-| 8 | `factory/design/open-questions.md` | 还剩 4 个待决问题，每个都已标明在什么时候决定 |
+| 7 | `factory/records/decisions/0001`–`0028` | 已确认的决策。改动其中任何一条之前必须先写新的 ADR |
+| 8 | `factory/design/open-questions.md` | 待决问题，每个都标明了在什么时候决定 |
 | 9 | `factory/records/research/*.md` | 调研与核对的依据：选型、标准、交叉核对、审阅报告 |
 | 10 | `factory/records/plans/v0-integration.md` | **V0 的执行计划**：组件、接缝、关卡和 story（ADR 0025） |
 
@@ -55,7 +55,7 @@
 - 提交信息沿用 Conventional Commits 风格，例如 `docs: ...`、`feat: ...`。V0.1 起由 commit-msg hook 强制（factory/design/tech-stack.md 的 Git hooks 一节，用户确认 2026-10-12）。仓库里目前没有 CLAUDE.md；根目录 `AGENTS.md` 由 V0-28（#69）创建。用户明确不沿用旧项目的工程规范和 harness。
 
 ### 已经完成的
-- 设计讨论和决策：28 份 ADR 已确认。**ADR 0028：仓库分三区**——`harness/` 驱动 agent，`factory/` 是车间，`memex/` 是孤立的成品。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
+- 设计讨论和决策：ADR 已确认。**ADR 0028：仓库分三区**——`harness/` 驱动 agent，`factory/` 是车间，`memex/` 是孤立的成品。**ADR 0020：验证和产品分开**——先用实验确定方向，实验工具不是产品，术语已统一，全局计划已成形，C4 图和契约 v0 已完成。
 - 开工前准备（2026-10-11，本地会话）：第 4 节的环境核查已完成，结果在本机 `.env`；技术栈、代码风格、目录结构、安全与数据要求已成文；模型和 llama.cpp 已按 ADR 0017 更新并实测。
 - 关键选型都经过了第三方核对，依据见 `factory/records/research/`。
 
