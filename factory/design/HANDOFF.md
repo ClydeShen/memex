@@ -53,7 +53,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 
 - The branches of the old system are tags now, and their branches are deleted (ADR 0031, 2026-10-28): `archive/memex-v1`, `archive/master`, `archive/ccr-80206efd-fwc2s7`, `archive/claude/new-session-t41aib`, `archive/eval/learning-engine-live`, `archive/exp/admission-verifier`, `archive/feat/freshness-substrate`. Do not move or delete these tags.
 
-- **The repository currently contains only documents, engineering configuration and one check**: README, `AGENTS.md`, `factory/`, `harness/`, `playbook/`, `.githooks/`, `.github/workflows/`, and `.gitignore`, `.gitattributes`, `.editorconfig`, `.nvmrc`, `.env.example`. There is no `package.json` and no product code.
+- **The repository contains the monorepo skeleton and no product code yet**: five empty packages (`memex/packages/contracts`, `runtime`, `fakes`; `factory/validation/lab`, `worlds`), the root configuration (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`, `vitest.config.ts`), the checks in `harness/sensors/`, `.githooks/` and `.github/`, and the documents. `pnpm check` checks all packages with one command.
 - Commit messages follow the Conventional Commits style, for example `docs: ...`, `feat: ...`. From V0.1 a commit-msg hook enforces it (the Git hooks section of factory/design/tech-stack.md, confirmed by the user 2026-10-12). The repository has no CLAUDE.md. The user explicitly does not reuse the engineering standards and harness of the old project.
 - **Everything committed to the repository, and every issue, comment and pull request, is in English** (user decision, 2026-10-27). The CJK check in the pre-commit hook and in CI rejects added lines with CJK text. After you clone, run `git config core.hooksPath .githooks` once.
 
@@ -61,9 +61,10 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 - Design discussion and decisions: the ADRs are accepted. **ADR 0028: three zones in the repository**: `harness/` drives the agents, `factory/` is the workshop, `memex/` is the isolated product. **ADR 0020: validation and product are separate**: experiments set the direction first, and the experiment tools are not the product. The terms are unified, the global plan has taken shape, and the C4 diagrams and contract v0 are complete.
 - Preparation before starting (2026-10-11, local session): the environment check of section 4 is complete, with the results in the local `.env`; the tech stack, code style, directory layout and security and data requirements are written; the models and llama.cpp were updated and tested as ADR 0017 says.
 - The key selections were all checked by third parties. The evidence is in `factory/records/research/`.
+- V0 started (2026-10-27): #42 verified the toolchain (factory/design/tech-stack.md, section "Verified in V0-02"), and #43 built the monorepo skeleton and `pnpm check`.
 
 ### Not started
-- Any V0 code.
+- V0 code beyond the skeleton: epic #38 continues with #44, #69 and #95; epics #39–#41 follow.
 - No other preparation is left.
 
 ---
