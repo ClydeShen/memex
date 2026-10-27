@@ -41,7 +41,7 @@
 │  ├─ workflow/              checklist 副本、团队约定、发布流程
 │  ├─ templates/             issue、PR、ADR、调研、as-built、交接的模板
 │  └─ sensors/               检查脚本和检查规则：边界、打包内容、标记词、front matter、as-built 新鲜度
-├─ playbook/                 跨团队通用的工程标准（英文），可以复制到其他项目
+├─ playbook/                 跨团队通用的工程标准（英文）；不属于三个区，以后迁到别的仓库
 ├─ AGENTS.md                 很薄的入口，指向 harness/agents/；Codex 和 Claude Code 都读它
 ├─ .agents/skills/           由 harness/skills/ 生成，给 Codex 用；不手改
 ├─ .claude/skills/           由 harness/skills/ 生成，给 Claude Code 用；不手改
@@ -56,6 +56,8 @@
 ├─ vitest.config.ts          测试
 └─ .gitignore  .gitattributes  .editorconfig  .nvmrc  .env.example
 ```
+
+`playbook/` 只作为知识来源：factory 构建时可以读它，把采用的做法写进 `harness/`；`harness/`、`factory/design/` 和 `memex/` 不链接到它的文件，因为它以后会迁走。
 
 判断一个文件放在哪里：换一个产品它还用得上，放 `harness/`；只对 Memex 有意义但不发布，放 `factory/`；发布出去的，放 `memex/`。根目录只放工具规定了位置的文件，并且保持很薄。
 

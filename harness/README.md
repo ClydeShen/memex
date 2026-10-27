@@ -17,6 +17,10 @@ harness 驱动 agent 怎样工作：它们读什么指令、用什么 skill、�
 | `templates/` | issue、PR、ADR、调研、as-built、交接的模板 |
 | `sensors/` | 检查脚本和检查规则：三区边界、打包内容、`memex/` 的标记词、front matter、as-built 新鲜度、生成副本是否一致 |
 
+## 和 playbook 的关系
+
+`playbook/` 是跨团队的通用标准，以后会迁到别的仓库。构建 harness 时可以读它，把采用的做法写进这里，写成自己的内容，不链接到 playbook 的文件。
+
 ## 谁能改
 
 - 用户和 agent 共同管理。

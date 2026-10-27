@@ -63,6 +63,7 @@ ADR 0020 已经把实验工具和产品分开，ADR 0026 规定 as-built 文档�
 
 ## 后果
 
+- playbook 留在顶层，不属于三个区，负责人以后会把它迁到别的仓库（2026-10-27）。factory 构建时可以读取 playbook，把其中的做法作为知识，落实到 `harness/` 和 `factory/` 的配置中。落实时把采用的内容写进 `harness/`，不让 `harness/`、`factory/design/` 和 `memex/` 链接到 `playbook/` 中的文件，这样迁走之后不会断。
 - 成品目录用产品自己的名字 `memex/`，不叫 `product/`（负责人确认，2026-10-27）。下文的"成品"都指 `memex/`。
 
 - 目录搬迁（2026-10-27，此时还没有代码）：`docs/adr/` → `factory/records/decisions/`，`docs/research/` → `factory/records/research/`，`docs/plans/` → `factory/records/plans/`，其余设计文档和根目录的 VISION、GLOSSARY、HANDOFF → `factory/design/`，`docs/playbook/` → `playbook/`。所有文档里的路径引用按新位置机械更新，包括已有 ADR 中的路径；ADR 的内容不变。
