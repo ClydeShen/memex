@@ -55,3 +55,5 @@ status: accepted
 - 会话开始的状态报告列出 `open` 的 note（#78）。
 - 共享 skill 增加"写 implementation note"（#79）。
 - GLOSSARY 新增 Implementation Note；factory/design/project-structure.md 的目录树加入这个目录。
+
+- **补充（2026-10-27，负责人要求简化）**：#73、#78、#79 已关闭，不做目录属性检查、状态报告和专门的 skill。implementation note 的规则只写进给实现 agent 的指令（#69），漏写由 #93 的独立检查发现。
