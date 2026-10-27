@@ -1,70 +1,70 @@
-# 依赖分类
+# Dependency categories
 
-原则：能替换的不写死。每个依赖都必须归入下面三类之一。新增依赖时，先在本文件登记它属于哪一类。
+Principle: do not hard-code what can be replaced. Each dependency must belong to one of the three categories below. When you add a dependency, first record its category in this file.
 
-工程工具链（测试、lint、架构检查等开发工具）以及具体使用哪些 npm 包，登记在 [tech-stack.md](./tech-stack.md)，那里写明了每一项的分类和引入时机。
+The engineering toolchain (testing, lint, architecture checks and other development tools) and the specific npm packages are recorded in [tech-stack.md](./tech-stack.md), which gives the category of each item and when it is introduced.
 
-- **硬依赖**：属于架构本身。替换它等于改架构，需要写 ADR。
-- **可配依赖**：由 Cognitive Contract 定义接口，提供默认实现，换实现只改配置（ADR 0008、0009）。
-- **可选依赖**：没有它，系统照样能运行，只是少了某些功能。
+- **Hard dependency**: part of the architecture itself. Replacing it means changing the architecture and needs an ADR.
+- **Configurable dependency**: a Cognitive Contract defines the interface and a default implementation is provided. Changing the implementation only changes the configuration (ADR 0008, 0009).
+- **Optional dependency**: the system still runs without it, with some features missing.
 
-## 硬依赖
+## Hard dependencies
 
-| 依赖 | 理由 |
+| Dependency | Reason |
 |---|---|
-| TypeScript / Node.js | 运行时、契约和实验平台都用这门语言（ADR 0013 要求核心不使用原生扩展） |
-| Cognitive Contract | 唯一稳定的边界 |
-| 统一资源配置格式（apiVersion / kind / metadata / spec） | ADR 0009 |
-| 只追加的事件日志（Event Sourcing），以 CloudEvents 作为信封，以 JSONL 存储 | ADR 0005、0007、0015 |
-| Action 模型：所有改动都经过 Action，并记录执行者 | ADR 0014 |
-| 标准数据词汇（JSON-LD、PROV-O 等） | ADR 0007 |
-| Claim 模型 | ADR 0002 |
-| 配置的校验库（默认用 Zod） | 只在契约包内部使用。对外暴露的是 JSON Schema 和 Standard Schema 接口，所以替换它的代价很小 |
+| TypeScript / Node.js | The runtime, the contracts and the experiment platform all use this language (ADR 0013 requires that the core uses no native extensions) |
+| Cognitive Contract | The only stable boundary |
+| Unified resource configuration format (apiVersion / kind / metadata / spec) | ADR 0009 |
+| Append-only event log (Event Sourcing), with CloudEvents as the envelope, stored as JSONL | ADR 0005, 0007, 0015 |
+| Action model: every change goes through an Action, and the actor is recorded | ADR 0014 |
+| Standard data vocabularies (JSON-LD, PROV-O and others) | ADR 0007 |
+| Claim model | ADR 0002 |
+| Configuration validation library (Zod by default) | Used only inside the contracts package. The public surface is JSON Schema and the Standard Schema interface, so replacing it costs little |
 
-验证工具（Lab）的要求不属于产品依赖，单独列在本文末尾（ADR 0020）。
+The requirements of the validation tools (Lab) are not product dependencies. They are listed separately at the end of this file (ADR 0020).
 
-## 可配依赖
+## Configurable dependencies
 
-| 接口（Provider 类别） | 默认实现 | 可替换为 | 何时需要确定默认值 |
+| Interface (Provider category) | Default implementation | Can be replaced by | When the default must be set |
 |---|---|---|---|
-| Model Backend | 作者本机的 llama.cpp | vLLM、其他兼容 OpenAI 接口的服务、远程端点、云端模型服务 | V1 |
-| Reasoning | Qwen3.8-27B（ADR 0017） | Qwen3.6-35B-A3B（速度备选）、任意模型 | V1 |
-| Intuition | Tev1 4B（ADR 0017：从官方权重自行转换） | 启发式规则、读取 Reasoning 模型的选项概率、Kev、Laya 等 | V2 |
-| Embedding | EmbeddingGemma-2（ADR 0017） | 任意嵌入模型 | V1（B1 需要） |
-| Knowledge 存储 | Oxigraph WASM（进程内） | Oxigraph 服务器模式、其他图存储 | V2 |
-| Retrieval | BM25 加向量检索 | 只用图检索、加 reranker 等 | V1（B1 需要） |
-| Attention | 基础实现 | 基于图的实现、基于 Intuition 的实现 | V2 |
-| Cognitive Strategy | 快慢双系统 | LLM-only、RAG、SwiftSage 式、NeSyFS 式 | V0 用 Fake，V2 用真实实现 |
-| Verification | 确定性规则：动作是否合法、目标是否达成、结论是否与证据冲突 | 加入模型复核、跨来源核对、SHACL 约束 | V0 用规则检查 |
-| Reasoning Strategy | 单次推理 | 先计划后执行、假设与证据交替 | V2 |
-| Capability | Micro World 的模拟器动作 | 本地沙箱能力、MCP | V1 |
-| Communication | CLI | HTTP / SSE、A2A | P1（产品命令在决策关卡后设计） |
-| Trace 导出 | 写入本地文件 | OTLP | V0 |
-| Policy（策略检查） | 验证阶段全部允许；产品阶段默认以谨慎为主的档位（ADR 0022） | 其他档位、快速分类模型判断、角色和权限、多用户、对象级访问控制（ADR 0014） | V0（产品默认档位在决策关卡确定） |
-| 运维遥测导出 | 以 JSONL 格式输出到 stdout，并写入本地文件 | OTLP（Grafana、Jaeger、Prometheus 等）（ADR 0015） | V0 |
-| 组合层 | 一个很薄的工厂函数 | Cordis、iii | V0 |
-| Environment | Micro World 生成器 | World 0、其他 Domain Pack | V0 用最简单的世界 |
+| Model Backend | llama.cpp on the author's machine | vLLM, other OpenAI-compatible services, remote endpoints, cloud model services | V1 |
+| Reasoning | Qwen3.8-27B (ADR 0017) | Qwen3.6-35B-A3B (speed alternative), any model | V1 |
+| Intuition | Tev1 4B (ADR 0017: converted from the official weights) | Heuristic rules, option probabilities read from the Reasoning model, Kev, Laya and others | V2 |
+| Embedding | EmbeddingGemma-2 (ADR 0017) | Any embedding model | V1 (needed by B1) |
+| Knowledge store | Oxigraph WASM (in process) | Oxigraph server mode, other graph stores | V2 |
+| Retrieval | BM25 plus vector retrieval | Graph retrieval only, adding a reranker, and others | V1 (needed by B1) |
+| Attention | Basic implementation | Graph-based implementation, Intuition-based implementation | V2 |
+| Cognitive Strategy | Fast and slow dual system | LLM-only, RAG, SwiftSage-style, NeSyFS-style | Fake in V0, real implementation in V2 |
+| Verification | Deterministic rules: is the action legal, is the goal reached, does the conclusion conflict with the evidence | Model review, cross-source checks, SHACL constraints | Rule checks in V0 |
+| Reasoning Strategy | Single-pass reasoning | Plan then execute, alternate hypothesis and evidence | V2 |
+| Capability | Simulator actions of the Micro World | Local sandbox capabilities, MCP | V1 |
+| Communication | CLI | HTTP / SSE, A2A | P1 (product commands are designed after the decision gate) |
+| Trace export | Write to local files | OTLP | V0 |
+| Policy (policy check) | Allow everything in the validation stage; a cautious default level in the product stage (ADR 0022) | Other levels, a fast classification model, roles and permissions, multiple users, object-level access control (ADR 0014) | V0 (the product default level is set at the decision gate) |
+| Operational telemetry export | JSONL to stdout, and to local files | OTLP (Grafana, Jaeger, Prometheus and others) (ADR 0015) | V0 |
+| Composition layer | A very thin factory function | Cordis, iii | V0 |
+| Environment | Micro World generator | World 0, other Domain Packs | The simplest world in V0 |
 
-## 可选依赖
+## Optional dependencies
 
-| 依赖 | 没有它时 |
+| Dependency | Without it |
 |---|---|
-| GPU | 用更小的模型，或者连接远程的模型后端 |
-| Docker / Compose | 直接在本机运行 Node 和模型后端 |
-| Web 界面、实验面板、监控面板 | 只用 CLI 和日志 |
-| MCP 服务器、A2A | 只用本地的 Capability |
+| GPU | Use a smaller model, or connect to a remote model backend |
+| Docker / Compose | Run Node and the model backend directly on the machine |
+| Web interface, experiment panel, monitoring panel | Use only the CLI and the logs |
+| MCP servers, A2A | Use only local Capabilities |
 
-## 后端能力要按声明来匹配，不能默认假设
+## Match backend capabilities by declaration, do not assume them
 
-不同的后端，能力并不一样。例如，Intuition 适配器要求后端能返回 token 概率（ADR 0010）。所以每个 Provider 都要**声明自己支持哪些能力**，比如 `supportsLogprobs`、`supportsGrammar`、`supportsJsonSchema`（约束解码，ADR 0019）。组合根和产品的自检命令（例如 `memex doctor`，名称在决策关卡后确定，ADR 0020）在启动时检查这些能力是否与配置匹配；不匹配时，要立即给出明确的错误。不能等到运行时才失败，也不能在代码里假设"后端一定支持某项能力"。
+Different backends have different capabilities. For example, the Intuition adapter needs a backend that returns token probabilities (ADR 0010). So each Provider must **declare the capabilities it supports**, for example `supportsLogprobs`, `supportsGrammar`, `supportsJsonSchema` (constrained decoding, ADR 0019). At startup, the composition root and the product self-check command (for example `memex doctor`; the name is set after the decision gate, ADR 0020) check that these capabilities match the configuration. When they do not match, give a clear error at once. Do not wait to fail at runtime, and do not assume in code that "the backend always supports this capability".
 
-## 决策时机
+## When to decide
 
-原则：**在最后负责任的时刻做决定**（last responsible moment，出自 Lean 软件开发：拖过这个时刻还不决定，就会失去一个重要的选项）。 只有在某个里程碑确实需要一个具体值时，才定下默认值。默认值不是承诺，以后更换默认值只是改配置。能做成配置项的选择，就不当成"决策"。
+Principle: **decide at the last responsible moment** (from Lean software development: if you wait past this moment, you lose an important option). Set a default value only when a milestone really needs a specific value. A default value is not a commitment. Changing it later is only a configuration change. A choice that can be made a configuration setting is not treated as a "decision".
 
-## 验证工具的要求（不属于产品）
+## Requirements of the validation tools (not part of the product)
 
-| 要求 | 理由 |
+| Requirement | Reason |
 |---|---|
-| 每个 Experiment 一个独立进程 | ADR 0004；只在验证阶段使用（ADR 0020） |
-| Micro World、World Generator、Oracle、Evaluator、Fake Provider | 只在验证阶段使用，不随产品发布（ADR 0020） |
+| One separate process for each Experiment | ADR 0004; used only in the validation stage (ADR 0020) |
+| Micro World, World Generator, Oracle, Evaluator, Fake Provider | Used only in the validation stage, not shipped with the product (ADR 0020) |

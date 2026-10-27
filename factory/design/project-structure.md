@@ -1,152 +1,154 @@
-# 目录结构与命名规范
+# Directory layout and naming rules
 
-本文件约定 Memex 仓库的目录结构、包的内部组织方式和命名规则。代码写法见 [code-style.md](./code-style.md)，依赖规则见 ADR 0008 和 [dependencies.md](./dependencies.md)。
+This file sets the directory layout of the Memex repository, the internal organization of packages, and the naming rules. For how to write code, see [code-style.md](./code-style.md). For dependency rules, see ADR 0008 and [dependencies.md](./dependencies.md).
 
-- **状态**：已确认（2026-10-11）；三个区的划分见 ADR 0028。
-- **原则**：
-  - 目录结构要直接体现依赖方向：只看目录，就能知道谁可以依赖谁。
-  - 目录名要说明系统里有什么，与"代码自解释"（code-style.md 第十节）是同一个思路。
-- **检查方式**：依赖方向和"只能通过公开入口 import"由 dependency-cruiser 自动检查；文件名大小写由 Biome 的 `useFilenamingConvention` 检查。配置在 V0.1 落地。
+- **Status**: accepted (2026-10-11). For the three zones, see ADR 0028.
+- **Principles**:
+  - The directory layout shows the dependency direction directly: from the directories alone, you can tell who can depend on whom.
+  - Directory names say what is in the system. This is the same idea as "self-explaining code" (code-style.md section 10).
+- **Checks**: dependency-cruiser checks the dependency direction and "import only through the public entry point". Biome `useFilenamingConvention` checks file name case. The configuration lands in V0.1.
 
 ---
 
-## 一、仓库顶层
+## 1. Repository top level
 
-仓库分三个区（ADR 0028）：`harness/` 驱动 agent 怎样工作，`factory/` 是生产 Memex 的车间，`memex/` 是发布出去的成品。另外，`playbook/` 是跨团队通用的标准，不属于 Memex。
+The repository has three zones (ADR 0028): `harness/` drives how the agents work, `factory/` is the workshop that builds Memex, and `memex/` is the shipped product. In addition, `playbook/` is a general cross-team standard and does not belong to Memex.
 
 ```
-（仓库根目录）
-├─ memex/                  成品：只有这个目录会发布
+(repository root)
+├─ memex/                    the product: only this directory is shipped
 │  ├─ packages/
-│  │  ├─ contracts/          @memex/contracts：契约、schema、Result、pipe
-│  │  ├─ runtime/            @memex/runtime：Event Log、Composition Root、认知循环、Projector
-│  │  └─ fakes/              @memex/fakes：产品测试用的 Fake Provider，只用于测试，不发布
-│  ├─ providers/             真实的 Provider，每个都是独立的包（V1 起）
-│  │  └─ intuition-tev1/     例：type 为 intuition.tev1 的 Provider
-│  └─ apps/                  产品的可执行程序：`memex` 命令行、以后的 Web 界面（P1 起）
-├─ factory/                  车间：只对 Memex 有意义，不发布；由 agent 按 harness 自治管理
-│  ├─ design/                设计文档，只写当前状态：VISION、GLOSSARY、HANDOFF、roadmap、架构、契约和各份规范
-│  ├─ records/               累积的记录，写完不再改：decisions/（ADR）、research/、plans/、implementation-notes.md
-│  ├─ validation/            验证工具，决策关卡时整体删除或改成回归评测
-│  │  ├─ lab/                @memex/lab：Runner、Worker、`pnpm lab`
-│  │  ├─ worlds/             @memex/worlds：Micro World、Ground Truth 与 Oracle、污染 Provider
-│  │  ├─ experiments/        实验配置 YAML，只包含合成数据
-│  │  └─ runs/               实验输出（不提交）
-│  └─ as-built/              产品代码的现状说明，每个包一页（ADR 0026）
-├─ harness/                  驱动：deliver agent 的配置，Codex 和 Claude Code 共用
-│  ├─ README.md              地图：每个子目录放什么、谁能改、怎样同步到各工具
-│  ├─ agents/                共享的 agent 指令正文
-│  ├─ skills/                共享 skill 的正文（Agent Skills 格式）
-│  ├─ standards/             可以带到其他产品的规范
-│  ├─ workflow/              checklist 副本、团队约定、发布流程
-│  ├─ templates/             issue、PR、ADR、调研、as-built、交接的模板
-│  └─ sensors/               检查脚本和检查规则：边界、打包内容、标记词、front matter、as-built 新鲜度
-├─ playbook/                 跨团队通用的工程标准（英文）；不属于三个区，以后迁到别的仓库
-├─ AGENTS.md                 很薄的入口，指向 harness/agents/；Codex 和 Claude Code 都读它
-├─ .agents/skills/           由 harness/skills/ 生成，给 Codex 用；不手改
-├─ .claude/skills/           由 harness/skills/ 生成，给 Claude Code 用；不手改
-├─ package.json              根配置：统一的脚本入口，`packageManager` 固定 pnpm 版本
-├─ pnpm-workspace.yaml       pnpm workspaces 与依赖安全设置（factory/design/security-and-data.md 第五节）
-├─ pnpm-lock.yaml            锁定依赖版本，必须提交
-├─ tsconfig.base.json        共用的 TypeScript 设置，各包继承
-├─ biome.json                lint 和格式化
-├─ .githooks/                git hooks 脚本，由 `prepare` 设置 `core.hooksPath` 生效（tech-stack.md）
-├─ .dependency-cruiser.cjs   架构边界规则
-├─ knip.json                 未使用代码检查
-├─ vitest.config.ts          测试
+│  │  ├─ contracts/          @memex/contracts: contracts, schemas, Result, pipe
+│  │  ├─ runtime/            @memex/runtime: Event Log, Composition Root, cognitive loop, Projector
+│  │  └─ fakes/              @memex/fakes: Fake Providers for product tests; test-only, not shipped
+│  ├─ providers/             real Providers, each a separate package (from V1)
+│  │  └─ intuition-tev1/     example: the Provider with type intuition.tev1
+│  └─ apps/                  product executables: the `memex` CLI, later the Web interface (from P1)
+├─ factory/                  the workshop: meaningful only for Memex, not shipped; agents manage it as the harness directs
+│  ├─ design/                design documents, current state only: VISION, GLOSSARY, HANDOFF, roadmap, architecture, contracts and the standards
+│  ├─ records/               accumulated records, not changed after they are written: decisions/ (ADRs), research/, plans/, implementation-notes.md
+│  ├─ validation/            validation tools; removed as a whole or turned into regression evaluation at the decision gate
+│  │  ├─ lab/                @memex/lab: Runner, Worker, `pnpm lab`
+│  │  ├─ worlds/             @memex/worlds: Micro World, Ground Truth and Oracle, polluting Provider
+│  │  ├─ experiments/        experiment configuration YAML, synthetic data only
+│  │  └─ runs/               experiment output (not committed)
+│  └─ as-built/              the current state of the product code, one page per package (ADR 0026)
+├─ harness/                  the driver: configuration of the delivery agents, shared by Codex and Claude Code
+│  ├─ README.md              the map: what each subdirectory holds, who can change it, how it syncs to each tool
+│  ├─ agents/                shared agent instructions
+│  ├─ skills/                shared skills (Agent Skills format)
+│  ├─ standards/             standards that can be taken to other products
+│  ├─ workflow/              checklist copies, team conventions, release process
+│  ├─ templates/             templates for issues, PRs, ADRs, research, as-built documents and handoffs
+│  └─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
+├─ playbook/                 general cross-team engineering standards; not part of the three zones; will move to another repository
+├─ AGENTS.md                 a thin entry point that points to harness/agents/; read by both Codex and Claude Code
+├─ .agents/skills/           generated from harness/skills/ for Codex; do not edit by hand
+├─ .claude/skills/           generated from harness/skills/ for Claude Code; do not edit by hand
+├─ .github/workflows/        CI: the CJK check on pushes to main and on pull requests
+├─ package.json              root configuration: the shared script entry points; `packageManager` fixes the pnpm version
+├─ pnpm-workspace.yaml       pnpm workspaces and dependency security settings (factory/design/security-and-data.md section 5)
+├─ pnpm-lock.yaml            locked dependency versions; must be committed
+├─ tsconfig.base.json        shared TypeScript settings, inherited by each package
+├─ biome.json                lint and formatting
+├─ .githooks/                git hook scripts, turned on with `core.hooksPath` (tech-stack.md)
+├─ .dependency-cruiser.cjs   architecture boundary rules
+├─ knip.json                 unused code check
+├─ vitest.config.ts          tests
 └─ .gitignore  .gitattributes  .editorconfig  .nvmrc  .env.example
 ```
 
-`playbook/` 只作为知识来源：factory 构建时可以读它，把采用的做法写进 `harness/`；`harness/`、`factory/design/` 和 `memex/` 不链接到它的文件，因为它以后会迁走。
+`playbook/` is only a source of knowledge: when the factory is built, agents can read it and write the practices they adopt into `harness/`. `harness/`, `factory/design/` and `memex/` do not link to its files, because it will move away later.
 
-判断一个文件放在哪里：换一个产品它还用得上，放 `harness/`；只对 Memex 有意义但不发布，放 `factory/`；发布出去的，放 `memex/`。根目录只放工具规定了位置的文件，并且保持很薄。
+To decide where a file goes: if a different product could still use it, put it in `harness/`; if it is meaningful only for Memex but not shipped, put it in `factory/`; if it is shipped, put it in `memex/`. The root holds only files whose location a tool fixes, and stays thin.
 
-pnpm workspaces 包含 `memex/packages/*`、`memex/providers/*`、`memex/apps/*` 和 `factory/validation/*`。
+pnpm workspaces include `memex/packages/*`, `memex/providers/*`, `memex/apps/*` and `factory/validation/*`.
 
-### 三个区之间的边界
+### Boundaries between the three zones
 
-1. **依赖只能单向**：`factory` 可以引用 `memex/`；`memex/` 不能引用 `factory` 和 `harness`，既不 import，也不写它们的路径。
-2. **只发布 `memex/`**：打包测试列出发布产物的全部文件，不在 `memex/` 下的一律报错；`memex/packages/fakes` 也被排除。
-3. **产品不引用开发记录**：`memex/` 里的注释、提示词、错误信息不写 ADR 编号，不提实验、Baseline 和版本沿革（code-style 第十节）。
-4. **生成的副本不手改**：`.agents/skills/` 和 `.claude/skills/` 由同步脚本从 `harness/skills/` 生成，检查确认两边一致。
+1. **Dependencies go one way only**: `factory` can refer to `memex/`; `memex/` cannot refer to `factory` or `harness`, neither by import nor by writing their paths.
+2. **Only `memex/` is shipped**: the packaging test lists all files of the shipped artifact and reports an error for any file outside `memex/`. `memex/packages/fakes` is also excluded.
+3. **The product does not refer to development records**: comments, prompts and error messages in `memex/` do not mention ADR numbers, experiments, Baselines or version history (code-style section 10).
+4. **Generated copies are not edited by hand**: a sync script generates `.agents/skills/` and `.claude/skills/` from `harness/skills/`, and a check makes sure that the two sides agree.
 
-### 包与依赖方向
+### Packages and dependency direction
 
-| 目录 | 是什么 | 可以依赖 | 不能依赖 |
+| Directory | What it is | Can depend on | Cannot depend on |
 |---|---|---|---|
-| `memex/packages/contracts` | 唯一稳定的边界（Cognitive Contract） | 只有 Zod 等少量登记过的库 | 其他所有包 |
-| `memex/packages/runtime` | Framework 的核心组件，包括 Composition Root 的注册表和装配逻辑 | `contracts` | 其他所有包 |
-| `memex/packages/fakes`、`memex/providers/*` | Provider 实现（端口与适配器中的"适配器"） | `contracts` | 其他 Provider、`runtime`、`apps/*`、`factory` 下的一切 |
-| `memex/apps/*` | 产品的装配入口（P1 起）：import 具体的 Provider 并登记到 Composition Root 的注册表 | `memex/` 下除 `fakes` 以外的全部 | `fakes`、`factory` 下的一切 |
-| `factory/validation/worlds` | 实验用的 Environment 和 Provider：Micro World、Oracle、污染 Provider | `contracts` | `runtime`、`lab`、`apps/*` |
-| `factory/validation/lab` | 验证工具（Runner、Worker） | `contracts`、`runtime`；**只有 Worker 的启动文件**（验证阶段的装配入口）可以 import `fakes`、`worlds` 和 `providers/*` | `apps/*` |
+| `memex/packages/contracts` | The only stable boundary (Cognitive Contract) | Only a few recorded libraries such as Zod | All other packages |
+| `memex/packages/runtime` | The core components of the framework, including the registry and assembly logic of the Composition Root | `contracts` | All other packages |
+| `memex/packages/fakes`, `memex/providers/*` | Provider implementations (the "adapters" in ports and adapters) | `contracts` | Other Providers, `runtime`, `apps/*`, everything under `factory` |
+| `memex/apps/*` | The product composition entry points (from P1): import concrete Providers and record them in the Composition Root registry | Everything under `memex/` except `fakes` | `fakes`, everything under `factory` |
+| `factory/validation/worlds` | Environments and Providers for experiments: Micro World, Oracle, polluting Provider | `contracts` | `runtime`, `lab`, `apps/*` |
+| `factory/validation/lab` | Validation tools (Runner, Worker) | `contracts`, `runtime`; **only the Worker startup file** (the composition entry point of the validation stage) can import `fakes`, `worlds` and `providers/*` | `apps/*` |
 
-说明：
-- **每个真实的 Provider 单独成包。** 它自己声明需要的依赖，这些依赖不会进入核心。替换一个 Provider，就是换掉一个包（ADR 0008）。
-- **Fake 分两处**：产品自己的测试需要的 Fake 在 `memex/packages/fakes`；只为实验存在的 Micro World、Oracle 和污染 Provider 在 `factory/validation/worlds`。这样产品的测试不需要引用车间。
-- **Lab 怎样拿到具体的 Provider**：Lab 的业务代码不 import Provider，只通过 Composition Root 的注册表拿到它们。整个验证阶段（V0–V2），Lab Worker 的启动文件都是装配入口：V0 中由它 import Fake Provider 和 Micro World 并登记，V1 起再加上 `memex/providers/*` 中的真实 Provider。P1 起，产品的装配入口在 `memex/apps/`。原则是"只有装配入口知道具体实现"（GLOSSARY：Composition Root）。
+Notes:
+- **Each real Provider is its own package.** It declares the dependencies it needs, and they do not enter the core. Replacing a Provider means swapping a package (ADR 0008).
+- **Fakes are in two places**: the Fakes that the product's own tests need are in `memex/packages/fakes`; the Micro World, Oracle and polluting Provider, which exist only for experiments, are in `factory/validation/worlds`. So the product tests do not need to refer to the workshop.
+- **How the Lab gets concrete Providers**: the Lab business code does not import Providers. It gets them only through the Composition Root registry. During the whole validation stage (V0–V2), the startup file of the Lab Worker is the composition entry point: in V0 it imports the Fake Providers and the Micro World and records them; from V1 it also adds the real Providers in `memex/providers/*`. From P1, the product composition entry point is in `memex/apps/`. The principle is "only the composition entry point knows the concrete implementations" (GLOSSARY: Composition Root).
 
-## 二、包的内部结构
+## 2. Package internal structure
 
 ```
 memex/packages/runtime/
-├─ package.json              用 "exports" 只公开 ./src/index.ts
-├─ tsconfig.json             继承 ../../../tsconfig.base.json
+├─ package.json              "exports" exposes only ./src/index.ts
+├─ tsconfig.json             extends ../../../tsconfig.base.json
 └─ src/
-   ├─ index.ts               唯一的公开入口
-   ├─ event-log/             按领域概念分目录
+   ├─ index.ts               the only public entry point
+   ├─ event-log/             directories by domain concept
    │  ├─ append-event.ts
    │  ├─ append-event.test.ts
    │  ├─ replay-events.ts
-   │  └─ fixtures/           测试数据，只能是合成数据（ADR 0016）
+   │  └─ fixtures/           test data, synthetic only (ADR 0016)
    ├─ composition-root/
    ├─ action-executor/
    └─ projectors/
 ```
 
-规则：
+Rules:
 
-1. **按领域概念分目录**（例如 `event-log/`、`projectors/`、`composition-root/`），不按技术层分目录（例如 `services/`、`models/`、`controllers/`）。
-2. **不建 `utils/`、`helpers/`、`common/`、`misc/` 这类万能目录。** 真正通用的小工具（`pipe`、`Result`）放进 `@memex/contracts`；其他工具放在用到它的那个概念目录里。
-3. **每个包只有一个公开入口 `src/index.ts`**，由 `package.json` 的 `exports` 字段限定。其他包不能 import 某个包内部的文件。
-4. **包内不建 `index.ts` 汇总导出**（只有包的公开入口例外）。汇总导出的文件会拖慢工具，也容易造成循环依赖。包内互相 import 时，直接引用具体文件。
-5. **一个文件只有一个主要职责**，文件名说明它做什么，通常以动词开头，例如 `append-event.ts`、`check-capabilities.ts`。只定义类型或 schema 的文件用名词命名，例如 `claim.ts`。
-6. **测试文件和被测文件放在同一目录**，命名为 `<被测文件名>.test.ts`。
-7. **测试数据放在旁边的 `fixtures/` 目录中**，只能是合成数据。
+1. **Organize directories by domain concept** (for example `event-log/`, `projectors/`, `composition-root/`), not by technical layer (for example `services/`, `models/`, `controllers/`).
+2. **Do not create catch-all directories such as `utils/`, `helpers/`, `common/` or `misc/`.** Truly general small tools (`pipe`, `Result`) go in `@memex/contracts`. Other tools go in the concept directory that uses them.
+3. **Each package has only one public entry point, `src/index.ts`**, enforced by the `exports` field of `package.json`. Other packages cannot import internal files of a package.
+4. **Do not create `index.ts` barrel files inside a package** (the public entry point of the package is the only exception). Barrel files slow down tools and easily cause circular dependencies. Inside a package, import the specific file directly.
+5. **One file has one main responsibility**, and its name says what it does, usually starting with a verb, for example `append-event.ts`, `check-capabilities.ts`. Files that only define types or schemas use nouns, for example `claim.ts`.
+6. **Put test files next to the files they test**, named `<file under test>.test.ts`.
+7. **Put test data in a `fixtures/` directory next to them**, synthetic only.
 
-## 三、命名规范
+## 3. Naming rules
 
-| 对象 | 规则 | 例子 |
+| Item | Rule | Example |
 |---|---|---|
-| 目录、源文件 | kebab-case | `composition-root/`、`append-event.ts` |
-| 表示一个概念的目录 | 单数 | `event-log/`、`composition-root/`、`claim/` |
-| 装同类东西的目录 | 复数 | `projectors/`、`fixtures/`、`examples/` |
-| npm 包名 | `@memex/` 加 kebab-case；包之间互相引用时用 `workspace:*` | `@memex/contracts`、`@memex/intuition-tev1` |
-| Provider 包的目录 | 把 `type` 中的点换成连字符 | `intuition.tev1` → `providers/intuition-tev1/` |
-| 测试文件 | `*.test.ts` | `append-event.test.ts` |
-| 资源 YAML | kebab-case 名字加 `kind` 后缀 | `local-qwen.model.yaml`、`smoke.experiment.yaml` |
-| 领域术语 | 使用 GLOSSARY.md 中的词，避开 `_Avoid_` 列出的词 | 用 `claim/`，不用 `fact/`；用 `capability/`，不用 `tool/` |
+| Directories, source files | kebab-case | `composition-root/`, `append-event.ts` |
+| A directory for one concept | Singular | `event-log/`, `composition-root/`, `claim/` |
+| A directory for items of the same kind | Plural | `projectors/`, `fixtures/`, `examples/` |
+| npm package names | `@memex/` plus kebab-case; packages refer to each other with `workspace:*` | `@memex/contracts`, `@memex/intuition-tev1` |
+| Provider package directories | Replace the dots in `type` with hyphens | `intuition.tev1` → `providers/intuition-tev1/` |
+| Test files | `*.test.ts` | `append-event.test.ts` |
+| Resource YAML | kebab-case name plus a `kind` suffix | `local-qwen.model.yaml`, `smoke.experiment.yaml` |
+| Domain terms | Use the words in GLOSSARY.md, and avoid the words listed under `_Avoid_` | Use `claim/`, not `fact/`; use `capability/`, not `tool/` |
 
-代码中标识符的命名（camelCase、PascalCase、`create` 前缀等）见 code-style.md 第八节。
+For identifier naming in code (camelCase, PascalCase, the `create` prefix and others), see code-style.md section 8.
 
-## 四、运行时数据的位置
+## 4. Where runtime data goes
 
-运行时产生的数据不属于仓库内容，实验数据和产品数据分开存放（ADR 0028）：
+Data produced at runtime is not repository content. Experiment data and product data are stored separately (ADR 0028):
 
-- **实验输出**放在 `factory/validation/runs/<experiment 名称>/<运行 id>/`，被 `.gitignore` 忽略。内容包括 Event Log、按 sha256 存放录制原文的内容存储（`blobs/`，ADR 0024）、快照和报告。具体的文件格式在 V0.5 时确定。
-- **产品实例的数据**默认放在 `.memex/`，可以通过配置修改，被 `.gitignore` 忽略。产品实例从空白开始，不导入任何实验数据。
-- 真实领域的数据只能放在产品实例的数据目录里，不能放进仓库（ADR 0016）。
+- **Experiment output** goes in `factory/validation/runs/<experiment name>/<run id>/`, ignored by `.gitignore`. It contains the Event Log, the content store with recorded full text by sha256 (`blobs/`, ADR 0024), snapshots and reports. The exact file format is set in V0.5.
+- **Product instance data** goes in `.memex/` by default. The configuration can change it. It is ignored by `.gitignore`. A product instance starts empty and imports no experiment data.
+- Data from a real domain can go only in the data directory of a product instance, never in the repository (ADR 0016).
 
-## 五、什么时候建什么
+## 5. When to create what
 
-| 目录 | 何时建立 |
+| Directory | When |
 |---|---|
-| `memex/packages/contracts`、`runtime`、`fakes`，`factory/validation/lab`、`worlds`，以及根目录的配置文件 | V0.1 |
-| `factory/validation/experiments/` | V0.5（第一个示例 Experiment） |
-| `harness/sensors/`、根目录 `AGENTS.md`、`harness/agents/`、`factory/as-built/TEMPLATE.md` 和 `index.md` | V0-28 |
-| `factory/as-built/` 的各包页面 | V0-29（第一次整理） |
-| `harness/skills/` 和同步脚本 | 第一个共享 skill 出现时 |
-| `memex/providers/` | V1（第一个真实 Provider） |
-| `memex/apps/` | P1（产品命令在决策关卡后设计） |
+| `memex/packages/contracts`, `runtime`, `fakes`, `factory/validation/lab`, `worlds`, and the root configuration files | V0.1 |
+| `factory/validation/experiments/` | V0.5 (the first example Experiment) |
+| `harness/sensors/` (the CJK check, from 2026-10-27), `.githooks/`, `.github/workflows/` | Exist now |
+| The other checks in `harness/sensors/`, `harness/agents/`, `factory/as-built/TEMPLATE.md` and `index.md` | V0-28 |
+| The per-package pages of `factory/as-built/` | V0-29 (the first cleanup) |
+| `harness/skills/` and the sync script | When the first shared skill appears |
+| `memex/providers/` | V1 (the first real Provider) |
+| `memex/apps/` | P1 (product commands are designed after the decision gate) |
 
-不要为了"以后可能会用"提前建立空目录。
+Do not create empty directories in advance "because they may be used later".

@@ -1,131 +1,131 @@
-# Memex 愿景与第一性原则
+# Memex vision and first principles
 
-本文件记录 Memex 想成为什么，以及所有设计决策背后不变的原则。具体决策见 `factory/records/decisions/`，术语见 `factory/design/GLOSSARY.md`，待定事项见 `factory/design/open-questions.md`。
+This file records what Memex wants to become, and the principles behind all design decisions that do not change. For specific decisions, see `factory/records/decisions/`. For terms, see `factory/design/GLOSSARY.md`. For open items, see `factory/design/open-questions.md`.
 
-## 产品定义
+## Product definition
 
-> **给它一个目标，让它自己去完成。**
+> **Give it a goal, and let it get there on its own.**
 
-展开来说：Memex 通过可扩展的工具访问世界，通过 Memex 核心构建 Worldview，最终帮助用户解决某个问题或实现某个目标。它可以在某个领域深耕，也可以把精通领域的经验转换成其他领域的参考，是一个能自我学习、自我提升的系统。（用户确认，2026-10-11）
+In more detail: Memex reaches the world through extensible tools, builds a Worldview through the Memex core, and in the end helps the user solve a problem or reach a goal. It can go deep in one domain, and it can turn the experience of a domain it masters into a reference for other domains. It is a system that learns and improves by itself. (Confirmed by the user, 2026-10-11)
 
-## 目的
+## Purpose
 
-Memex 是一个可扩展、比较通用的 Agent 框架。接入某个领域的数据后，Agent 能在该领域中建立并不断修正自己的 Worldview，再结合模型本身的推理能力解决问题。功能可以向外扩展：不同的交互方式、MCP、Skills、A2A 等工具，让 Agent 能连接外部世界，并在使用中自我学习、持续提高。
+Memex is an extensible, fairly general agent framework. After it connects to the data of a domain, the agent can build and keep correcting its own Worldview of that domain, and then solve problems together with the reasoning ability of the model. Its features can extend outward: different interaction modes, and tools such as MCP, Skills and A2A, let the agent connect to the outside world, learn by itself while it is used, and keep improving.
 
-这是一个个人研究和学习项目。目的是弄清楚这样的系统应该怎么构建。它不用于商业目的，也不以追上云端大模型为目标。
+This is a personal research and learning project. Its purpose is to find out how such a system should be built. It is not for commercial use, and it does not aim to catch up with large cloud models.
 
-## 中心假设
+## Central hypothesis
 
-> 一个长期运行的 Agent，变得更有效的主要途径，是改进它关注什么、相信什么、归纳出什么，以及什么时候选择深入推理；而不是不断往推理上下文里塞更多信息。
+> For a long-running agent, the main way to become more effective is to improve what it attends to, what it believes, what it generalizes, and when it chooses to reason deeply, rather than to keep putting more information into the reasoning context.
 
-这是一个**待验证的假设**，不是既定事实。验证阶段的意义在于让它可以用数据来回答，并据此确定产品的方向和核心能力（ADR 0020）。
+This is a **hypothesis to be verified**, not an established fact. The point of the validation stage is to make it answerable with data, and to set the direction and core capabilities of the product from that answer (ADR 0020).
 
-## 第一性原则
+## First principles
 
-1. **智能不等于记忆的多少。** 堆积记忆会带来噪声、过时信息和错误传播。学习指的是把经验整理成结构：选择、整理、归纳、验证，然后形成 Pattern。被存下来的经验可以无限增长，但每次决策需要用到的信息应该越来越少。
+1. **Intelligence is not the amount of memory.** Piling up memory brings noise, stale information and the spread of errors. Learning means turning experience into structure: select, organize, generalize, verify, and then form Patterns. Stored experience can grow without limit, but the information that each decision needs should get smaller and smaller.
 
-2. **存储的是 Claim，不是事实。** 每条知识都是一条可以被推翻的主张，带有来源、时间范围和把握程度。来源不同，可信度就不同。遗忘和撤销都是正常的认知操作。
+2. **Store Claims, not facts.** Each piece of knowledge is a claim that can be overturned, with a source, a time range and a degree of certainty. Different sources have different trust. Forgetting and retracting are normal cognitive operations.
 
-3. **学习发生在 Worldview 里，而不在模型权重里。** 不训练模型，直接使用现成的模型。模型本身不变，变的是交给它的输入：Worldview 越好，同一个模型的判断就越准。界线：凡是修改模型本身（微调、LoRA、任何权重更新）都算训练，一律不做；只调整模型外部的配置参数（例如"把握多高才走快路径"的阈值、置信度的温度系数）不算训练。另外训练一个独立的小模型来做路由或打分，不改认知模型的权重，也不算训练（ADR 0027）。
+3. **Learning happens in the Worldview, not in the model weights.** Do not train models. Use off-the-shelf models directly. The model stays the same. What changes is the input given to it: the better the Worldview, the more accurate the same model's judgments. The boundary: any change to the model itself (fine-tuning, LoRA, any weight update) counts as training and is never done. Tuning only configuration parameters outside the model (for example the "how sure before taking the fast path" threshold, or the temperature of confidence) is not training. Training a separate small model for routing or scoring, without changing the weights of the cognitive model, is also not training (ADR 0027).
 
-4. **快慢两种思考配合。** 直觉（System 1）快、便宜，负责判断"见过没有、有没有把握、要不要深想"。推理（System 2）慢、昂贵，只用在真正困难或拿不准的情况。拿不准时宁可多想。
+4. **Fast and slow thinking work together.** Intuition (System 1) is fast and cheap. It judges "have I seen this, am I sure, should I think harder". Reasoning (System 2) is slow and expensive, and is used only for cases that are really hard or uncertain. When unsure, think more rather than less.
 
-5. **本体是共同的语言。** 只看文字的相似程度，Agent 认不出"同一类问题"，也看不出"这里其实不一样"；按类型和关系来组织经验，才能泛化。本体从最小的规模开始，只在 Agent 分不清两件事时才扩展。
+5. **The ontology is the shared language.** By text similarity alone, an agent cannot recognize "the same kind of problem", and cannot see "this is actually different". Organizing experience by types and relations is what makes generalization possible. The ontology starts at the smallest size, and grows only when the agent cannot tell two things apart.
 
-6. **契约稳定，其余一切可替换。** 高层模块只依赖抽象接口。换模型、换 Model Backend（包括云端模型服务）、换 Provider、换存储、换策略，都只需要改配置。每个依赖都必须明确归入硬依赖、可配依赖或可选依赖三类之一（factory/design/dependencies.md）；能替换的不写死；能做成配置项的选择，就不当成一次性决策。
+6. **The contracts are stable; everything else can be replaced.** High-level modules depend only on abstract interfaces. Changing the model, the Model Backend (including cloud model services), a Provider, the store or the strategy needs only a configuration change. Each dependency must belong to one of three categories: hard, configurable or optional (factory/design/dependencies.md). Do not hard-code what can be replaced. A choice that can be a configuration setting is not a one-time decision.
 
-7. **一种配置格式，一套通用数据标准。** 所有可配置的内容都使用同一种资源格式。数据使用 JSON-LD、PROV-O 等通用词汇表达，不建立孤立的系统。能用现有标准的地方，绝不自己发明。
+7. **One configuration format, one set of common data standards.** All configurable content uses the same resource format. Data uses common vocabularies such as JSON-LD and PROV-O, so that the system is not isolated. Where an existing standard fits, never invent your own.
 
-8. **认知组件和本体都由实验结果驱动。** 引入新的认知组件（检索、记忆、推理方式等）或扩展本体之前，先回答两个问题：它解决了哪个已经测出来的问题？改进能否测量？不能测量就先不加。工程基础设施（部署、权限、可观测性、配置）不属于这条原则，按工程需求决定，见 ADR 0013–0015。
+8. **Experiment results drive cognitive components and the ontology.** Before you add a new cognitive component (retrieval, memory, a way of reasoning) or extend the ontology, answer two questions: which measured problem does it solve? Can the improvement be measured? If it cannot be measured, do not add it yet. Engineering infrastructure (deployment, permissions, observability, configuration) is outside this principle and follows engineering needs, see ADR 0013–0015.
 
-9. **实验服务于搭建。** 实验的目的是通过几组快速对比，引导架构尽快成形、成为可用的系统，而不是做全面的对比研究。每个维度只保留一个主选，事先定好收敛规则（ADR 0010）。
+9. **Experiments serve the build.** The purpose of experiments is to use a few quick comparisons to guide the architecture into shape and into a usable system quickly, not to do a full comparative study. Each dimension keeps only one main choice, and the convergence rules are set in advance (ADR 0010).
 
-10. **进步必须可测量、可复现，并且要防范假象。** 必须跟更简单的系统比较。要防范的假象包括：模型本来就会、背题而不是学会、测试题太容易，以及冤枉了一个其实有效的架构。
+10. **Progress must be measurable, reproducible and guarded against illusions.** Always compare with a simpler system. The illusions to guard against: the model already knew it; memorizing the test instead of learning; test tasks that are too easy; and wrongly rejecting an architecture that actually works.
 
-11. **本地优先，属于用户自己，到处都能部署。** 在自己的机器上运行，知识归用户所有，可以导出和审计。目标平台包括 Linux 服务器、云主机、Mac、Windows，以及其他人的电脑；一键启动、一键升级，在各平台上的行为一致（ADR 0013）。
+11. **Local-first, owned by the user, deployable anywhere.** It runs on your own machine. Knowledge belongs to the user and can be exported and audited. Target platforms include Linux servers, cloud hosts, Mac, Windows, and other people's computers. One-step start, one-step upgrade, and the same behavior on every platform (ADR 0013).
 
-12. **认识自己不等于随意修改自己。** 自我进化的含义是：Memex 逐步知道自己由什么构成、能做什么、有什么限制、怎么运行；能就新功能给出有依据的改进计划；升级之后也知道自己升级了。它不会在没有授权的情况下改造自己，改进由用户决定，并经过实验验证。
+12. **Knowing itself is not freely changing itself.** Self-evolution means: Memex gradually knows what it is made of, what it can do, what its limits are and how it runs; it can give a well-founded improvement plan for a new feature; and after an upgrade it knows it was upgraded. It does not rebuild itself without authorization. The user decides on improvements, and experiments verify them.
 
-## 核心模块
+## Core modules
 
-| 层次 | 模块 | 说明 |
+| Layer | Modules | Notes |
 |---|---|---|
-| 稳定核心 | Cognitive Contract、Environment 接口、Domain Pack 格式、统一配置格式、标准数据词汇、Action 模型 | 几乎不变 |
-| 认知循环 | Cognitive Strategy、Attention、Intuition、Reasoning、Verification、Cognitive State 和 Cognitive Budget | 每一步都在运转 |
-| 知识与学习 | Ontology、Worldview（Claim、溯源、时间、Pattern）、Event Log（Experience 和 Trace 都是它的 Projection）、Consolidation 和 Decay | 进步的来源 |
-| 与外界交互 | Capability（MCP）、Communication（CLI、Web、A2A） | 可插拔 |
-| 支撑设施 | Composition Root、Policy、运维遥测 | 保障运行 |
-| 验证工具（不属于产品，ADR 0020） | Lab（World Generator、Micro World、Oracle、Evaluator、实验运行器） | 在验证阶段证明想法；不随产品发布 |
+| Stable core | Cognitive Contract, Environment interface, Domain Pack format, unified configuration format, standard data vocabularies, Action model | Almost never changes |
+| Cognitive loop | Cognitive Strategy, Attention, Intuition, Reasoning, Verification, Cognitive State and Cognitive Budget | Runs at every step |
+| Knowledge and learning | Ontology, Worldview (Claims, provenance, time, Patterns), Event Log (Experience and Trace are both its Projections), Consolidation and Decay | The source of progress |
+| Interaction with the outside | Capability (MCP), Communication (CLI, Web, A2A) | Pluggable |
+| Support | Composition Root, Policy, operational telemetry | Keeps it running |
+| Validation tools (not part of the product, ADR 0020) | Lab (World Generator, Micro World, Oracle, Evaluator, experiment runner) | Prove the ideas in the validation stage; not shipped with the product |
 
-最核心的三个模块：**Cognitive Contract、Worldview、Cognitive Strategy。** 直觉模型和推理模型都是可以替换的组件，不属于核心。Lab 是验证阶段的工具，用来证明这些模块有效，本身不是产品（ADR 0020）。
+The three most central modules: **Cognitive Contract, Worldview, Cognitive Strategy.** The intuition model and the reasoning model are replaceable components and are not part of the core. The Lab is a tool of the validation stage that proves these modules work. It is not the product itself (ADR 0020).
 
-## 验证之后：产品的方向
+## After validation: the direction of the product
 
-1. **让学习真正发生**：完整的记忆生命周期、Pattern 学习、由 Agent 提议并经过验证的本体扩展、长期运行下的学习曲线。
-2. **进入真实领域**：第一个领域是 World 0，即 Memex 本身及相关知识，目的是自我学习和进化（ADR 0011）。之后再进入一个与 Memex 无关的外部领域，用来检验方法能否推广。每个领域都打包成一个 Domain Pack。
-3. **连接外部世界**：通过 MCP 接入工具；用 Agent Skills 导出和导入 Pattern；通过 A2A 与其他 Agent 交换 Claim；真实的本地能力都在沙箱中运行。
-4. **多种交互形态**：CLI、Web、聊天、语音，都只是 Communication Provider。
-5. **长期运行和性能**：在资源预算内做后台整合，清理过时的知识；先测量，再针对热点优化。
+1. **Make learning really happen**: the full memory lifecycle, Pattern learning, ontology extensions that the agent proposes and that are verified, and learning curves under long-running use.
+2. **Enter real domains**: the first domain is World 0, that is, Memex itself and related knowledge, for self-learning and evolution (ADR 0011). After that, an external domain unrelated to Memex, to test whether the method generalizes. Each domain is packaged as a Domain Pack.
+3. **Connect to the outside world**: connect tools through MCP; export and import Patterns with Agent Skills; exchange Claims with other agents through A2A; all real local capabilities run in a sandbox.
+4. **Many interaction forms**: CLI, Web, chat and voice are all just Communication Providers.
+5. **Long-running use and performance**: background consolidation within a resource budget, cleaning out stale knowledge; measure first, then optimize the hot spots.
 
-## 理想状态（愿景，未经验证）
+## The ideal state (vision, not verified)
 
-参照 OpenAI Gym（统一了环境接口）、MCP（统一了工具接入）、Kubernetes 资源格式（统一了配置）的先例：
+Following the precedents of OpenAI Gym (unified the environment interface), MCP (unified tool access) and the Kubernetes resource format (unified configuration):
 
-1. **领域可以插拔。** 一个 Domain Pack 就能让 Agent 在一个新领域开始建立 Worldview，Domain Pack 可以分享和复用。
-2. **组件可以比较。** 直觉、推理、记忆、策略都可以由不同的人贡献，并在同一个实验平台上公平比较。
-3. **知识可以带走。** Worldview 用通用标准保存，可以追溯、审计、导出和迁移。
-4. **进步可以量化。** 每个 Agent 都有自己的学习曲线：经验越多，推理调用、延迟和上下文越少，准确率不下降。
-5. **本地优先，与生态互通。** 通过 MCP、Skills、A2A 与外部世界连接，同时保留每条知识的来源和可信度。
+1. **Domains are pluggable.** One Domain Pack lets an agent start building a Worldview in a new domain. Domain Packs can be shared and reused.
+2. **Components are comparable.** Intuition, reasoning, memory and strategy can come from different people and be compared fairly on the same experiment platform.
+3. **Knowledge is portable.** The Worldview is saved in common standards, and can be traced, audited, exported and migrated.
+4. **Progress is quantifiable.** Each agent has its own learning curve: with more experience, fewer reasoning calls, less latency and less context, without lower accuracy.
+5. **Local-first, interoperable with the ecosystem.** Connect to the outside world through MCP, Skills and A2A, and keep the source and trust of each piece of knowledge.
 
-需要现实看待的是：标准能否形成取决于有没有人采用，而不是设计得多好。现阶段，"标准"首先意味着内部纪律：接口稳定、配置统一、数据能和外部互通。
+To be realistic: whether a standard forms depends on adoption, not on how good the design is. At this stage, "standard" first means internal discipline: stable interfaces, unified configuration, data that can interoperate with the outside.
 
-## 跨领域迁移（产品目标，待验证；roadmap P5）
+## Cross-domain transfer (product goal, to be verified; roadmap P5)
 
-人类上手新领域时，常常拿自己擅长的领域来对照。比如 AWS 专家接手 Azure 时会想："这个服务其实就是 AWS 里的 xxx，应该也有类似的功能，我来验证一下。"Memex 希望 Agent 也能这样做：在一个垂直领域里积累起来的 Worldview，可以有选择地借用到另一个领域。
+When people learn a new domain, they often compare it with a domain they know well. For example, an AWS expert who takes over Azure thinks: "this service is really xxx in AWS, so it should have a similar feature; let me check." Memex wants the agent to do the same: a Worldview built up in one vertical domain can be selectively borrowed into another domain.
 
-**过程**：映射 → 预测 → 验证 → 修正。这和认知循环完全对应：映射靠本体，预测就是提出 Hypothesis，验证就是执行 Action 并获得 Observation，修正就是更新 Claim。
+**Process**: map → predict → verify → correct. This matches the cognitive loop exactly: mapping uses the ontology, predicting is proposing a Hypothesis, verifying is executing an Action and getting an Observation, and correcting is updating Claims.
 
-**借用方式（借鉴 jj / git）**：
-- 默认像 cherry-pick 一样，只挑选抽象层面的内容：概念对应、Pattern、预期，以及"该问哪些问题"。
-- 不搬运具体事实。
-- 借来的内容以"待验证的假设"身份进入新领域，并记录来源。
+**How to borrow (inspired by jj / git)**:
+- By default, like a cherry-pick, select only abstract content: concept mappings, Patterns, expectations, and "which questions to ask".
+- Do not carry over specific facts.
+- Borrowed content enters the new domain as a "hypothesis to be verified", with its source recorded.
 
-**世界观 diff**：先对齐，再比较。比较结果分四类：
-- 两边共同、并且都经过验证的 → 作为**支柱**，提升到核心本体的抽象层。
-- 两边对得上、但行为不同的 → 作为**学习素材**，保存为带适用范围的"差异 Claim"。和 jj 一样，冲突本身就是一等对象，不必马上解决。
-- 只有源领域有的、只有新领域有的 → 分别标记。
+**Worldview diff**: align first, then compare. The result has four classes:
+- Shared by both sides and verified on both → a **pillar**, promoted to the abstract layer of the core ontology.
+- Aligned on both sides but behaving differently → **learning material**, stored as a "difference Claim" with a scope. As in jj, the conflict itself is a first-class object and does not have to be resolved at once.
+- Only in the source domain, only in the new domain → marked separately.
 
-失败的迁移不是浪费，而是数据。
+A failed transfer is not waste. It is data.
 
-**用 graph 和 vector 判断远近**：vector 衡量表面相似（像不像），graph 衡量结构相似（是不是同一种角色）。
+**Use graph and vector to judge distance**: vector measures surface similarity (does it look alike); graph measures structural similarity (does it play the same role).
 
-| | 结构近 | 结构远 |
+| | Structurally near | Structurally far |
 |---|---|---|
-| 表面近 | 近迁移（AWS ↔ Azure）：可以大胆借用，逐条验证 | 假朋友：看起来一样，结构不同。风险最高 |
-| 表面远 | 深层类比（保险 ↔ 投资，编程 ↔ 做饭）：价值最大 | 无关 |
+| Surface near | Near transfer (AWS ↔ Azure): borrow boldly, verify item by item | False friends: look the same, different structure. Highest risk |
+| Surface far | Deep analogy (insurance ↔ investing, programming ↔ cooking): highest value | Unrelated |
 
-两个信号相互矛盾时，信息量最大。迁移距离越远，借来的内容起点越低、越需要验证。每次验证的成败又会校准对距离的估计：Agent 会从经验中学到"哪些经验能搬、哪些不能"。
+When the two signals contradict each other, they carry the most information. The farther the transfer, the lower the starting confidence of borrowed content, and the more it needs verification. The success or failure of each verification in turn calibrates the distance estimate: the agent learns from experience "which experience can move, and which cannot".
 
-**分工**：
-- graph 和 vector 负责计算对齐和差异。这是确定性的计算。
-- 直觉负责快速判断"这个差异是否不对劲、是否重要"。
-- 推理负责仔细想清楚差异的原因和影响。
-- 验证负责检验结论。
-- 由组合层（候选：Cordis、iii，或者一个很薄的工厂，见 ADR 0004、0008）把各模块按配置串起来。
+**Division of work**:
+- Graph and vector compute the alignment and the differences. This is deterministic computation.
+- Intuition quickly judges "is this difference odd, does it matter".
+- Reasoning thinks through the causes and effects of the difference.
+- Verification tests the conclusions.
+- The composition layer (candidates: Cordis, iii, or a very thin factory, see ADR 0004, 0008) connects the modules as the configuration says.
 
-**风险**：
-- 名字对得上，功能边界未必相同。
-- 映射本身也可能出错，所以映射也应该存成可以被推翻的 Claim。
-- 现有研究显示，LLM 的结构性迁移能力弱于人类，容易被表面相似误导。
-- "LLM Agent 的负迁移"目前缺少直接研究。
+**Risks**:
+- Names can match while functional boundaries differ.
+- The mapping itself can be wrong, so mappings should also be stored as Claims that can be overturned.
+- Existing research shows that LLMs are weaker than humans at structural transfer and are easily misled by surface similarity.
+- There is little direct research on "negative transfer in LLM agents".
 
-**可测量**：世界生成器可以构造"结构相同、名字不同、部分关系被故意改动"的领域对。在这样的领域对上，比较"带着经验进入"和"从零开始"两种情况：衡量迁移带来的收益（推理次数和观察次数是否减少），以及负迁移率。
+**Measurable**: the world generator can build domain pairs that have "the same structure, different names, and some relations deliberately changed". On such pairs, compare "entering with experience" and "starting from zero": measure the gain from transfer (fewer reasoning calls and observations or not), and the negative transfer rate.
 
-## 尚未被证明的事
+## Not proven yet
 
-- 通过整理经验、而不是堆积信息，Agent 能否在一个领域里持续变好（中心假设）。
-- 不经训练的直觉模型能否可靠地判断"要不要深入推理"。
-- 本体加图谱在挑选信息上是否优于向量相似度。
-- 从经验中提炼的 Pattern 能否在不降低准确率的前提下减少推理。
-- 小模型能否从非结构化资料中准确抽取 Claim。
-- 跨领域迁移带来的收益能否超过负迁移造成的损失。
+- Whether an agent can keep getting better in a domain by organizing experience rather than piling up information (the central hypothesis).
+- Whether an untrained intuition model can reliably judge "should I reason deeply".
+- Whether an ontology plus a graph selects information better than vector similarity.
+- Whether Patterns distilled from experience can reduce reasoning without lowering accuracy.
+- Whether a small model can accurately extract Claims from unstructured material.
+- Whether the gain from cross-domain transfer can exceed the loss from negative transfer.

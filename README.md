@@ -50,7 +50,7 @@ The repository has three zones ([ADR 0028](factory/records/decisions/0028-harnes
 - Node.js 26 (see `.nvmrc`)
 - pnpm 12
 - Machine-specific settings go in `.env`, which is not committed. See `.env.example` for the keys to fill in.
-- After you clone, run `git config core.hooksPath harness/sensors/git-hooks` once. This turns on the pre-commit check that rejects CJK text. CI runs the same check on every push to `main` and every pull request.
+- After you clone, run `git config core.hooksPath .githooks` once. This turns on the pre-commit check that rejects CJK text. CI runs the same check on every push to `main` and every pull request.
 
 ## License
 

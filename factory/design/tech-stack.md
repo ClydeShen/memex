@@ -1,172 +1,172 @@
-# 技术栈推荐
+# Tech stack recommendations
 
-本文件列出 Memex 的工程技术栈：每样东西的作用、依赖分类，以及在哪个里程碑引入。依赖分类的定义见 [dependencies.md](./dependencies.md)，里程碑见 [roadmap.md](./roadmap.md)，这些工具要检查的代码风格见 [code-style.md](./code-style.md)。
+This file lists the engineering tech stack of Memex: the role of each item, its dependency category, and the milestone that introduces it. For the definitions of the dependency categories, see [dependencies.md](./dependencies.md). For the milestones, see [roadmap.md](./roadmap.md). For the code style that these tools check, see [code-style.md](./code-style.md).
 
-- **状态**：推荐（2026-10-11 用户确认；Git hooks 和 TUI 两部分于同日补充，hook 的分工 2026-10-12 用户确认）。版本号是当天 `npm view <包名> version` 的结果，引入时再取当时的最新版。
-- **都可以替换**：这里的选择都是工程选择，不是架构决定（roadmap 第四部分："测试框架和 lint 工具按当时的主流选择"）。更换某个工具只需要修改本文件，不需要写 ADR。
-- **硬依赖除外**：已经在 ADR 中定下的硬依赖（Node.js / TypeScript、Zod、JSONL + CloudEvents 等）照旧，要换需要先写 ADR。
+- **Status**: recommended (confirmed by the user 2026-10-11; the Git hooks and TUI parts were added the same day; the division of work between hooks was confirmed by the user 2026-10-12; the CJK check was added by the user's decision 2026-10-27). Version numbers are the result of `npm view <package> version` on that day. Take the latest version at the time each item is introduced.
+- **Everything can be replaced**: these are engineering choices, not architecture decisions (roadmap section 4: "the test framework and lint tools follow the mainstream choice at the time"). Replacing a tool only needs a change to this file, not an ADR.
+- **Except hard dependencies**: hard dependencies already set in ADRs (Node.js / TypeScript, Zod, JSONL + CloudEvents and others) stay. Replacing them needs an ADR first.
 
-## 选型原则
+## Selection principles
 
-1. **Node 自带的功能够用，就不装包。** Node 26 能直接运行 `.ts`、自带 UUIDv7、`fetch`、`util.parseArgs`、`child_process`，这些都不需要第三方包。
-2. **到需要的里程碑才引入**（P5）。默认值不等于承诺。
-3. **每个依赖都要登记分类**（A3）。本文件的"分类"一列就是登记。
-4. **运行时核心不使用原生扩展**（E1），只用纯 TypeScript 和 WASM。
+1. **If a built-in Node feature is enough, do not install a package.** Node 26 runs `.ts` directly and has UUIDv7, `fetch`, `util.parseArgs` and `child_process` built in. None of these need third-party packages.
+2. **Introduce an item only at the milestone that needs it** (P5). A default value is not a commitment.
+3. **Record the category of each dependency** (A3). The "Category" column of this file is the record.
+4. **The runtime core uses no native extensions** (E1), only pure TypeScript and WASM.
 
-## 两个影响选型的事实（2026-10-11 核实）
+## Two facts that affect the selection (verified 2026-10-11)
 
-- **TypeScript 7.0 已正式发布，但还没有编程接口（API）。** 接口要等到 7.1，目前 7.1 还是开发版。typescript-eslint 的最新版 8.71.1 要求 TypeScript 低于 6.1，所以"TS 7 + ESLint"现在装不到一起。本栈因此用 Biome 做 lint，Biome 不依赖 TypeScript 的接口。
-- **Node 26 默认会去掉类型后直接运行 `.ts` 文件**（`process.features.typescript === "strip"`），所以实验阶段不需要构建步骤。代价是只能使用可以直接去掉的类型语法：开启 `erasableSyntaxOnly`，不用 `enum`、参数属性和带运行时代码的 `namespace`，用 `as const` 对象代替 `enum`。
+- **TypeScript 7.0 is released, but it has no programmatic API yet.** The API comes in 7.1, which is still a development version. The latest typescript-eslint, 8.71.1, requires TypeScript below 6.1, so "TS 7 + ESLint" cannot be installed together now. This stack therefore uses Biome for lint. Biome does not depend on the TypeScript API.
+- **Node 26 strips types and runs `.ts` files directly by default** (`process.features.typescript === "strip"`), so the experiment stage needs no build step. The cost is that only erasable type syntax can be used: turn on `erasableSyntaxOnly`, do not use `enum`, parameter properties or `namespace` with runtime code, and use `as const` objects instead of `enum`.
 
 ---
 
-## 一、语言与运行时
+## 1. Language and runtime
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| Node.js | 26.x（`.nvmrc`） | 硬依赖 | 运行时；直接运行 `.ts`，不需要构建。按官方发布计划，Node 26 在 2026-10-28 进入 Active LTS，此前是 Current；它也是旧的单双数发布模式下的最后一个版本，从 Node 27 起每年只发一个大版本 | 已就绪 |
-| TypeScript | 7.0.x | 硬依赖 | 只做类型检查（`tsc --noEmit`），不负责产出代码。开启 `strict` 和 `erasableSyntaxOnly` | V0.1 |
-| pnpm | 12.x（`packageManager` 字段固定） | 开发工具 | 包管理和 monorepo（pnpm workspaces）。选它而不是 npm 的理由是安全（用户决定，2026-10-11）：默认阻止依赖包的安装脚本，只放行 `allowBuilds` 中列出的包；`minimumReleaseAge` 默认推迟安装刚发布的版本；`trustPolicy` 可以拒绝发布可信度下降的版本；`node_modules` 结构严格，代码无法使用没有声明的依赖。另外安装更快，也更省磁盘空间 | V0.1 |
+| Node.js | 26.x (`.nvmrc`) | Hard dependency | Runtime; runs `.ts` directly with no build. By the official release schedule, Node 26 enters Active LTS on 2026-10-28 and is Current before that. It is also the last version of the old odd/even release model; from Node 27 there is one major version per year | Ready |
+| TypeScript | 7.0.x | Hard dependency | Type checking only (`tsc --noEmit`); it does not emit code. Turn on `strict` and `erasableSyntaxOnly` | V0.1 |
+| pnpm | 12.x (fixed by the `packageManager` field) | Development tool | Package management and monorepo (pnpm workspaces). It was chosen over npm for security (user decision, 2026-10-11): it blocks dependency install scripts by default and allows only the packages listed in `allowBuilds`; `minimumReleaseAge` delays installing newly published versions by default; `trustPolicy` can reject versions whose trust level went down; the strict `node_modules` layout stops code from using undeclared dependencies. It also installs faster and uses less disk space | V0.1 |
 
-## 二、代码质量
+## 2. Code quality
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| Biome | 2.5.x | 开发工具 | lint 和格式化合在一个工具里，带类型相关的规则，不依赖 TypeScript 的接口 | V0.1 |
-| dependency-cruiser | 18.5.x | 开发工具 | 把架构约束写成自动检查：核心只依赖 `@memex/contracts`；Provider 之间不能互相 import；只有 Composition Root 能引用具体实现（A2，ADR 0008）。违反时检查失败 | V0.1 |
-| knip | 6.41.x | 开发工具 | 找出没用到的文件、导出和依赖，原生支持 monorepo | V0.1 |
-| markdownlint-cli2 | 0.23.x | 开发工具 | 检查 `factory/as-built/` 的 Markdown 格式（ADR 0026） | V0-28 |
-| CodeQL | GitHub 提供 | 开发工具 | 安全扫描，公开仓库免费，支持 JS 和 TS。追踪不可信数据在代码中的流向，例如模型输出流进 `eval`、配置中的路径穿越、`child_process` 命令注入、overlay 合并时的原型污染（security-and-data.md X3、X5、C2）。用 GitHub 的默认设置（default setup）：在仓库的 Settings → Code security 中开启，不需要 workflow 文件；推送到 `main` 时和每周各扫描一次，只报告问题、不阻止合并，所以不增加 ADR 0012 想避免的流程负担。开启仓库设置由用户操作 | V0 首次合并进 `main` 时（用户确认，2026-10-13） |
-| Dependabot、`pnpm audit` | GitHub 和 pnpm 提供 | 开发工具 | 提醒依赖包中的已知漏洞 | V0.1 起（不需要 CI，与 security-and-data.md S4 一致） |
+| Biome | 2.5.x | Development tool | Lint and formatting in one tool, with type-aware rules, independent of the TypeScript API | V0.1 |
+| dependency-cruiser | 18.5.x | Development tool | Turns the architecture constraints into automated checks: the core depends only on `@memex/contracts`; Providers cannot import each other; only the Composition Root can refer to concrete implementations (A2, ADR 0008). The check fails on a violation | V0.1 |
+| knip | 6.41.x | Development tool | Finds unused files, exports and dependencies, with native monorepo support | V0.1 |
+| markdownlint-cli2 | 0.23.x | Development tool | Checks the Markdown format of `factory/as-built/` (ADR 0026) | V0-28 |
+| CodeQL | Provided by GitHub | Development tool | Security scanning, free for public repositories, supports JS and TS. Tracks how untrusted data flows through the code, for example model output flowing into `eval`, path traversal in configuration, `child_process` command injection, prototype pollution in overlay merges (security-and-data.md X3, X5, C2). Use the GitHub default setup: turn it on in the repository Settings → Code security, with no workflow file. It scans on pushes to `main` and once a week, and only reports problems without blocking merges, so it adds none of the process load that ADR 0012 wants to avoid. The user turns on the repository setting | When V0 first merges into `main` (confirmed by the user, 2026-10-13) |
+| Dependabot, `pnpm audit` | Provided by GitHub and pnpm | Development tool | Warns about known vulnerabilities in dependencies | From V0.1 (no CI needed, consistent with security-and-data.md S4) |
+| CJK check (`harness/sensors/no-cjk.mjs`) | Own script, Node built-ins only | Development tool | Fails when added lines or new paths contain CJK text, so that all repository content is in English. Lines that already exist are not checked. Runs in the pre-commit hook and in CI (`.github/workflows/no-cjk.yml`, on pushes to `main` and on pull requests) | In effect (user decision, 2026-10-27) |
 
-备选：
-- ESLint 10 加 typescript-eslint 8：规则更全，但需要把 TypeScript 降到 6.0。等 TS 7.1 发布、typescript-eslint 支持 TS 7 之后，可以重新评估。
-- oxlint 1.x 加 oxfmt：速度最快，但 oxfmt 还在 0.x 版本。
-- SonarQube Cloud：公开仓库可以免费使用，但它是云服务，而且和上面几个工具的功能重复，暂不引入。
+Alternatives:
+- ESLint 10 with typescript-eslint 8: more complete rules, but TypeScript must go down to 6.0. Evaluate again after TS 7.1 is released and typescript-eslint supports TS 7.
+- oxlint 1.x with oxfmt: the fastest, but oxfmt is still at 0.x.
+- SonarQube Cloud: free for public repositories, but it is a cloud service and overlaps with the tools above. Not introduced for now.
 
 ### Git hooks
 
-用途：提交之前在本机先跑一遍快速检查，把明显的问题挡在提交之前。hook 可以用 `git commit --no-verify` 跳过，所以它只是本机的便利，不是关卡：完整检查靠 `pnpm check`，决策关卡之后再由 CI 兜底（ADR 0012、0020）。
+Purpose: run quick checks on the local machine before a commit, to stop obvious problems before they are committed. A hook can be skipped with `git commit --no-verify`, so it is only a local convenience, not a gate: the full check is `pnpm check`, and CI is the backstop after the decision gate (ADR 0012, 0020). The CJK check is the exception: it already runs in CI (user decision, 2026-10-27).
 
-| 做法 | 版本 | 分类 | 作用 | 何时引入 |
+| Approach | Version | Category | Role | When |
 |---|---|---|---|---|
-| git 自带的 `core.hooksPath`（主选） | git 自带 | — | hook 脚本放在仓库的 `.githooks/` 目录里一起提交；根 `package.json` 的 `prepare` 脚本执行 `git config core.hooksPath .githooks`，`pnpm install` 时自动生效。不装任何包（选型原则 1、security-and-data.md S3）。pnpm 的 `allowBuilds` 只管依赖包的安装脚本，根项目自己的 `prepare` 照常运行 | V0.1 |
-| Biome 的 `--staged` | Biome 自带 | — | pre-commit 中执行 `biome check --staged`，只检查已暂存的文件，不需要 lint-staged | V0.1 |
+| git's built-in `core.hooksPath` (main choice) | Built into git | — | The hook scripts are committed in the `.githooks/` directory of the repository. Until V0.1, run `git config core.hooksPath .githooks` once by hand. From V0.1, the `prepare` script of the root `package.json` runs it, so it takes effect on `pnpm install`. No package is installed (selection principle 1, security-and-data.md S3). pnpm `allowBuilds` only controls the install scripts of dependencies; the root project's own `prepare` runs as usual | In effect |
+| Biome `--staged` | Built into Biome | — | The pre-commit hook runs `biome check --staged`, which checks only the staged files, with no need for lint-staged | V0.1 |
 
-三个 hook 分工如下（用户确认，2026-10-12）：
+The three hooks divide the work like this (confirmed by the user, 2026-10-12; the CJK check added 2026-10-27):
 
-| hook | 做什么 | 理由 |
+| Hook | What it does | Reason |
 |---|---|---|
-| pre-commit | 只执行 `biome check --staged` | 要轻：Agent 在本地开发时频繁提交，不能拖慢速度 |
-| commit-msg | 强制 Conventional Commits 格式（`type(scope): 描述`），用一个很短的 `.ts` 脚本检查，Node 26 直接运行 | 提交信息是重要的历史追溯依据；World 0 也会把 git 历史当作数据来源（ADR 0011） |
-| pre-push | 执行完整的 `pnpm check`（类型检查、lint、架构检查、测试） | 推上去的代码必须是通过检查的代码 |
+| pre-commit | The CJK check on the staged changes (now), and `biome check --staged` (from V0.1) | Must stay light: agents commit often during local development, and the hook must not slow them down |
+| commit-msg | Enforces the Conventional Commits format (`type(scope): description`) with a very short `.ts` script, run directly by Node 26 | Commit messages are an important source for tracing history; World 0 also uses the git history as a data source (ADR 0011) |
+| pre-push | Runs the full `pnpm check` (type check, lint, architecture check, tests) | Code that is pushed must pass the checks |
 
-备选：
-- lefthook 2.2.x：Go 写的单个程序，用一个 YAML 文件配置，可以并行运行多项检查。npm 包按平台带预编译的二进制；它自己的 postinstall 会被 pnpm 默认拦下，要在 `prepare` 里执行 `lefthook install`（specimens 中 iii 的 console 就是这样用的）。等 hook 里的检查变多、需要并行时再换。
-- husky 9.1.x：零依赖，hook 是 `.husky/` 下的 shell 脚本。它做的事和 `core.hooksPath` 基本相同，只是多一个包。
+Alternatives:
+- lefthook 2.2.x: a single program written in Go, configured with one YAML file, can run several checks in parallel. The npm package ships prebuilt binaries per platform. Its own postinstall is blocked by pnpm by default, so `lefthook install` must run in `prepare` (the console of iii in specimens uses it this way). Switch when the hooks have more checks and need to run them in parallel.
+- husky 9.1.x: zero dependencies; the hooks are shell scripts under `.husky/`. It does basically the same as `core.hooksPath`, with one more package.
 
-## 三、测试
+## 3. Testing
 
-V0 的三条通过标准（可复现、不泄漏、可替换）都写成这里的测试。
+The three V0 pass criteria (reproducible, no leaks, replaceable) are all written as tests with these tools.
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| Vitest | 5.0.x | 开发工具 | 单元测试和集成测试 | V0.1 |
-| @vitest/coverage-v8 | 5.0.x | 开发工具 | 测试覆盖率 | V0.1 |
-| fast-check | 4.10.x | 开发工具 | 基于性质的测试：自动生成大量随机输入，验证一些不变量，例如"重放日志后 Projection 完全一致""同一个种子结果相同"。比手写几个用例更有说服力 | V0.3 |
+| Vitest | 5.0.x | Development tool | Unit and integration tests | V0.1 |
+| @vitest/coverage-v8 | 5.0.x | Development tool | Test coverage | V0.1 |
+| fast-check | 4.10.x | Development tool | Property-based testing: generates many random inputs automatically and verifies invariants, for example "the Projection is exactly the same after the log is replayed" and "the same seed gives the same result". More convincing than a few hand-written cases | V0.3 |
 
-## 四、契约与数据（运行时依赖）
+## 4. Contracts and data (runtime dependencies)
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| Zod | 4.6.x | 硬依赖（只在契约包内部使用） | 定义 schema，并用 `z.toJSONSchema()` 导出 JSON Schema（ADR 0009） | V0.2 |
-| yaml | 2.9.x | 可替换的实现细节 | 读取多文档的资源 YAML（KRM 格式） | V0.2 |
-| canonicalize | 5.1.x | 可替换的实现细节 | RFC 8785 规范化 JSON。先规范化、再算哈希，Trace 哈希才稳定，"可复现"标准依赖它 | V0.3 |
-| `node:crypto` | Node 自带 | — | 用 sha256 算哈希；用 `randomUUIDv7()` 生成按时间排序的事件 id，不需要 `uuid` 包 | V0.3 |
-| `node:child_process` | Node 自带 | — | 每个 Experiment 一个子进程，用 JSONL 通信（ADR 0004），不需要 `execa` | V0.5 |
-| `node:util` 的 `parseArgs` | Node 自带 | — | 解析 `pnpm lab run` 的命令行参数，验证工具够用 | V0.5 |
+| Zod | 4.6.x | Hard dependency (used only inside the contracts package) | Defines schemas and exports JSON Schema with `z.toJSONSchema()` (ADR 0009) | V0.2 |
+| yaml | 2.9.x | Replaceable implementation detail | Reads multi-document resource YAML (KRM format) | V0.2 |
+| canonicalize | 5.1.x | Replaceable implementation detail | RFC 8785 canonical JSON. Canonicalize first and then hash, so that the Trace hash is stable. The "reproducible" criterion depends on it | V0.3 |
+| `node:crypto` | Built into Node | — | sha256 hashes; `randomUUIDv7()` for time-ordered event ids, with no need for the `uuid` package | V0.3 |
+| `node:child_process` | Built into Node | — | One child process for each Experiment, communicating with JSONL (ADR 0004), with no need for `execa` | V0.5 |
+| `parseArgs` from `node:util` | Built into Node | — | Parses the command-line arguments of `pnpm lab run`; enough for the validation tools | V0.5 |
 
-不使用 CloudEvents 官方 SDK：我们只需要它的 JSON 结构格式，用 Zod 定义就够了，而且这个 SDK 一年多没有更新（最新版 10.0.0 发布于 2025-06）。
+The official CloudEvents SDK is not used: we only need its JSON structured format, which Zod can define, and the SDK has not been updated for more than a year (the latest version, 10.0.0, was released in 2025-06).
 
-注意：事件 id 和时间戳每次运行都会不同，所以比较 Trace 哈希之前要先去掉或替换这些字段（V0 通过标准中说的"规范化之后"）。
+Note: event ids and timestamps differ on every run, so remove or replace these fields before comparing Trace hashes (the "normalized" in the V0 pass criteria).
 
-## 五、工具函数
+## 5. Utility functions
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| es-toolkit | 1.52.x | 可替换的实现细节 | lodash 的现代替代品，体积小，类型完整 | **用到时再引入**。Node 26 已经内置了 `structuredClone`、`Object.groupBy`、Set 的集合运算、`Array.prototype.toSorted` 等，V0 很可能用不到。需要时选它，不选 lodash |
+| es-toolkit | 1.52.x | Replaceable implementation detail | A modern replacement for lodash, small and fully typed | **Only when needed**. Node 26 already has `structuredClone`, `Object.groupBy`, Set operations, `Array.prototype.toSorted` and others built in, so V0 probably does not need it. When needed, choose it, not lodash |
 
-## 六、后续里程碑
+## 6. Later milestones
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| 内置 `fetch` | Node 自带 | — | 调用兼容 OpenAI 接口的 Model Backend。需要传 `logprobs`、`top_logprobs`、`chat_template_kwargs` 等非标准参数，直接发请求最简单。AI SDK 或 openai SDK 只作为某个 Provider 内部的可选实现（ADR 0008） | V1 |
-| commander | 15.x | 可替换的实现细节 | 产品命令（`memex ...`）的命令行解析；产品命令在决策关卡后设计 | P1 |
-| pino | 10.x | 可替换的实现细节 | 高性能日志。ADR 0015 要求使用 OpenTelemetry 日志数据模型的字段名，pino 的默认字段名不同，需要转换。所以 V0 先写一个很薄的函数直接输出这些字段，性能不够时再换 pino | V1 之后视需要 |
-| Docker Compose | — | 可选依赖 | 一键启动（产品命令的候选） | P4 |
-| oxigraph | 0.5.x | 可配依赖的默认实现（Knowledge 存储） | 进程内运行的 WASM 图存储（ADR 0010） | V2 |
-| jsonld | 9.x | 可替换的实现细节 | 把数据导出为 RDF（ADR 0007） | V2 或 P1 |
-| OpenTelemetry SDK | — | 可选依赖 | 可选的 OTLP 导出（ADR 0015） | 产品阶段 |
-| tsdown | 0.23.x | 开发工具 | 打包发布 npm 命令行工具。实验阶段直接运行 `.ts`，不需要它 | P4 |
-| changesets | 3.x | 开发工具 | 版本号和更新日志 | P4 |
+| Built-in `fetch` | Built into Node | — | Calls the OpenAI-compatible Model Backend. It must send non-standard parameters such as `logprobs`, `top_logprobs` and `chat_template_kwargs`, and sending requests directly is the simplest way. The AI SDK or the openai SDK is only an optional implementation inside a Provider (ADR 0008) | V1 |
+| commander | 15.x | Replaceable implementation detail | Command-line parsing for the product commands (`memex ...`); the product commands are designed after the decision gate | P1 |
+| pino | 10.x | Replaceable implementation detail | High-performance logging. ADR 0015 requires the field names of the OpenTelemetry log data model, and the default field names of pino differ and need conversion. So V0 starts with a very thin function that writes these fields directly, and switches to pino if performance is not enough | After V1, if needed |
+| Docker Compose | — | Optional dependency | One-step start (a candidate product command) | P4 |
+| oxigraph | 0.5.x | Default implementation of a configurable dependency (Knowledge store) | WASM graph store that runs in process (ADR 0010) | V2 |
+| jsonld | 9.x | Replaceable implementation detail | Exports data as RDF (ADR 0007) | V2 or P1 |
+| OpenTelemetry SDK | — | Optional dependency | Optional OTLP export (ADR 0015) | Product stage |
+| tsdown | 0.23.x | Development tool | Packages and publishes the npm command-line tool. The experiment stage runs `.ts` directly and does not need it | P4 |
+| changesets | 3.x | Development tool | Version numbers and changelogs | P4 |
 
-### 终端交互界面（TUI）
+### Terminal user interface (TUI)
 
-产品命令（`memex ...`）在决策关卡之后设计（ADR 0020），TUI 到 P1 才需要。验证阶段的 `pnpm lab` 只输出文本和 JSON 报告，不需要 TUI。
+The product commands (`memex ...`) are designed after the decision gate (ADR 0020), so a TUI is needed only from P1. In the validation stage, `pnpm lab` outputs only text and JSON reports and needs no TUI.
 
-| 工具 | 版本 | 分类 | 作用 | 何时引入 |
+| Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| `node:util` 的 `styleText`、`node:readline` | Node 自带 | — | 终端颜色和简单的行输入，不需要 chalk | 用到时 |
-| Ink | 8.0.x | 可替换的实现细节 | 用 React 组件写终端界面，例如对话、查看目标进度、审批。纯 JavaScript，布局引擎 yoga-layout 是 WASM，不违反 E1。Claude Code、GitHub Copilot CLI，以及 Hermes 的新 TUI（specimens/hermes-agent/ui-tui）都用它；生态最大，有 ink-testing-library 可以测试界面 | P1 |
-| @clack/prompts | 1.8.x | 可替换的实现细节 | 向导式问答，例如 `memex init` 这类首次配置流程。OpenClaw 的向导流程也用 Clack | P1 |
+| `styleText` from `node:util`, `node:readline` | Built into Node | — | Terminal colors and simple line input, with no need for chalk | When needed |
+| Ink | 8.0.x | Replaceable implementation detail | Writes terminal interfaces as React components, for example conversation, goal progress and approval. Pure JavaScript; its layout engine yoga-layout is WASM, so it does not break E1. Claude Code, GitHub Copilot CLI and the new Hermes TUI (specimens/hermes-agent/ui-tui) all use it. It has the largest ecosystem, and ink-testing-library can test the interface | P1 |
+| @clack/prompts | 1.8.x | Replaceable implementation detail | Wizard-style prompts, for first-time setup flows such as `memex init`. The OpenClaw wizard also uses Clack | P1 |
 
-备选：
-- pi-tui（`@earendil-works/pi-tui` 1.1.x）：命令式组件，差分渲染加同步输出（CSI 2026），专为流式输出的 Agent 界面设计，只有 2 个依赖。OpenClaw 的 `openclaw tui` 基于它。比较年轻：包名在 2026 年从 `@mariozechner/pi-tui` 改成现在的名字，旧包停在 0.73.1。如果 Ink 在长时间流式输出时卡顿（Ink 有帧率上限），换它。
-- 不选 OpenTUI（0.6.x）：渲染核心是 Zig，按平台带预编译的原生库，与 E1 和 ADR 0013"各平台行为一致"的取向相反；而且还在 0.x。
+Alternatives:
+- pi-tui (`@earendil-works/pi-tui` 1.1.x): imperative components, differential rendering with synchronized output (CSI 2026), designed for agent interfaces with streaming output, only 2 dependencies. `openclaw tui` of OpenClaw is built on it. It is fairly young: the package was renamed in 2026 from `@mariozechner/pi-tui`, and the old package stopped at 0.73.1. If Ink stutters on long streaming output (Ink has a frame rate cap), switch to it.
+- OpenTUI (0.6.x) is not chosen: its rendering core is Zig and ships prebuilt native libraries per platform, against E1 and the "same behavior on every platform" of ADR 0013; and it is still at 0.x.
 
-## 明确不引入
+## Explicitly not introduced
 
-| 工具 | 原因 |
+| Tool | Reason |
 |---|---|
-| turbo、nx | pnpm workspaces 加 `pnpm -r` 就够了，不需要额外的任务编排 |
-| npm、yarn（作为包管理器） | 选 pnpm，理由见第一节 |
-| lodash | 选 es-toolkit |
-| uuid | Node 26 自带 `crypto.randomUUIDv7()` |
-| execa | `node:child_process` 够用 |
-| Prettier | Biome 已包含格式化 |
-| lint-staged | Biome 自带 `--staged` |
-| commitlint | 只为检查一行提交信息格式，引入一套解析器和配置包太重；需要时写一个很短的脚本 |
-| simple-git-hooks | 靠自身的 postinstall 安装 hook，pnpm 默认会拦下；`core.hooksPath` 不需要安装脚本 |
-| chalk | Node 26 自带 `util.styleText` |
-| TypeDoc、madge | 声明的 TypeScript 依赖不含 TS 7（2026-10-13 `npm view`），见 ADR 0026 |
-| api-extractor | 需要 `.d.ts`，与"不构建"的栈不合（ADR 0026） |
-| CloudEvents SDK | 见第四节 |
-| tsup | tsdown 是它的后继，而且实验阶段不需要打包 |
+| turbo, nx | pnpm workspaces with `pnpm -r` is enough; no extra task orchestration is needed |
+| npm, yarn (as package managers) | pnpm is chosen, see section 1 |
+| lodash | es-toolkit is chosen |
+| uuid | Node 26 has `crypto.randomUUIDv7()` built in |
+| execa | `node:child_process` is enough |
+| Prettier | Biome includes formatting |
+| lint-staged | Biome has `--staged` built in |
+| commitlint | Too heavy, with a parser and configuration packages, just to check the format of one line of commit message; write a very short script when needed |
+| simple-git-hooks | Installs hooks through its own postinstall, which pnpm blocks by default; `core.hooksPath` needs no install script |
+| chalk | Node 26 has `util.styleText` built in |
+| TypeDoc, madge | Their declared TypeScript dependency does not include TS 7 (`npm view`, 2026-10-13), see ADR 0026 |
+| api-extractor | Needs `.d.ts`, which does not fit a stack with no build (ADR 0026) |
+| CloudEvents SDK | See section 4 |
+| tsup | tsdown is its successor, and the experiment stage needs no bundling |
 
-## 尚未核实（V0.1 开工时先实测）
+## Not verified yet (test first when V0.1 starts)
 
-1. **dependency-cruiser 和 knip 在 TypeScript 7 下能否正常工作。** 它们可能用到 TypeScript 的接口。如果不能，退路是在开发依赖里另装一份 TypeScript 6 给它们用，类型检查仍然用 TS 7。
-2. **Vitest 5 相比 4 有哪些变化。** 版本号是从 npm 查到的，更新说明还没有看过。
-3. **Biome 的类型相关规则比 typescript-eslint 少多少。** 尚未逐条比对。
-4. **pnpm 12 的安全设置名称。** `allowBuilds`、`minimumReleaseAge`、`trustPolicy` 是按 pnpm 11 的文档核实的；pnpm 12 是用 Rust 重写的版本（2026-08 发布），这些设置在 12 中是否完全相同，要在 V0.1 写 `pnpm-workspace.yaml` 时对照 12 的文档确认。
+1. **Whether dependency-cruiser and knip work with TypeScript 7.** They may use the TypeScript API. If not, the fallback is a separate TypeScript 6 in the development dependencies for them, while type checking still uses TS 7.
+2. **What changed in Vitest 5 compared with 4.** The version number comes from npm; the release notes have not been read yet.
+3. **How many fewer type-aware rules Biome has than typescript-eslint.** Not compared rule by rule yet.
+4. **The names of the pnpm 12 security settings.** `allowBuilds`, `minimumReleaseAge` and `trustPolicy` were verified against the pnpm 11 documentation. pnpm 12 is a rewrite in Rust (released 2026-08). Whether these settings are exactly the same in 12 must be confirmed against the 12 documentation when V0.1 writes `pnpm-workspace.yaml`.
+5. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
+6. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
 
-5. **Ink 8 相比 7 有哪些变化。** Ink 8.0.0 于 2026-10-03 发布，要求 React 19.3 以上，更新说明还没有看过；P1 引入时再核对。
-6. **`core.hooksPath` 下的 hook 在 Windows 上的表现。** git for Windows 用自带的 sh 运行 hook，按理和其他平台一致，V0.1 落地时在本机实测一次。
+## Sources
 
-## 来源
-
-- TypeScript 7：[InfoQ：TypeScript 7 发布](https://infoq.com/news/2026/08/typescript-7-released/) · [VS Magazine：7.0 RC](https://visualstudiomagazine.com/articles/2026/06/22/typescript-7-0-rc-moves-microsofts-go-rewrite-into-the-mainline-compiler.aspx) · [为什么 ESLint 还不能用 TS 7](https://dev.to/the-modern-web/why-angular-vue-and-eslint-cant-upgrade-to-typescript-70-yet-and-why-ts-71-changes-441g) · [TS 7 迁移就绪度](https://www.digitalapplied.com/blog/typescript-7-native-compiler-early-adopter-migration-readiness)
-- Node 原生 TypeScript：[Node.js 文档：TypeScript](https://nodejs.org/api/typescript.md) · [原生运行 TypeScript](https://nodejs.org/zh-cn/learn/typescript/run-natively)
-- Lint：[InfoQ：ESLint 10](https://infoq.com/news/2026/04/eslint-10-release) · [Oxfmt Beta](https://oxc.rs/blog/2026-02-24-oxfmt-beta) · [Biome vs Oxc 2026](https://www.pkgpulse.com/guides/biome-vs-oxc-2026) · [Biome vs ESLint vs Oxlint 2026](https://www.pkgpulse.com/guides/biome-vs-eslint-vs-oxlint-2026)
-- 架构检查：[lastminute.com：用 dependency-cruiser 守住架构边界](https://technology.lastminute.com/how-we-enforce-architecture-boundaries-at-scale-on-our-app/) · [knip](https://www.npmjs.com/package/knip)
-- 安全扫描：[CodeQL code scanning](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning) · [CodeQL 默认设置](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning) · [SonarQube Cloud 订阅计划](https://docs.sonarsource.com/sonarcloud/administering-sonarcloud/managing-subscription/subscription-plans)
-- 测试：[Vitest 博客](https://main.vitest.dev/blog)
-- 构建：[tsdown 基准](https://tsdown.dev/advanced/benchmark) · [从 tsup 换到 tsdown](https://alan.norbauer.com/articles/tsdown-bundler)
-- 工具函数：[es-toolkit vs lodash](https://blog.logrocket.com/es-toolkit-lodash-alternative)
-- 日志：[Pino vs Winston](https://betterstack.com/community/comparisons/pino-vs-winston) · [Pino 与 OpenTelemetry](https://1xapi.com/blog/structured-logging-nodejs-pino-opentelemetry-2026)
-- CLI：[2026 Node CLI 框架](https://www.pkgpulse.com/guides/best-cli-frameworks-nodejs-2026)
-- Git hooks：[git-config：core.hooksPath](https://git-scm.com/docs/git-config#Documentation/git-config.txt-corehooksPath) · [Biome CLI（`--staged`）](https://biomejs.dev/reference/cli/) · [pnpm 构建设置（allowBuilds 只管依赖）](https://pnpm.io/settings/build) · [husky](https://typicode.github.io/husky/get-started.html) · [Husky vs Lefthook vs lint-staged 2026](https://www.pkgpulse.com/guides/husky-vs-lefthook-vs-lint-staged-git-hooks-nodejs-2026) · [用 Lefthook 代替 Husky](https://recca0120.github.io/en/2026/03/08/lefthook-git-hooks/)
-- TUI：[OpenTUI（Better Stack）](https://betterstack.com/community/guides/scaling-nodejs/opentui-react/) · [OpenTUI 与 Ink 对比](https://blog.openreplay.com/opentui-alternative-ink/) · [Node 终端界面](https://blog.openreplay.com/building-terminal-interfaces-nodejs/) · [OpenClaw TUI 文档](https://docs.openclaw.ai/de/cli/tui.md) · [pi-tui（depscope）](https://mcp.depscope.dev/pkg/npm/@mariozechner/pi-tui)；版本号和依赖来自 2026-10-11 的 `npm view`
-- Node 发布计划：[nodejs/Release schedule.json](https://github.com/nodejs/Release/blob/main/schedule.json)
-- 规范化 JSON 与 UUID：[canonicalize](https://npmjs.com/package/canonicalize) · [Node 原生 UUID](https://dev.to/pierre/you-should-ditch-uuid-node-has-you-covered-10i3)
-- Oxigraph：[DepScope：oxigraph](https://mcp.depscope.dev/pkg/npm/oxigraph)
+- TypeScript 7: [InfoQ: TypeScript 7 released](https://infoq.com/news/2026/08/typescript-7-released/) · [VS Magazine: 7.0 RC](https://visualstudiomagazine.com/articles/2026/06/22/typescript-7-0-rc-moves-microsofts-go-rewrite-into-the-mainline-compiler.aspx) · [Why ESLint cannot use TS 7 yet](https://dev.to/the-modern-web/why-angular-vue-and-eslint-cant-upgrade-to-typescript-70-yet-and-why-ts-71-changes-441g) · [TS 7 migration readiness](https://www.digitalapplied.com/blog/typescript-7-native-compiler-early-adopter-migration-readiness)
+- Native TypeScript in Node: [Node.js docs: TypeScript](https://nodejs.org/api/typescript.md) · [Running TypeScript natively](https://nodejs.org/en/learn/typescript/run-natively)
+- Lint: [InfoQ: ESLint 10](https://infoq.com/news/2026/04/eslint-10-release) · [Oxfmt Beta](https://oxc.rs/blog/2026-02-24-oxfmt-beta) · [Biome vs Oxc 2026](https://www.pkgpulse.com/guides/biome-vs-oxc-2026) · [Biome vs ESLint vs Oxlint 2026](https://www.pkgpulse.com/guides/biome-vs-eslint-vs-oxlint-2026)
+- Architecture checks: [lastminute.com: enforcing architecture boundaries with dependency-cruiser](https://technology.lastminute.com/how-we-enforce-architecture-boundaries-at-scale-on-our-app/) · [knip](https://www.npmjs.com/package/knip)
+- Security scanning: [CodeQL code scanning](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-code-scanning) · [CodeQL default setup](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning) · [SonarQube Cloud subscription plans](https://docs.sonarsource.com/sonarcloud/administering-sonarcloud/managing-subscription/subscription-plans)
+- Testing: [Vitest blog](https://main.vitest.dev/blog)
+- Build: [tsdown benchmark](https://tsdown.dev/advanced/benchmark) · [Switching from tsup to tsdown](https://alan.norbauer.com/articles/tsdown-bundler)
+- Utility functions: [es-toolkit vs lodash](https://blog.logrocket.com/es-toolkit-lodash-alternative)
+- Logging: [Pino vs Winston](https://betterstack.com/community/comparisons/pino-vs-winston) · [Pino and OpenTelemetry](https://1xapi.com/blog/structured-logging-nodejs-pino-opentelemetry-2026)
+- CLI: [Node CLI frameworks 2026](https://www.pkgpulse.com/guides/best-cli-frameworks-nodejs-2026)
+- Git hooks: [git-config: core.hooksPath](https://git-scm.com/docs/git-config#Documentation/git-config.txt-corehooksPath) · [Biome CLI (`--staged`)](https://biomejs.dev/reference/cli/) · [pnpm build settings (allowBuilds covers only dependencies)](https://pnpm.io/settings/build) · [husky](https://typicode.github.io/husky/get-started.html) · [Husky vs Lefthook vs lint-staged 2026](https://www.pkgpulse.com/guides/husky-vs-lefthook-vs-lint-staged-git-hooks-nodejs-2026) · [Using Lefthook instead of Husky](https://recca0120.github.io/en/2026/03/08/lefthook-git-hooks/)
+- TUI: [OpenTUI (Better Stack)](https://betterstack.com/community/guides/scaling-nodejs/opentui-react/) · [OpenTUI compared with Ink](https://blog.openreplay.com/opentui-alternative-ink/) · [Terminal interfaces in Node](https://blog.openreplay.com/building-terminal-interfaces-nodejs/) · [OpenClaw TUI docs](https://docs.openclaw.ai/de/cli/tui.md) · [pi-tui (depscope)](https://mcp.depscope.dev/pkg/npm/@mariozechner/pi-tui); versions and dependencies from `npm view` on 2026-10-11
+- Node release schedule: [nodejs/Release schedule.json](https://github.com/nodejs/Release/blob/main/schedule.json)
+- Canonical JSON and UUID: [canonicalize](https://npmjs.com/package/canonicalize) · [Native UUID in Node](https://dev.to/pierre/you-should-ditch-uuid-node-has-you-covered-10i3)
+- Oxigraph: [DepScope: oxigraph](https://mcp.depscope.dev/pkg/npm/oxigraph)
