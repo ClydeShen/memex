@@ -53,7 +53,7 @@ All stages and all branches must follow the constraints below. To break any of t
 ### Process
 | # | Constraint | Source |
 |---|---|---|
-| P1 | Validation stage: one `epic/*` branch for each epic. It merges into `main` through a pull request when all stories of the epic pass their acceptance criteria | ADR 0012, 0030 |
+| P1 | Validation stage: one `epic/*` branch for each epic. It merges into `main` through a pull request when all stories of the epic pass their acceptance criteria | ADR 0012, 0030, 0031 |
 | P2 | The product stage starts at the decision gate: Q1–Q3 all have answers, and the contract is frozen as v1. From then on, all changes go through PRs and CI | ADR 0012, 0020 |
 | P3 | Keep the experiment matrix minimal, advance by the convergence rules, and do not add control groups at will | ADR 0010 |
 | P4 | Experiment results drive changes to cognitive components and the ontology. Engineering infrastructure follows engineering needs | VISION principle 8 |

@@ -2,6 +2,8 @@
 status: accepted
 ---
 
+Amended by ADR 0031 (task branches, cleanup, old branches).
+
 # Each epic is developed on its own `epic/*` branch and merged into `main` through a pull request
 
 ADR 0012 let the validation stage work on experiment branches (`exp/*`) that merge into `main` without a pull request after they pass their criteria. On 2026-10-27 a cloud session opened a branch whose name said nothing about its content. The owner wants one branch per epic, with a fixed prefix and a name that says what the epic is, and a pull request for each epic (confirmed by the owner, 2026-10-27). This revises the branch part of ADR 0012 for the validation stage. The rest of ADR 0012 stays.

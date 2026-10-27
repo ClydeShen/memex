@@ -45,7 +45,7 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 ├─ AGENTS.md                 a thin entry point that points to harness/agents/; read by both Codex and Claude Code
 ├─ .agents/skills/           generated from harness/skills/ for Codex; do not edit by hand
 ├─ .claude/skills/           generated from harness/skills/ for Claude Code; do not edit by hand
-├─ .github/workflows/        CI: the CJK check on pushes to main and on pull requests
+├─ .github/workflows/        CI: the CJK check on pull requests and on pushes to main and epic branches
 ├─ package.json              root configuration: the shared script entry points; `packageManager` fixes the pnpm version
 ├─ pnpm-workspace.yaml       pnpm workspaces and dependency security settings (factory/design/security-and-data.md section 5)
 ├─ pnpm-lock.yaml            locked dependency versions; must be committed
