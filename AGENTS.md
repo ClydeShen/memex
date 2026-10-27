@@ -1,3 +1,5 @@
+Start every session by reading `factory/design/HANDOFF.md`.
+
 Create or update an entry in `factory/records/implementation-notes.md` only when both conditions apply:
 
 - The change involves a significant design decision, or deviates from the agreed design or expected behavior.
