@@ -1,0 +1,18 @@
+packages:
+  - memex/packages/*
+  - memex/providers/*
+  - memex/apps/*
+  - factory/validation/*
+
+# Supply chain (factory/design/security-and-data.md section 5, S2).
+# Dependency install scripts run only for packages approved one by one in allowBuilds.
+# No dependency needs one yet.
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+
+packageExtensions:
+  # dependency-cruiser reads .ts only with TypeScript below 7, while tsc uses TypeScript 7.
+  # Remove when dependency-cruiser supports TypeScript 7 (factory/design/tech-stack.md, "Verified in V0-02").
+  dependency-cruiser:
+    dependencies:
+      typescript: 6.0.3
