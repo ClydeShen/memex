@@ -8,6 +8,7 @@ This file sets the shared code style of Memex. For the toolchain, see [tech-stac
   - **[Auto]**: a tool checks it, and the check fails on a violation. The rule name is in parentheses.
   - **[Review]**: no tool can check it; code review does.
 - The configuration of the automated checks lands in V0.1. If a rule turns out not to be workable during configuration, change this file.
+- Every Biome rule named under **[Auto]** exists in Biome 2.6.3 and reports a violation when enabled (tested in V0-02, see #42). `useExplicitType`, `noFloatingPromises` and `noMisusedPromises` are in the `nursery` group, so they can change between Biome versions.
 
 ---
 
@@ -17,7 +18,7 @@ Dependency inversion (DIP) is the most important rule. It is ADR 0008 and constr
 
 1. **Depend only on the contracts.** A Provider can import only `@memex/contracts`. Core code does not import any concrete Provider. Concrete implementations are imported only in the **composition entry point** and recorded in the registry (GLOSSARY: Composition Root; for the dependency direction, see project-structure.md). Providers cannot import each other. **[Auto]** (dependency-cruiser)
 2. **Dependencies come in from outside.** Everything a function or a Provider needs comes in through parameters or the context at `init`. Do not import concrete implementations inside, and do not read global state. **[Review]**
-3. **Only the Composition Root can read environment variables.** Configuration needed elsewhere is read by the Composition Root and passed in. **[Auto]** (`noProcessEnv`, except in the Composition Root)
+3. **Only the Composition Root can read environment variables.** Configuration needed elsewhere is read by the Composition Root and passed in. **[Auto]** (`noProcessEnv`, turned off for the Composition Root files with a Biome `overrides` entry)
 4. **Use factory functions instead of classes.** Write Providers and other components as factory functions that take dependencies and return an object. Then there is no `this`, and no wrong `this` binding. It also matches the arrow function style of section 2. **[Review]**
 5. **Use the other four SOLID principles as design references, not mechanically.** For example, single responsibility does not mean "one function per file"; interface segregation means that ports are small and a Provider gets only the `services` it really needs. **[Review]**
 
@@ -38,14 +39,14 @@ In the example, the configuration comes in through the factory parameters. Only 
 
 ## 2. How to write functions
 
-1. **Use arrow functions by default**, written as `const name = (...) => ...`. **[Auto]** (`useArrowFunction`, covers only function expressions) **[Review]** (function declarations)
+1. **Use arrow functions by default**, written as `const name = (...) => ...`. **[Auto]** (`useArrowFunction` for function expressions; the GritQL plugin `no-function-declaration` for function declarations)
 2. **`function` is allowed in these cases**:
    - Function overloads: TypeScript overload signatures can be written only on `function` declarations;
    - Cases that really need hoisting.
 3. **Exported functions state their return type.** The return type is part of the interface. When it is written out, a signature change is found earlier. **[Auto]** (`useExplicitType`)
 4. **Do not change the parameters passed in.** **[Auto]** (`noParameterAssign`)
 
-> Whether to forbid `function` declarations with a Biome 2 GritQL plugin is decided after a test in V0.1.
+> Function declarations are forbidden with a Biome GritQL plugin whose pattern is `JsFunctionDeclaration()` (tested in V0-02 with Biome 2.6.3). It reports both plain function declarations and the implementation of an overloaded function; overload signatures are not reported. For the allowed cases, write `// biome-ignore lint/plugin/no-function-declaration: <reason>` above the declaration. This is the one-line "why" comment of section 10.
 
 ## 3. Control flow: return early
 
@@ -92,7 +93,7 @@ Rules:
 1. **Use `throw` only for "the program is wrong"**, that is, cases that should be impossible, such as a broken invariant. **[Review]**
 2. **Expected failures return a `Result`**: `{ ok: true, value } | { ok: false, error }`. Error types are discriminated unions, and the caller handles each error with a `switch`. **[Review]**
 3. **Implement the `Result` type yourself**, in `@memex/contracts`, because it is part of the contracts. Do not introduce libraries such as neverthrow.
-4. **Every Promise must be handled.** **[Auto]** (Biome `noFloatingPromises`; confirm in V0.1 that this rule is available)
+4. **Every Promise must be handled.** **[Auto]** (Biome `noFloatingPromises` and `noMisusedPromises`; in tests, Vitest 5 also fails an asynchronous assertion that is not awaited)
 5. **Contain external calls at the boundary.** When you call the Model Backend or another external system, convert exceptions into a `Result` at the call site, so that exceptions thrown by third parties do not reach the core code. **[Review]**
 
 ## 6. Data and immutability
@@ -107,7 +108,7 @@ Rules:
 2. **Use only erasable type syntax**, so that Node can run `.ts` directly: turn on `erasableSyntaxOnly`, and do not use `enum`, `namespace` or parameter properties. Use `as const` objects with union types instead of `enum`. **[Auto]** (tsc, and `noEnum`, `noNamespace`, `noParameterProperties`)
 3. **Do not use `any`.** When a type is really unknown, use `unknown`, then validate or narrow it. **[Auto]** (`noExplicitAny`)
 4. **Do not use the non-null assertion `!`.** **[Auto]** (`noNonNullAssertion`)
-5. **Use only named exports**, no default exports. **[Auto]** (`noDefaultExport`)
+5. **Use only named exports**, no default exports. **[Auto]** (`noDefaultExport`) The exception is a tool configuration file that the tool can read only through a default export, for example `vitest.config.ts`. Biome turns the rule off for these files.
 6. **Use only ES modules** (ESM), not CommonJS. **[Auto]** (`noCommonJs`)
 
 ## 8. Naming

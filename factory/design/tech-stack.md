@@ -25,16 +25,16 @@ This file lists the engineering tech stack of Memex: the role of each item, its 
 | Tool | Version | Category | Role | When |
 |---|---|---|---|---|
 | Node.js | 26.x (`.nvmrc`) | Hard dependency | Runtime; runs `.ts` directly with no build. By the official release schedule, Node 26 enters Active LTS on 2026-10-28 and is Current before that. It is also the last version of the old odd/even release model; from Node 27 there is one major version per year | Ready |
-| TypeScript | 7.0.x | Hard dependency | Type checking only (`tsc --noEmit`); it does not emit code. Turn on `strict` and `erasableSyntaxOnly` | V0.1 |
-| pnpm | 12.x (fixed by the `packageManager` field) | Development tool | Package management and monorepo (pnpm workspaces). It was chosen over npm for security (user decision, 2026-10-11): it blocks dependency install scripts by default and allows only the packages listed in `allowBuilds`; `minimumReleaseAge` delays installing newly published versions by default; `trustPolicy` can reject versions whose trust level went down; the strict `node_modules` layout stops code from using undeclared dependencies. It also installs faster and uses less disk space | V0.1 |
+| TypeScript | 7.0.x | Hard dependency | Type checking only (`tsc --noEmit`); it does not emit code. Turn on `strict` and `erasableSyntaxOnly`. dependency-cruiser gets its own TypeScript 6 (see "Verified in V0-02") | V0.1 |
+| pnpm | 12.x (fixed by the `packageManager` field) | Development tool | Package management and monorepo (pnpm workspaces). It was chosen over npm for security (user decision, 2026-10-11): it blocks dependency install scripts by default and allows only the packages listed in `allowBuilds`; `minimumReleaseAge` delays installing newly published versions by default; `trustPolicy` can reject versions whose trust level went down; the strict `node_modules` layout stops code from using undeclared dependencies. It also installs faster and uses less disk space. The setting names were confirmed for pnpm 12 (see "Verified in V0-02") | V0.1 |
 
 ## 2. Code quality
 
 | Tool | Version | Category | Role | When |
 |---|---|---|---|---|
-| Biome | 2.5.x | Development tool | Lint and formatting in one tool, with type-aware rules, independent of the TypeScript API | V0.1 |
-| dependency-cruiser | 18.5.x | Development tool | Turns the architecture constraints into automated checks: the core depends only on `@memex/contracts`; Providers cannot import each other; only the Composition Root can refer to concrete implementations (A2, ADR 0008). The check fails on a violation | V0.1 |
-| knip | 6.41.x | Development tool | Finds unused files, exports and dependencies, with native monorepo support | V0.1 |
+| Biome | 2.6.x | Development tool | Lint and formatting in one tool, with type-aware rules, independent of the TypeScript API | V0.1 |
+| dependency-cruiser | 18.7.x | Development tool | Turns the architecture constraints into automated checks: the core depends only on `@memex/contracts`; Providers cannot import each other; only the Composition Root can refer to concrete implementations (A2, ADR 0008). The check fails on a violation. It parses `.ts` only with TypeScript below 7, so it gets TypeScript 6 through `packageExtensions` | V0.1 |
+| knip | 6.43.x | Development tool | Finds unused files, exports and dependencies, with native monorepo support. It parses with oxc and does not need the TypeScript API | V0.1 |
 | markdownlint-cli2 | 0.23.x | Development tool | Checks the Markdown format of `factory/as-built/` (ADR 0026) | V0-28 |
 | CodeQL | Provided by GitHub | Development tool | Security scanning, free for public repositories, supports JS and TS. Tracks how untrusted data flows through the code, for example model output flowing into `eval`, path traversal in configuration, `child_process` command injection, prototype pollution in overlay merges (security-and-data.md X3, X5, C2). Use the GitHub default setup: turn it on in the repository Settings → Code security, with no workflow file. It scans on pushes to `main` and once a week, and only reports problems without blocking merges, so it adds none of the process load that ADR 0012 wants to avoid. The user turns on the repository setting | When V0 first merges into `main` (confirmed by the user, 2026-10-13) |
 | Dependabot, `pnpm audit` | Provided by GitHub and pnpm | Development tool | Warns about known vulnerabilities in dependencies | From V0.1 (no CI needed, consistent with security-and-data.md S4) |
@@ -144,14 +144,42 @@ Alternatives:
 | CloudEvents SDK | See section 4 |
 | tsup | tsdown is its successor, and the experiment stage needs no bundling |
 
-## Not verified yet (test first when V0.1 starts)
+## Verified in V0-02 (2026-10-27)
 
-1. **Whether dependency-cruiser and knip work with TypeScript 7.** They may use the TypeScript API. If not, the fallback is a separate TypeScript 6 in the development dependencies for them, while type checking still uses TS 7.
-2. **What changed in Vitest 5 compared with 4.** The version number comes from npm; the release notes have not been read yet.
-3. **How many fewer type-aware rules Biome has than typescript-eslint.** Not compared rule by rule yet.
-4. **The names of the pnpm 12 security settings.** `allowBuilds`, `minimumReleaseAge` and `trustPolicy` were verified against the pnpm 11 documentation. pnpm 12 is a rewrite in Rust (released 2026-08). Whether these settings are exactly the same in 12 must be confirmed against the 12 documentation when V0.1 writes `pnpm-workspace.yaml`.
-5. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
-6. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
+Tested in a throwaway pnpm workspace outside the repository, with Node 26.12.1, pnpm 12.15.0, TypeScript 7.0.2, Biome 2.6.3, dependency-cruiser 18.7.0, knip 6.43.0 and Vitest 5.0.5. The workspace had three packages under `memex/packages/`, `.ts` imports with explicit extensions, `import type`, and a workspace dependency (`workspace:*`). The results are in #42.
+
+1. **dependency-cruiser and knip with TypeScript 7.**
+   - `tsc -p .` with TypeScript 7.0.2 passes with `strict`, `erasableSyntaxOnly`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes` and `allowImportingTsExtensions`.
+   - **dependency-cruiser does not work with TypeScript 7 alone.** `depcruise --info` lists its TypeScript transpiler as `typescript >=2.0.0 <7.0.0`, so with only TypeScript 7 installed it does not read `.ts` files. TypeScript 7 has no programmatic API in its main entry point (it exports only `./lib/version.cjs`).
+   - **The fallback works, in a different form than planned.** A second TypeScript in the root development dependencies cannot help, because the package name `typescript` is already TypeScript 7. Instead, `pnpm-workspace.yaml` gives dependency-cruiser its own copy:
+     ```yaml
+     packageExtensions:
+       dependency-cruiser:
+         dependencies:
+           typescript: 6.0.3
+     ```
+     After this, `depcruise --info` reports `typescript@6.0.3` and `.ts` as supported, `tsc -v` still reports 7.0.2, and a rule "runtime may import only contracts" fails with exit code 1 on a deliberate `runtime → fakes` import. Type-only imports are reported as `type-only` (with `tsPreCompilationDeps: true`), and `@memex/contracts` resolves to its source file through the `exports` field. Remove the extension when dependency-cruiser supports TypeScript 7.
+   - **knip works with TypeScript 7 as it is.** knip 6.43 parses with `oxc-parser` and has no dependency on `typescript`. It reported an unused file, an unused export and an unused exported type in a non-entry file, and recognized `tsc`, `biome`, `depcruise` and `vitest` used in `scripts`. Exports of package entry files (the `exports` field) count as public and are not reported.
+2. **What changed in Vitest 5.** From the [5.0.0 release notes](https://github.com/vitest-dev/vitest/releases/tag/v5.0.0). The changes that affect this project:
+   - It requires Node.js 22 and Vite 6.4. Node 26 is fine.
+   - **An asynchronous assertion that is not awaited fails the test.** Verified: `expect(promise).resolves.toBe(1)` without `await` fails with "Promise returned by ... was not awaited". This supports code-style section 5, rule 4.
+   - Mocks are cleared before each test by default.
+   - The config file is no longer looked up in ancestor directories; inline `projects` extend the root config by default and share one Vite server. So keep one `vitest.config.ts` in the root with `test.projects`.
+   - Report output (`json`, `junit`, `html`, `blob`, attachments) goes to `.vitest/` by default. Add `.vitest/` to `.gitignore`.
+   - `vitest.config.ts` must have a default export. Verified: with only a named export, `vitest run` fails. Turn `noDefaultExport` off for tool configuration files (code-style section 7).
+   - A test file imports a workspace package and a sibling `.ts` file with its extension, and `vitest run` passes.
+3. **Biome type-aware rules compared with typescript-eslint.** typescript-eslint 8.72.1 has 63 rules that need type information (`requiresTypeChecking: true` in its rule metadata). `biome migrate eslint --include-nursery` maps **19** of them directly to Biome rules, and **12 more** with `--include-inspired`: 31 of 63 in total. Most of the type-aware ones are in the Biome `nursery` group, for example `noFloatingPromises`, `noMisusedPromises`, `useExhaustiveSwitchCases`, `useStrictBooleanExpressions` and `noUnsafeReturn`. The 32 rules with no Biome rule yet include, from the typescript-eslint `recommended-type-checked` set: `await-thenable`, `no-unsafe-argument`, `no-unsafe-assignment`, `no-unsafe-call`, `no-unsafe-member-access`, `no-unsafe-enum-comparison`, `no-unnecessary-type-assertion`, `no-duplicate-type-constituents`, `no-redundant-type-constituents`, `no-array-delete`, `restrict-template-expressions` and `unbound-method`. **Conclusion: Biome stays.** The biggest gap is the `no-unsafe-*` family, which tracks values of type `any`. Here `any` is already forbidden (`noExplicitAny`, `strict`), and external data enters as `unknown` and is parsed with Zod, so the gap matters less. Evaluate again when typescript-eslint supports TypeScript 7 (see the alternatives in section 2).
+4. **The pnpm 12 security settings.** Checked against the pnpm 12 documentation ([settings](https://github.com/pnpm/pnpm.io/blob/main/docs/settings.md), [build settings](https://github.com/pnpm/pnpm.io/blob/main/docs/settings/build.md), [dependency resolution](https://github.com/pnpm/pnpm.io/blob/main/docs/settings/dependency-resolution.md)) and the `CHANGELOG.md` shipped in the pnpm 12.15.0 package. pnpm 12 is a native executable.
+   - The names are unchanged: `allowBuilds` (a map from package matcher to `true` or `false`), `minimumReleaseAge` (minutes, default 1440), `trustPolicy` (`no-downgrade` or `off`, default `off`). Related: `minimumReleaseAgeExclude`, `trustPolicyExclude`, `trustPolicyIgnoreAfter`, `strictDepBuilds` (default `true`), `blockExoticSubdeps` (default `true`), and `permissions` (from 12.11.0; its `build` capability takes precedence over `allowBuilds`).
+   - They go in `pnpm-workspace.yaml`. `.npmrc` holds only auth, registry, TLS and proxy settings.
+   - **pnpm 12 rejects unknown keys** in `pnpm-workspace.yaml` when the project pins a pnpm version that the running pnpm satisfies. Verified: a misspelled `minimumReleaseAgee` fails with `ERR_PNPM_UNRECOGNIZED_WORKSPACE_SETTINGS` ("did you mean minimumReleaseAge?"), and `minimumReleaseAge: 1440`, `trustPolicy: no-downgrade` and `allowBuilds` are accepted. So a misspelled security setting cannot be ignored without notice, as long as `packageManager` pins pnpm.
+   - Verified: adding `esbuild`, whose install script is not listed in `allowBuilds`, fails with "Ignored build scripts: esbuild" and exit code 1. With `minimumReleaseAge: 30000`, adding a package published 12 days earlier fails with a cutoff message.
+   - Biome and TypeScript 7 ship their binaries as optional platform packages without install scripts, so neither needs an `allowBuilds` entry.
+
+## Not verified yet
+
+1. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
+2. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
 
 ## Sources
 
