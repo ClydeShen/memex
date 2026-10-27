@@ -50,10 +50,8 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 | `main` | The only baseline of the new system, starting from an empty initial commit | Epic branches merge into it through a pull request (ADR 0030) |
 | `epic/*` | One branch per epic, for example `epic/v0-foundation` | Created when the epic starts; deleted automatically after the merge (ADR 0030, 0031) |
 | `claude/...`, `codex/...` | Task branches of the cloud implementer and the reviewer | One pull request into the epic branch each; deleted automatically after the merge (ADR 0031) |
-| `master` | The old system (old Memex / graph-engineering) | **Do not touch** |
-| `archive/memex-v1` | Archive of the old code, same content as `master` | **Do not touch** |
-| `ccr-80206efd-fwc2s7` | Working branch of the cloud session, currently the same as `main` | Not used after the handoff |
-| `exp/*`, `feat/*`, `eval/*` | Branches left over from the old system | Do not touch |
+
+- The branches of the old system are tags now, and their branches are deleted (ADR 0031, 2026-10-28): `archive/memex-v1`, `archive/master`, `archive/ccr-80206efd-fwc2s7`, `archive/claude/new-session-t41aib`, `archive/eval/learning-engine-live`, `archive/exp/admission-verifier`, `archive/feat/freshness-substrate`. Do not move or delete these tags.
 
 - **The repository currently contains only documents, engineering configuration and one check**: README, `AGENTS.md`, `factory/`, `harness/`, `playbook/`, `.githooks/`, `.github/workflows/`, and `.gitignore`, `.gitattributes`, `.editorconfig`, `.nvmrc`, `.env.example`. There is no `package.json` and no product code.
 - Commit messages follow the Conventional Commits style, for example `docs: ...`, `feat: ...`. From V0.1 a commit-msg hook enforces it (the Git hooks section of factory/design/tech-stack.md, confirmed by the user 2026-10-12). The repository has no CLAUDE.md. The user explicitly does not reuse the engineering standards and harness of the old project.
@@ -154,7 +152,7 @@ These belong to later milestones.
 
 ## 7. Do not
 
-- Do not change `master`, `archive/memex-v1` or the other old branches.
+- Do not move or delete the `archive/*` tags.
 - Do not train or fine-tune any model. Adjustments that change only configuration parameters, such as Calibration, are allowed (VISION principle 3).
 - Do not add candidate models or control groups outside the experiment matrix. When a change is needed, follow the convergence rules first (ADR 0010).
 - Do not hard-code any Model Backend, store or composition layer. Assemble everything through configuration and the Composition Root (ADR 0008).
