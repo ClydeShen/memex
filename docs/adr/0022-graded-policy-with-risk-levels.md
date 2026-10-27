@@ -20,7 +20,9 @@ status: accepted
    - 验证阶段：Policy 默认全部放行（V0.4 的 Fake Policy）。这时没有修改自身的 Action，也不接触真实世界。
    - 产品阶段：默认档位以谨慎为主，随着功能完善逐步放开。有几档、默认是哪一档、是否用快速分类模型判断哪些 Action 需要审批，在决策关卡确定（open-questions.md 第 4 条）。分类模型只是一种 Policy Provider（例如 `policy.classifier`），在配置中引用一个模型即可，不需要另外的接口。
 
-- **补充（2026-10-27，负责人确认）：harness 类的修改也算"修改自身"。** Agent 自动产生的对自身工作方式的修改，包括 Capability、脚本、提示词模板、guardrails、workflow，以及评分和检测代码，风险等级都是"修改自身"，因为 workflow 或行为可能因此改变，适用第 4 条。依据：Harness² 会自动改写自己的 harness；误演化研究发现，workflow 和工具的自我演化会引入漏洞和偏离（docs/research/harness2-2026-10-27.md）。Pattern 是否属于这一类还没定，见 open-questions.md 第 9 条。
+- **补充（2026-10-27，负责人确认）：harness 类的修改也算"修改自身"。** Agent 自动产生的对自身工作方式的修改，包括 Capability、脚本、提示词模板、guardrails、workflow，以及评分和检测代码，风险等级都是"修改自身"，因为 workflow 或行为可能因此改变，适用第 4 条。依据：Harness² 会自动改写自己的 harness；误演化研究发现，workflow 和工具的自我演化会引入漏洞和偏离（docs/research/harness2-2026-10-27.md）。界线按"引擎"和"内容"划分（同日确认）：
+  - **引擎**：代码、Capability、提示词模板、guardrails、Policy、评分和检测代码、配置。改了它，同样的 Worldview 会产生不同的行为，属于"修改自身"。
+  - **Worldview 的内容**：Claim 和 Pattern，由不变的引擎解释和执行，属于学习，不需要用户批准。但进入 Worldview 之前要经过 Verification 和回退检查：在以前成功的情况上重放，确认没有弄坏（参考 GRASP，见同一份调研第八节）。
 
 ## Considered Options
 
