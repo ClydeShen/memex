@@ -1,0 +1,3 @@
+#!/bin/sh
+# Code that is pushed must pass the full check.
+exec pnpm check

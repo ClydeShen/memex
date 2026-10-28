@@ -12,7 +12,7 @@ Roles (`planner`, `reviewer`, `local-impl`, `cloud-impl`) and the branch rules a
 2. Find your role in the user's first message, and read its row in the Roles table of `AGENTS.md`.
 3. The first time you work in this repository, read the documents of section 1 in order. It takes about 20 minutes. Later, read only what your task needs.
 4. Read the issue you are given, and its epic. The issue is the only channel between the agents.
-5. If you change code: run `git config core.hooksPath .githooks` once, then `pnpm install` and `pnpm check`. `pnpm check` must pass before you start.
+5. If you change code: run `pnpm install` (on a fresh clone it also turns on the git hooks) and `pnpm check`. `pnpm check` must pass before you start.
 
 ---
 

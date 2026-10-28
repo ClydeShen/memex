@@ -4,6 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@12.15.0",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
     "check": "pnpm run lint && pnpm run arch && pnpm run markers && pnpm run typecheck && pnpm run unused && pnpm run test",
     "lint": "biome check .",
     "arch": "depcruise memex factory/validation",
