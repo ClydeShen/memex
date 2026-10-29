@@ -30,3 +30,7 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 - Do not push to `main` unless you are `planner`. Do not force-push.
 - Dependabot pull requests target `main`. The user merges them after CI passes.
 - Do not commit generated output: run results, logs, caches, or files with a timestamp in the name. Write it under an ignored directory such as `factory/validation/runs/`. If a tool creates a new kind of output, add a `.gitignore` rule in the same commit.
+
+## Code Review Rules
+
+- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: the checks, the severity levels and the report format.
