@@ -24,3 +24,4 @@ Shared by Codex and Claude Code. The root `AGENTS.md` points here. It also holds
 - Report the result of each acceptance criterion in the issue, with the command and its output.
 - Do not change `factory/records/`, except to append to `factory/records/implementation-notes.md`. Do not edit the epic issues; `planner` keeps them.
 - When you change a contract (`factory/design/architecture/contracts.md`), say why in the issue.
+- If a check fails in a file you may not edit, do not work around it and do not use `--no-verify`. Report the check, the file and the error in the issue, ask the user, and stop.

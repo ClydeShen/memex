@@ -122,11 +122,7 @@ const epicBody = (overrides: Partial<Body> = {}): string => {
 };
 
 const input = (
-  changes: {
-    subIssues?: Issue[];
-    blockedBy?: Record<number, number[]>;
-    body?: Partial<Body>;
-  } = {},
+  changes: { subIssues?: Issue[]; blockedBy?: Record<number, number[]>; body?: Partial<Body> } = {},
 ): PlanInput => {
   const subIssues = changes.subIssues ?? SUB_ISSUES;
   const known = new Map([...subIssues, OUTSIDE].map((each) => [each.number, each]));
@@ -214,9 +210,9 @@ describe("a dependency cycle", () => {
 
   test("keeps the issues in the cycle out of the layers", () => {
     expect(report.blockedByCycle.map((entry) => entry.issue.number)).toEqual([14, 15]);
-    expect(report.blocked.flatMap((layer) => layer.issues.map((entry) => entry.issue.number))).toEqual(
-      [16],
-    );
+    expect(
+      report.blocked.flatMap((layer) => layer.issues.map((entry) => entry.issue.number)),
+    ).toEqual([16]);
   });
 
   test("is found when an issue blocks itself", () => {
@@ -272,7 +268,9 @@ describe("each kind of mismatch gives exit code 1", () => {
     {
       name: "an issue missing from the All issues table",
       data: input({
-        body: { statuses: Object.fromEntries(Object.entries(STATUSES).filter(([n]) => n !== "17")) },
+        body: {
+          statuses: Object.fromEntries(Object.entries(STATUSES).filter(([n]) => n !== "17")),
+        },
       }),
       expected: "#17 is missing from the All issues table",
     },

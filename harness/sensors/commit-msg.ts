@@ -7,7 +7,19 @@
 
 import { readFileSync } from "node:fs";
 
-const TYPES = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"];
+const TYPES = [
+  "build",
+  "chore",
+  "ci",
+  "docs",
+  "feat",
+  "fix",
+  "perf",
+  "refactor",
+  "revert",
+  "style",
+  "test",
+];
 const CONVENTIONAL = new RegExp(`^(?:${TYPES.join("|")})(?:\\([\\w./-]+\\))?!?: \\S`);
 const GIT_GENERATED = /^(?:Merge |Revert ")/;
 

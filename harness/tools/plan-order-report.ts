@@ -328,18 +328,24 @@ const labelMismatches = (input: PlanInput): string[] =>
       const roles = rolesOf(issue);
       if (roles.length === 0) return [`labels: #${issue.number} has no ${ROLE_PREFIX}* label`];
       if (roles.length > 1) {
-        return [`labels: #${issue.number} has more than one ${ROLE_PREFIX}* label: ${roles.join(", ")}`];
+        return [
+          `labels: #${issue.number} has more than one ${ROLE_PREFIX}* label: ${roles.join(", ")}`,
+        ];
       }
       return [];
     });
 
 const missingMismatches = (input: PlanInput, epic: EpicBody): string[] =>
   input.subIssues.flatMap((issue) => [
-    ...(epic.statuses.has(issue.number) ? [] : [`#${issue.number} is missing from the All issues table`]),
+    ...(epic.statuses.has(issue.number)
+      ? []
+      : [`#${issue.number} is missing from the All issues table`]),
     ...(epic.suggestedOrder.includes(issue.number)
       ? []
       : [`#${issue.number} is missing from the last suggested-order table`]),
-    ...(epic.diagramIssues.has(issue.number) ? [] : [`#${issue.number} is missing from the diagram`]),
+    ...(epic.diagramIssues.has(issue.number)
+      ? []
+      : [`#${issue.number} is missing from the diagram`]),
   ]);
 
 export const planOrder = (input: PlanInput): Report => {
@@ -387,15 +393,16 @@ const describeBlocked = ({ issue, openBlockers }: BlockedIssue): string =>
 export const formatReport = (report: Report): string => {
   const lines = [`Plan order for epic #${report.epic}`, "", "1. Cycles"];
   if (report.cycles.length === 0) lines.push(NONE);
-  for (const cycle of report.cycles) lines.push(`  ${cycle.map((issue) => `#${issue}`).join(" -> ")}`);
+  for (const cycle of report.cycles)
+    lines.push(`  ${cycle.map((issue) => `#${issue}`).join(" -> ")}`);
 
   lines.push("", "2. Ready, by role");
   if (report.ready.length === 0) lines.push(NONE);
   for (const group of report.ready) {
     lines.push(`  ${group.role}`);
-    group.issues.forEach((issue, position) =>
-      lines.push(`    ${position === 0 ? "next: " : ""}${describe(issue)}`),
-    );
+    group.issues.forEach((issue, position) => {
+      lines.push(`    ${position === 0 ? "next: " : ""}${describe(issue)}`);
+    });
   }
 
   lines.push("", "3. Blocked");

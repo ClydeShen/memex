@@ -32,13 +32,13 @@ export const parseAvoidedWords = (glossary: string): AvoidedWord[] => {
   return words.filter(({ word }) => !terms.has(word.toLowerCase()));
 };
 
-const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegExp = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const findAvoidedWords = (root: string): string[] => {
   if (!existsSync(join(root, GLOSSARY)) || !existsSync(join(root, AS_BUILT))) return [];
   const words = parseAvoidedWords(readFileSync(join(root, GLOSSARY), "utf8")).map((avoided) => ({
     ...avoided,
-    pattern: new RegExp(`\\b${escape(avoided.word)}\\b`, "i"),
+    pattern: new RegExp(`\\b${escapeRegExp(avoided.word)}\\b`, "i"),
   }));
   const files = globSync("**/*.md", { cwd: join(root, AS_BUILT) })
     .map((file) => `${AS_BUILT}/${file.replaceAll("\\", "/")}`)

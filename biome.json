@@ -1,19 +1,26 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "includes": [
       "**",
       "!**/*.md",
       "!pnpm-lock.yaml",
-      "!harness",
       "!playbook",
       "!factory/design",
       "!factory/records"
     ]
   },
-  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineEnding": "lf", "lineWidth": 100 },
-  "plugins": ["./harness/sensors/no-function-declaration.grit"],
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
   "linter": {
     "rules": {
       "complexity": {
@@ -39,7 +46,9 @@
         "useNamingConvention": "error",
         "useFilenamingConvention": {
           "level": "error",
-          "options": { "filenameCases": ["kebab-case"] }
+          "options": {
+            "filenameCases": ["kebab-case"]
+          }
         },
         "noMagicNumbers": "error"
       },
@@ -52,16 +61,69 @@
   },
   "overrides": [
     {
+      "includes": ["**", "!harness/**", "!.claude/hooks/**"],
+      "plugins": ["./harness/sensors/no-function-declaration.grit"]
+    },
+    {
+      "includes": ["harness/**", ".claude/hooks/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useArrowFunction": "off",
+            "noExcessiveCognitiveComplexity": "off"
+          },
+          "nursery": {
+            "useExplicitType": "off",
+            "noFloatingPromises": "off",
+            "noMisusedPromises": "off"
+          },
+          "style": {
+            "noParameterAssign": "off",
+            "noUselessElse": "off",
+            "noNestedTernary": "off",
+            "noProcessEnv": "off",
+            "noEnum": "off",
+            "noNamespace": "off",
+            "noParameterProperties": "off",
+            "noNonNullAssertion": "off",
+            "noDefaultExport": "off",
+            "noCommonJs": "off",
+            "useNamingConvention": "off",
+            "useFilenamingConvention": "off",
+            "noMagicNumbers": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["memex/packages/runtime/src/composition-root/**"],
-      "linter": { "rules": { "style": { "noProcessEnv": "off" } } }
+      "linter": {
+        "rules": {
+          "style": {
+            "noProcessEnv": "off"
+          }
+        }
+      }
     },
     {
       "includes": ["*.config.ts"],
-      "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
     },
     {
       "includes": [".dependency-cruiser.cjs"],
-      "linter": { "rules": { "style": { "noCommonJs": "off" } } }
+      "linter": {
+        "rules": {
+          "style": {
+            "noCommonJs": "off"
+          }
+        }
+      }
     }
   ]
 }

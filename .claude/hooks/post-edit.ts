@@ -8,7 +8,6 @@ import { isAbsolute, join, relative } from "node:path";
 
 type HookInput = {
   cwd: string;
-  // biome-ignore lint/style/useNamingConvention: field names are set by Claude Code.
   tool_input?: { file_path?: string };
 };
 

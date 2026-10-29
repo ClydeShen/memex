@@ -54,7 +54,9 @@ function findViolations(diff) {
       file = text === "+++ /dev/null" ? null : text.slice(6);
       if (file && CJK.test(file)) violations.push(`${file}: path contains CJK text`);
     } else if (text.startsWith("@@")) {
-      const [, , oldCount, newStart, newCount] = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(text);
+      const [, , oldCount, newStart, newCount] = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(
+        text,
+      );
       oldLeft = oldCount === undefined ? 1 : Number(oldCount);
       newLeft = newCount === undefined ? 1 : Number(newCount);
       line = Number(newStart);
