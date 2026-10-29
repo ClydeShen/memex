@@ -42,7 +42,8 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 │  │  └─ pull-requests.md    the pull request title and body
 │  ├─ workflow/              checklist copies, team conventions, release process
 │  ├─ templates/             templates for issues, PRs, ADRs, research, as-built documents and handoffs
-│  └─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
+│  ├─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
+│  └─ tools/                 scripts that help the agents work but check nothing in a commit, for example `pnpm plan:order`; type checked with harness/tsconfig.json
 ├─ playbook/                 general cross-team engineering standards; not part of the three zones; will move to another repository
 ├─ AGENTS.md                 a thin entry point that points to harness/agents/; read by both Codex and Claude Code
 ├─ .agents/skills/           generated from harness/skills/ for Codex; do not edit by hand
@@ -150,6 +151,7 @@ Data produced at runtime is not repository content. Experiment data and product 
 | `harness/sensors/` (the CJK check, from 2026-10-27), `.githooks/`, `.github/workflows/` | Exist now |
 | The other checks in `harness/sensors/`, `harness/agents/`, `factory/as-built/TEMPLATE.md` and `index.md` | V0-28 |
 | The per-package pages of `factory/as-built/` | V0-29 (the first cleanup) |
+| `harness/tools/` (`pnpm plan:order`) | V0-32 (#96) |
 | `harness/skills/` and the sync script | When the first shared skill appears |
 | `memex/providers/` | V1 (the first real Provider) |
 | `memex/apps/` | P1 (product commands are designed after the decision gate) |
