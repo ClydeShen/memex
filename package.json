@@ -9,13 +9,14 @@
     "lint": "biome check .",
     "arch": "depcruise memex factory/validation",
     "markers": "node harness/sensors/marker-words.mjs memex",
-    "typecheck": "pnpm --recursive --no-bail run typecheck",
+    "typecheck": "pnpm --recursive --no-bail run typecheck && tsc --project harness/tsconfig.json",
     "unused": "knip",
     "test": "vitest run",
     "docs:check": "node harness/sensors/docs/cli.ts check",
     "docs:lint": "markdownlint-cli2 \"factory/as-built/**/*.md\"",
     "docs:stale": "node harness/sensors/docs/cli.ts stale",
-    "docs:generate": "node harness/sensors/docs/cli.ts generate"
+    "docs:generate": "node harness/sensors/docs/cli.ts generate",
+    "plan:order": "node harness/tools/plan-order.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",

@@ -16,6 +16,7 @@ Create a subdirectory the first time it is needed. Do not create empty directori
 | `workflow/` | Copies of checklists selected from the playbook, team conventions, states and gates, release process |
 | `templates/` | Templates for issues, PRs, ADRs, research, as-built documents and handoffs |
 | `sensors/` | Check scripts and check rules: zone boundaries, package contents, marker words in `memex/`, front matter, as-built freshness, consistency of generated copies |
+| `tools/` | Scripts that help the agents work but check nothing, for example `pnpm plan:order` |
 
 ## Relation to the playbook
 
