@@ -67,7 +67,7 @@ Git hooks run only at commit and push, while an agent edits many times within a 
 | Agent hook | What it does |
 |---|---|
 | `PostToolUse` (`Edit\|Write`) | Runs `biome check` on the edited `.ts` file and sends the failure, with the rule name, back to the agent in the same turn |
-| `Stop` | Runs the type check, `biome check` and `vitest related --run` on the files changed since the last commit. On failure it blocks the end of the turn and gives the reason. When `stop_hook_active` is true it lets the turn end, so it cannot loop |
+| `Stop` | Runs the type check, `biome check` and `vitest related --run` on the files changed since the last commit, except the files that `permissions.deny` keeps the agent from editing (their changes come from someone else). On failure it blocks the end of the turn and gives the reason. When `stop_hook_active` is true it lets the turn end, so it cannot loop |
 
 The same file denies edits to the checks themselves (`permissions.deny`): `.githooks/`, `.claude/`, `harness/sensors/`, `.github/`, `.dependency-cruiser.cjs`, `biome.json`, `knip.json`. The user lifts a rule for the time of a change. The rules match tool calls, so they do not stop an agent that changes a file through a script; the git checks of the cleanup stories catch that. Pushes to `main` and force-pushes are not denied there: the shared file would also block `planner`, which pushes docs to `main`, and on the local machine `planner` and `local-impl` share one checkout. The rule for them is in `AGENTS.md`.
 
