@@ -38,6 +38,8 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 │  ├─ agents/                shared agent instructions
 │  ├─ skills/                shared skills (Agent Skills format)
 │  ├─ standards/             standards that can be taken to other products
+│  │  ├─ commit-messages.md  the commit message rule; the commit-msg hook enforces its first line
+│  │  └─ pull-requests.md    the pull request title and body
 │  ├─ workflow/              checklist copies, team conventions, release process
 │  ├─ templates/             templates for issues, PRs, ADRs, research, as-built documents and handoffs
 │  └─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
@@ -46,6 +48,7 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 ├─ .agents/skills/           generated from harness/skills/ for Codex; do not edit by hand
 ├─ .claude/skills/           generated from harness/skills/ for Claude Code; do not edit by hand
 ├─ .github/workflows/        CI: the CJK check on pull requests and on pushes to main and epic branches
+├─ .vscode/                  project VS Code settings (Biome on save, the commit and pull request rules for generated text) and recommended extensions
 ├─ package.json              root configuration: the shared script entry points; `packageManager` fixes the pnpm version
 ├─ pnpm-workspace.yaml       pnpm workspaces and dependency security settings (factory/design/security-and-data.md section 5)
 ├─ pnpm-lock.yaml            locked dependency versions; must be committed

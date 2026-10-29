@@ -1,0 +1,52 @@
+{
+  "js/ts.experimental.useTsgo": true,
+  "js/ts.tsdk.path": "./node_modules/typescript",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "file": "harness/standards/commit-messages.md"
+    }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+      "file": "harness/standards/pull-requests.md"
+    }
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    }
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    }
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    }
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.vitest": true,
+    "factory/validation/runs": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.vitest/**": true,
+    "**/factory/validation/runs/**": true
+  }
+}

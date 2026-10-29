@@ -51,7 +51,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 
 - The branches of the old system are tags now (ADR 0031, 2026-10-28): `archive/master`, `archive/memex-v1`, `archive/ccr-80206efd-fwc2s7`, `archive/claude/new-session-t41aib`, `archive/eval/learning-engine-live`, `archive/exp/admission-verifier`, `archive/feat/freshness-substrate`. The user does not reuse the engineering standards and harness of the old system.
 - **The repository contains the monorepo skeleton and no product code yet**: five empty packages (`memex/packages/contracts`, `runtime`, `fakes`; `factory/validation/lab`, `worlds`), the root configuration (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`, `vitest.config.ts`), the checks in `harness/sensors/`, `.githooks/` and `.github/`, and the documents. `pnpm check` checks all packages with one command.
-- Commit messages follow Conventional Commits, for example `docs: ...`, `feat: ...`, with `Refs #<issue>` instead of closing keywords (ADR 0031). #44 adds a commit-msg hook that enforces the format.
+- Commit messages and pull requests follow `harness/standards/commit-messages.md` and `harness/standards/pull-requests.md` (ADR 0031). The commit-msg hook enforces the first line.
 - **Everything committed to the repository, and every issue, comment and pull request, is in English** (user decision, 2026-10-27). The CJK check in the pre-commit hook and in CI rejects added lines with CJK text.
 - The agent instructions are in `AGENTS.md`. The repository has no CLAUDE.md.
 
