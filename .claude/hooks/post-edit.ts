@@ -4,7 +4,7 @@
 
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { isAbsolute, join, relative } from "node:path";
 
 type HookInput = {
   cwd: string;
@@ -17,8 +17,11 @@ const BLOCK = 2;
 const input = JSON.parse(readFileSync(0, "utf8")) as HookInput;
 // Windows paths arrive with backslashes; Biome and the checks below expect forward slashes.
 const file = input.tool_input?.file_path?.replaceAll("\\", "/");
+// Biome only checks files inside the project; it fails on a path outside it.
+const path = file === undefined ? "" : relative(input.cwd, file);
+const inProject = path !== "" && !path.startsWith("..") && !isAbsolute(path);
 
-if (file?.endsWith(".ts")) {
+if (file?.endsWith(".ts") && inProject) {
   const biome = join(input.cwd, "node_modules/@biomejs/biome/bin/biome");
   const result = spawnSync(process.execPath, [biome, "check", "--no-errors-on-unmatched", file], {
     cwd: input.cwd,

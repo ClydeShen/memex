@@ -4,6 +4,6 @@ import { defineConfig } from "vitest/config";
 // and a reporters setting turns that off.
 export default defineConfig({
   test: {
-    include: ["memex/**/*.test.ts", "factory/validation/**/*.test.ts"],
+    include: ["memex/**/*.test.ts", "factory/validation/**/*.test.ts", "harness/**/*.test.ts"],
   },
 });
