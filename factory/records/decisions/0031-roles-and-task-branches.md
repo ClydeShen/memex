@@ -24,6 +24,7 @@ Two implementers work at the same time, and all agents post from the same accoun
 5. **Assignment.** Each story has one label, `role:local-impl` or `role:cloud-impl`. Every issue, comment and pull request ends with `Role: <role>`.
 6. **Issue closing.** Commit messages use `Refs #<issue>`, not closing keywords. `planner` closes issues after verification.
 7. **CI.** The checks run on pull requests and on pushes to `main` and `epic/**`. Branch protection waits for the formal stage of ADR 0012.
+8. **Merge of task pull requests** (user decision, 2026-10-29). `planner` merges a task pull request into the epic branch, after `reviewer` approves it and `planner` has verified the acceptance of its issue. The author does not merge it.
 
 The rules for agents are in `AGENTS.md`, sections Roles and Branches.
 
