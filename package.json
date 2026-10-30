@@ -19,7 +19,7 @@
     "plan:order": "node harness/tools/plan-order.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.3",
+    "@biomejs/biome": "2.6.4",
     "@types/node": "26.6.5",
     "dependency-cruiser": "18.7.0",
     "knip": "6.43.0",
