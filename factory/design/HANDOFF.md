@@ -64,7 +64,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 - Team and branches (2026-10-28): four roles, one branch per epic, merges into `main` by pull request (ADR 0030, 0031).
 
 ### In progress
-- Epic #38 (foundation), on `epic/v0-foundation`: #44, #69, #95. Then epics #39, #40, #41 in this order. The live state of each epic is its "Current status" paragraph on GitHub.
+- Epic #38 (foundation) is done: merged into `main` on 2026-10-30 (bef2ff07). Next: epic #39 on `epic/v0-end-to-end`, starting with #45, then epics #40 and #41 in this order. The live state of each epic is its "Current status" paragraph on GitHub.
 
 ---
 
@@ -114,7 +114,7 @@ Known risks for V1:
 
 **Branches**: `epic/v0-foundation` (#38), `epic/v0-end-to-end` (#39), `epic/v0-contracts` (#40), `epic/v0-gates` (#41). Commit after each story, with its verification result in the message. When the epic is done, it merges into `main` through a pull request with a merge commit, after `reviewer` has reviewed it and the user approves.
 
-**Engineering setup first** (user decision, 2026-10-29): no story writes product code or runs an experiment before the engineering setup is done: the configuration that keeps the agents inside their limits (git, CI, agent instructions, dev tools, environment, check tools). In V0 that is epic #38; #45 is blocked by its open stories.
+**Engineering setup first** (user decision, 2026-10-29): no story writes product code or runs an experiment before the engineering setup is done: the configuration that keeps the agents inside their limits (git, CI, agent instructions, dev tools, environment, check tools). In V0 that is epic #38, done on 2026-10-30.
 
 **Milestone overview**:
 1. **V0.1 Monorepo skeleton**: done in #43.
