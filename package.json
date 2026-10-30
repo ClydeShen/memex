@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.3",
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "dependency-cruiser": "18.7.0",
     "knip": "6.43.0",
     "markdownlint-cli2": "0.23.3",
