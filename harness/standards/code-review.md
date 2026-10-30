@@ -1,54 +1,46 @@
 # Code review
 
-`reviewer` follows this standard for every pull request into an epic branch or into `main`. It covers pull requests only, not design documents or issues.
+`reviewer` reads the diff of a pull request into an epic branch or into `main`. A review is fast and looks at one thing: if this change is wrong, can we recover?
 
-## Checks
+## Do not check
 
-A review makes these five checks, in this sequence. Each one that fails is a finding.
+Do not report what a program can find: lint, format, types, compile errors, failing tests. `pnpm check` covers them. Do not run it. Do not report style or wording.
 
-1. **Acceptance.** Each acceptance condition of the linked issue (`Refs #<issue>`) is met, and the pull request or the issue report shows the evidence: the command and its output, or the manual step and its result. A condition without evidence is not met.
-2. **Scope.** The pull request changes nothing outside the scope of the issue. Name each extra change: the path and why it is outside the scope.
-3. **Repository rules.** The rules in `AGENTS.md`: the branch and its target, `Refs #<issue>` without closing keywords, English only, no generated output, the `Role:` line. And the standards in `harness/standards/`: [commit-messages.md](./commit-messages.md), [pull-requests.md](./pull-requests.md) and this file.
-4. **Protected files.** Name each changed path that matches `permissions.deny` in `.claude/settings.json`. The change is allowed only if the issue records that the user lifted the rule for it. Otherwise it is a finding, also when it was made with a shell command: the deny rules stop the edit tools, not scripts.
-5. **Tests.** New or changed logic has tests, and the tests fail when the logic is wrong. Accept as evidence a run in which a deliberately broken version fails the tests, or check it yourself by breaking the logic and running the tests.
+## Check
 
-## Severity
+Read the diff and the scope of the linked issue. Answer two questions:
 
-The levels are the P0–P3 scale of Codex code review. On GitHub, Codex reports only P0 and P1.
+1. **Damage.** What can this change break, and is that inside the scope of the issue?
+2. **Recovery.** If the change is wrong, can we undo it, for example with `git revert`?
 
-| Level | Meaning | Blocks the merge |
+A change cannot be undone, or its damage is outside the code, in these cases:
+
+- It deletes or rewrites data, history or files outside the repository.
+- It publishes a secret or private data. The repository is public.
+- It acts on an external system, a shared branch or the real repository from a test or a script.
+- It weakens a check, a hook or a deny rule that would catch the mistake.
+
+## Result
+
+| Result | When | Action |
 |---|---|---|
-| P0 | The change breaks the target branch or `pnpm check`, loses data, opens a security hole, or changes a protected file without the user's permission (check 4) | Yes |
-| P1 | An acceptance condition is not met or has no evidence; a repository rule is broken; logic is wrong, has no tests, or has tests that cannot fail | Yes |
-| P2 | A harmless change outside the scope; a problem for later maintenance; a document that the change made out of date | No |
-| P3 | Wording, naming or style that no check covers | No |
+| `Verdict: acceptable` | The damage is inside the scope and the change can be undone | Pass. Do not add other comments. |
+| `Verdict: needs decision` | You cannot estimate the damage, or the change cannot be undone | Name the path and line, what can go wrong, and why it cannot be undone. `planner` asks the user. |
+
+A correct-looking change that may have a bug still passes if the damage is small and it can be undone.
 
 ## Report
 
-- **One finding per comment**, placed at the line it is about. The comment has, in this order:
-  - the level and the check, for example `[P1] Acceptance`;
-  - the location as `path/file:line`;
-  - the evidence: the quoted line, or the command and its output;
-  - what would fix it.
-- **One summary**, as a review comment:
-  - `Head: <full commit SHA>`: the head of the pull request that was reviewed;
-  - the result of each of the five checks;
-  - the findings, grouped by level;
-  - as the last two lines, the verdict and the role:
+One comment on the pull request:
 
-    ```text
-    Verdict: acceptable
-    Role: reviewer
-    ```
+```text
+Head: <full commit SHA>
+Damage: <one sentence>
+Recovery: <one sentence>
+Verdict: acceptable
+Role: reviewer
+```
 
-    or `Verdict: changes needed`, then `Role: reviewer`.
+A verdict counts only for the head it names. After a new push, review the new head.
 
-`Verdict: acceptable` means that no P0 or P1 finding is open. A verdict counts only for the head it names. After a new push, the pull request needs a new review of the new head.
-
-All agents post from the same GitHub account, and GitHub does not let the author of a pull request approve it. So `planner` treats `Verdict: acceptable` at the current head as the approval that ADR 0031 point 8 requires, instead of a GitHub approval.
-
-## Fixes
-
-- The author fixes the findings on the same branch, with new commits and no force-push, and replies to each finding with the commit that fixes it, or with the reason why it stays.
-- `reviewer` reviews the new head again and writes a new summary with a new `Head:` and verdict.
-- The author does not merge. `planner` merges the pull request into the epic branch after `Verdict: acceptable` at the current head, and after checking the acceptance of the issue (ADR 0031 point 8).
+All agents post from one GitHub account, so GitHub cannot record an approval. `planner` accepts `Verdict: acceptable` at the current head as the approval (ADR 0031 point 8). The author does not merge.
