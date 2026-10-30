@@ -33,7 +33,7 @@ Some research has correction notes: `cross-check-2026-10-10.md` (no model traini
 - Epic #38 (foundation) is merged into `main` (bef2ff07, 2026-10-30). Now: epic #39 on `epic/v0-end-to-end`. Then `epic/v0-contracts` (#40) and `epic/v0-gates` (#41).
 - Each epic that makes code ends with a cleanup story (ADR 0026).
 - If the implementation shows that a contract needs a change, change `contracts.md` and give the reason. The contract freezes at the decision gate.
-- Dependabot pull requests target `main`. The user merges them. CI does not run `pnpm check` before the decision gate (ADR 0012). For a pull request that updates a check tool, `planner` first runs `pnpm check` on its branch and reports the result.
+- Dependabot pull requests (user decision, 2026-10-31): `reviewer` does not review them. At the end of each epic, `planner` gives an implementer one story for the open ones. A security update does not wait for the end of the epic. CI does not run `pnpm check` before the decision gate (ADR 0012).
 - Everything in the repository, issues, comments and pull requests is in English. The pre-commit hook rejects added CJK lines.
 - After V0 merges into `main`, remind the user to turn on the CodeQL default setup.
 
