@@ -53,6 +53,22 @@ describe("resourceSchema", () => {
     ).toBe(false);
   });
 
+  test("rejects an unknown field in metadata and in the spec of a component", () => {
+    expect(
+      resourceSchema.safeParse({ ...environment, metadata: { name: "one-room", labels: {} } })
+        .success,
+    ).toBe(false);
+    expect(
+      resourceSchema.safeParse({ ...environment, spec: { ...environment.spec, ref: "x" } }).success,
+    ).toBe(false);
+  });
+
+  test("rejects a negative seed", () => {
+    expect(
+      resourceSchema.safeParse({ ...experiment, spec: { ...experiment.spec, seed: -1 } }).success,
+    ).toBe(false);
+  });
+
   test("rejects an Experiment without a positive step limit", () => {
     expect(
       resourceSchema.safeParse({ ...experiment, spec: { ...experiment.spec, maxSteps: 0 } })

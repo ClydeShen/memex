@@ -14,6 +14,12 @@ test("accepts the data part of a step context", () => {
   expect(stepContextSchema.parse(context)).toEqual(context);
 });
 
+test("rejects a negative remaining budget", () => {
+  expect(stepContextSchema.safeParse({ ...context, budget: { remainingSteps: -1 } }).success).toBe(
+    false,
+  );
+});
+
 test("rejects a negative step and a state without a Goal", () => {
   expect(
     stepContextSchema.safeParse({ ...context, state: { ...context.state, step: -1 } }).success,

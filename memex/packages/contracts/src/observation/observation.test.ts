@@ -12,6 +12,10 @@ test("accepts an Observation with a JSON payload", () => {
   expect(observationSchema.parse(observation)).toEqual(observation);
 });
 
+test("rejects an empty source", () => {
+  expect(observationSchema.safeParse({ ...observation, source: "" }).success).toBe(false);
+});
+
 test("rejects a time without a time zone and a payload that is not JSON", () => {
   expect(
     observationSchema.safeParse({ ...observation, recordedAt: "2026-01-01 00:00" }).success,

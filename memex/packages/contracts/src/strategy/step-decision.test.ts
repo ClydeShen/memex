@@ -15,3 +15,7 @@ test("rejects an Action that names its own actor and a missing done", () => {
   ).toBe(false);
   expect(stepDecisionSchema.safeParse({ actions: [] }).success).toBe(false);
 });
+
+test("rejects an unknown field on the decision", () => {
+  expect(stepDecisionSchema.safeParse({ actions: [], done: true, wait: true }).success).toBe(false);
+});

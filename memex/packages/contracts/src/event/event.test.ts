@@ -36,3 +36,23 @@ test("rejects an extension attribute name that CloudEvents does not allow", () =
     eventSchema.safeParse({ ...event, ...Object.fromEntries([["memex_actor", "agent"]]) }).success,
   ).toBe(false);
 });
+
+test("rejects an event without the actor or the Instance that the core records", () => {
+  const { memexactor: _, ...withoutActor } = event;
+  const { memexinstance: __, ...withoutInstance } = event;
+  expect(eventSchema.safeParse(withoutActor).success).toBe(false);
+  expect(eventSchema.safeParse(withoutInstance).success).toBe(false);
+  expect(eventSchema.safeParse({ ...event, memexactor: "" }).success).toBe(false);
+});
+
+test("rejects a parent that is not a UUIDv7", () => {
+  expect(
+    eventSchema.safeParse({ ...event, memexparent: "550e8400-e29b-41d4-a716-446655440000" })
+      .success,
+  ).toBe(false);
+});
+
+test("rejects a time without a time zone and a content type other than JSON", () => {
+  expect(eventSchema.safeParse({ ...event, time: "2026-01-01T00:00:01" }).success).toBe(false);
+  expect(eventSchema.safeParse({ ...event, datacontenttype: "text/plain" }).success).toBe(false);
+});
