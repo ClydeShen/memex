@@ -202,7 +202,11 @@ importers:
 
   memex/packages/fakes: {}
 
-  memex/packages/runtime: {}
+  memex/packages/runtime:
+    dependencies:
+      '@memex/contracts':
+        specifier: workspace:*
+        version: link:../contracts
 
 packages:
 
