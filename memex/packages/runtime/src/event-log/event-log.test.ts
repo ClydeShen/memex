@@ -58,6 +58,11 @@ test("writes exactly one complete JSON event on each line", async () => {
   expect(lines.pop()).toBe("");
   expect(lines).toHaveLength(STEPS.length);
   for (const line of lines) expect(JSON.parse(line)).toMatchObject({ specversion: "1.0" });
+  const events = await collect(log.read());
+  expect(events.map((event) => event.memexparent)).toEqual([
+    undefined,
+    ...events.slice(0, -1).map((event) => event.id),
+  ]);
 });
 
 test("rejects an event that does not match the schema and does not write it", async () => {
