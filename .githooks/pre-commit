@@ -1,2 +1,4 @@
 #!/bin/sh
-exec node harness/sensors/no-cjk.mjs --staged
+# Light checks on the staged changes only: agents commit often, so this must stay fast.
+node harness/sensors/no-cjk.mjs --staged || exit 1
+exec pnpm exec biome check --staged --no-errors-on-unmatched

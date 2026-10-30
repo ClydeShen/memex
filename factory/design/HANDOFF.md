@@ -12,7 +12,7 @@ Roles (`planner`, `reviewer`, `local-impl`, `cloud-impl`) and the branch rules a
 2. Find your role in the user's first message, and read its row in the Roles table of `AGENTS.md`.
 3. The first time you work in this repository, read the documents of section 1 in order. It takes about 20 minutes. Later, read only what your task needs.
 4. Read the issue you are given, and its epic. The issue is the only channel between the agents.
-5. If you change code: run `git config core.hooksPath .githooks` once, then `pnpm install` and `pnpm check`. `pnpm check` must pass before you start.
+5. If you change code: run `pnpm install` (on a fresh clone it also turns on the git hooks) and `pnpm check`. `pnpm check` must pass before you start.
 
 ---
 
@@ -27,7 +27,7 @@ Roles (`planner`, `reviewer`, `local-impl`, `cloud-impl`) and the branch rules a
 | 5 | `factory/design/architecture/contracts.md` | Integration contracts v0 draft. **V0 implements it** |
 | 6 | `factory/design/dependencies.md`, `factory/design/tech-stack.md`, `factory/design/code-style.md`, `factory/design/security-and-data.md`, `factory/design/project-structure.md` | The category of each dependency (hard, configurable, optional) and the milestone that sets each default; the engineering tech stack and the specific npm packages; the shared code style and constraints, the security and data requirements, and the directory layout and naming rules, which you **must read before writing code** |
 | 7 | `factory/records/decisions/` | Accepted decisions. Before you change any of them, write a new ADR. **Read 0028 before writing code**: the repository has three zones, `memex/` is the isolated product, and its comments, prompts and error messages do not mention ADR numbers, experiments or version history. When you make a decision that the user should know about, add an entry to `factory/records/implementation-notes.md` (rule in `AGENTS.md`) |
-| 8 | `harness/README.md` | The configuration zone of the delivery agents. `harness/agents/` is created by #69; until then, this file applies |
+| 8 | `harness/README.md` | The configuration zone of the delivery agents. The shared agent instructions are in `harness/agents/README.md` |
 | 9 | `factory/design/open-questions.md` | Open questions, each with when it is decided |
 | 10 | `factory/records/research/*.md` | Evidence from research and checks: selection, standards, cross-checks, review reports |
 | 11 | `factory/records/plans/v0-integration.md` | **The V0 execution plan**: components, seams, gates and stories (ADR 0025) |
@@ -51,7 +51,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 
 - The branches of the old system are tags now (ADR 0031, 2026-10-28): `archive/master`, `archive/memex-v1`, `archive/ccr-80206efd-fwc2s7`, `archive/claude/new-session-t41aib`, `archive/eval/learning-engine-live`, `archive/exp/admission-verifier`, `archive/feat/freshness-substrate`. The user does not reuse the engineering standards and harness of the old system.
 - **The repository contains the monorepo skeleton and no product code yet**: five empty packages (`memex/packages/contracts`, `runtime`, `fakes`; `factory/validation/lab`, `worlds`), the root configuration (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`, `vitest.config.ts`), the checks in `harness/sensors/`, `.githooks/` and `.github/`, and the documents. `pnpm check` checks all packages with one command.
-- Commit messages follow Conventional Commits, for example `docs: ...`, `feat: ...`, with `Refs #<issue>` instead of closing keywords (ADR 0031). #44 adds a commit-msg hook that enforces the format.
+- Commit messages and pull requests follow `harness/standards/commit-messages.md` and `harness/standards/pull-requests.md` (ADR 0031). The commit-msg hook enforces the first line.
 - Dependabot pull requests target `main`, and the user merges them. CI does not run `pnpm check` before the decision gate (ADR 0012), so for a pull request that updates a check tool (Biome, TypeScript, Vitest, knip, dependency-cruiser, markdownlint-cli2), `planner` first runs `pnpm check` on its branch and reports the result in the pull request (user decision, 2026-10-29).
 - **Everything committed to the repository, and every issue, comment and pull request, is in English** (user decision, 2026-10-27). The CJK check in the pre-commit hook and in CI rejects added lines with CJK text.
 - The agent instructions are in `AGENTS.md`. The repository has no CLAUDE.md.

@@ -1,0 +1,11 @@
+// markdownlint-cli2 checks only factory/as-built/ (ADR 0026); see the docs:lint script.
+{
+  "config": {
+    // Long lines are fine: prose is not wrapped at a fixed width.
+    "MD013": false,
+    // The template marks what to fill in with <placeholders>.
+    "MD033": false,
+    // Tables use the compact |---| form of the other documents, without aligned pipes.
+    "MD060": false
+  }
+}

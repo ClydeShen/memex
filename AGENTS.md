@@ -1,5 +1,7 @@
 Start every session by reading `factory/design/HANDOFF.md`.
 
+The shared agent instructions are in [harness/agents/README.md](harness/agents/README.md): what to read first, the commands, and how to work.
+
 Create or update an entry in `factory/records/implementation-notes.md` only when both conditions apply:
 
 - The change involves a significant design decision, or deviates from the agreed design or expected behavior.
@@ -25,7 +27,11 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 - `planner` merges a task pull request into the epic branch, after `reviewer` approves it and `planner` has verified its acceptance. The author does not merge it.
 - An epic merges into `main` through a pull request with a merge commit, after `reviewer` review and user approval.
 - Merged branches are deleted automatically. An epic that fails is kept as a tag with the same name under `archive/` (for example `archive/epic/v0-foundation`), then its branch is deleted.
-- Write `Refs #<issue>` in commit messages, not `Closes`. `planner` closes issues after verification.
+- Commit messages follow [harness/standards/commit-messages.md](harness/standards/commit-messages.md), and pull requests follow [harness/standards/pull-requests.md](harness/standards/pull-requests.md). `planner` closes issues after verification.
 - Do not push to `main` unless you are `planner`. Do not force-push.
 - Dependabot pull requests target `main`. The user merges them after CI passes.
 - Do not commit generated output: run results, logs, caches, or files with a timestamp in the name. Write it under an ignored directory such as `factory/validation/runs/`. If a tool creates a new kind of output, add a `.gitignore` rule in the same commit.
+
+## Code Review Rules
+
+- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: the checks, the severity levels and the report format.

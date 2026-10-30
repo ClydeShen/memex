@@ -51,7 +51,7 @@ The repository has three zones ([ADR 0028](factory/records/decisions/0028-harnes
 - pnpm 12
 - Machine-specific settings go in `.env`, which is not committed. See `.env.example` for the keys to fill in.
 - Install with `pnpm install`. `pnpm check` runs lint, the architecture check, the marker word scan, the type check, the unused code check and the tests of all packages.
-- After you clone, run `git config core.hooksPath .githooks` once. This turns on the pre-commit check that rejects CJK text. CI runs the same check on every pull request and every push to `main` or an epic branch.
+- `pnpm install` on a fresh clone turns on the git hooks in `.githooks/` (the root `prepare` script sets `core.hooksPath`). pre-commit rejects CJK text and lint errors in the staged files, commit-msg enforces Conventional Commits, and pre-push runs `pnpm check`. CI runs the CJK check on every pull request and every push to `main` or an epic branch.
 
 ## License
 

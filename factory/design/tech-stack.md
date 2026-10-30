@@ -26,6 +26,7 @@ This file lists the engineering tech stack of Memex: the role of each item, its 
 |---|---|---|---|---|
 | Node.js | 26.x (`.nvmrc`) | Hard dependency | Runtime; runs `.ts` directly with no build. By the official release schedule, Node 26 enters Active LTS on 2026-10-28 and is Current before that. It is also the last version of the old odd/even release model; from Node 27 there is one major version per year | Ready |
 | TypeScript | 7.0.x | Hard dependency | Type checking only (`tsc --noEmit`); it does not emit code. Turn on `strict` and `erasableSyntaxOnly`. dependency-cruiser gets its own TypeScript 6 (see "Verified in V0-02") | V0.1 |
+| @types/node | 26.6.x | Development tool | Node API types for the type check of `harness/` and `.claude/hooks/`. Types only: no runtime code, and its one dependency is `undici-types`. Only `harness/tsconfig.json` loads it (`types: ["node"]`); the product packages keep `types: []`, so they cannot use Node APIs by accident. Added in #97 in place of hand-written declarations | V0-33 |
 | pnpm | 12.x (fixed by the `packageManager` field) | Development tool | Package management and monorepo (pnpm workspaces). It was chosen over npm for security (user decision, 2026-10-11): it blocks dependency install scripts by default and allows only the packages listed in `allowBuilds`; `minimumReleaseAge` delays installing newly published versions by default; `trustPolicy` can reject versions whose trust level went down; the strict `node_modules` layout stops code from using undeclared dependencies. It also installs faster and uses less disk space. The setting names were confirmed for pnpm 12 (see "Verified in V0-02") | V0.1 |
 
 ## 2. Code quality
@@ -40,6 +41,12 @@ This file lists the engineering tech stack of Memex: the role of each item, its 
 | Dependabot, `pnpm audit` | Provided by GitHub and pnpm | Development tool | Warns about known vulnerabilities in dependencies | From V0.1 (no CI needed, consistent with security-and-data.md S4) |
 | CJK check (`harness/sensors/no-cjk.mjs`) | Own script, Node built-ins only | Development tool | Fails when added lines or new paths contain CJK text, so that all repository content is in English. Lines that already exist are not checked. Runs in the pre-commit hook and in CI (`.github/workflows/no-cjk.yml`, on pull requests and on pushes to `main` and `epic/**`) | In effect (user decision, 2026-10-27) |
 
+Scope of the checks (#97):
+- `pnpm lint` (Biome) and `pnpm typecheck` (tsc) cover `harness/` and `.claude/hooks/` as well as the packages. The type check of those files is `harness/tsconfig.json`, which loads `@types/node`; the packages keep `types: []`.
+- `harness/**` and `.claude/hooks/**` get lenient lint rules: the formatter and the Biome recommended rules only. `biome.json` turns off there the extra rules of the project (the `complexity`, `nursery` and `style` rules it adds). The reason: `pnpm check` and the pre-push hook run these checks, and some of the files are protected from the agent (`permissions.deny`). A finding of a style rule in a protected file would block pushes that the agent cannot fix. `biome.json` is strict JSON, so the reason cannot be a comment in it.
+- The GritQL rule `no-function-declaration` is attached by an override to everything except `harness/**` and `.claude/hooks/**`, because an override can only add plugins, not remove one. Product code is therefore still checked by it.
+- When a check fails in a protected file, the `Stop` hook does not ask the agent to fix it: it tells the agent to report the check, the file and the error in the issue, ask the user, and stop.
+
 Alternatives:
 - ESLint 10 with typescript-eslint 8: more complete rules, but TypeScript must go down to 6.0. Evaluate again after TS 7.1 is released and typescript-eslint supports TS 7.
 - oxlint 1.x with oxfmt: the fastest, but oxfmt is still at 0.x.
@@ -51,16 +58,25 @@ Purpose: run quick checks on the local machine before a commit, to stop obvious 
 
 | Approach | Version | Category | Role | When |
 |---|---|---|---|---|
-| git's built-in `core.hooksPath` (main choice) | Built into git | — | The hook scripts are committed in the `.githooks/` directory of the repository. Until V0.1, run `git config core.hooksPath .githooks` once by hand. From V0.1, the `prepare` script of the root `package.json` runs it, so it takes effect on `pnpm install`. No package is installed (selection principle 1, security-and-data.md S3). pnpm `allowBuilds` only controls the install scripts of dependencies; the root project's own `prepare` runs as usual | In effect |
+| git's built-in `core.hooksPath` (main choice) | Built into git | — | The hook scripts are committed in the `.githooks/` directory of the repository. The `prepare` script of the root `package.json` runs `git config core.hooksPath .githooks`, so it takes effect on `pnpm install`. pnpm skips `prepare` when the install is already up to date, so in an existing clone where the setting is missing, run `pnpm run prepare`. No package is installed (selection principle 1, security-and-data.md S3). pnpm `allowBuilds` only controls the install scripts of dependencies; the root project's own `prepare` runs as usual | In effect |
 | Biome `--staged` | Built into Biome | — | The pre-commit hook runs `biome check --staged`, which checks only the staged files, with no need for lint-staged | V0.1 |
 
 The three hooks divide the work like this (confirmed by the user, 2026-10-12; the CJK check added 2026-10-27):
 
 | Hook | What it does | Reason |
 |---|---|---|
-| pre-commit | The CJK check on the staged changes (now), and `biome check --staged` (from V0.1) | Must stay light: agents commit often during local development, and the hook must not slow them down |
-| commit-msg | Enforces the Conventional Commits format (`type(scope): description`) with a very short `.ts` script, run directly by Node 26 | Commit messages are an important source for tracing history; World 0 also uses the git history as a data source (ADR 0011) |
+| pre-commit | The CJK check on the staged changes, then `biome check --staged` | Must stay light: agents commit often during local development, and the hook must not slow them down |
+| commit-msg | Enforces the Conventional Commits format (`type(scope)!: description`) with a very short `.ts` script (`harness/sensors/commit-msg.ts`), run directly by Node 26. The merge and revert messages that git writes are accepted | Commit messages are an important source for tracing history; World 0 also uses the git history as a data source (ADR 0011) |
 | pre-push | Runs the full `pnpm check` (type check, lint, architecture check, tests) | Code that is pushed must pass the checks |
+
+Git hooks run only at commit and push, while an agent edits many times within a story. So Claude Code also gets hooks of its own in the project `.claude/settings.json`, with the scripts in `.claude/hooks/` (confirmed by the user, 2026-10-14; research conclusions A3 and A4 in `factory/records/research/qa-harness-tools-2026-10-14.md`):
+
+| Agent hook | What it does |
+|---|---|
+| `PostToolUse` (`Edit\|Write`) | Runs `biome check` on the edited `.ts` file and sends the failure, with the rule name, back to the agent in the same turn |
+| `Stop` | Runs the type check, `biome check` and `vitest related --run` on the files changed since the last commit, except the files that `permissions.deny` keeps the agent from editing (their changes come from someone else). On failure it blocks the end of the turn and gives the reason. When `stop_hook_active` is true it lets the turn end, so it cannot loop |
+
+The same file denies edits to the checks themselves (`permissions.deny`): `.githooks/`, `.claude/`, `harness/sensors/`, `.github/`, `.dependency-cruiser.cjs`, `biome.json`, `knip.json`. The user lifts a rule for the time of a change. The rules match tool calls, so they do not stop an agent that changes a file through a script; the git checks of the cleanup stories catch that. Pushes to `main` and force-pushes are not denied there: the shared file would also block `planner`, which pushes docs to `main`, and on the local machine `planner` and `local-impl` share one checkout. The rule for them is in `AGENTS.md`.
 
 Alternatives:
 - lefthook 2.2.x: a single program written in Go, configured with one YAML file, can run several checks in parallel. The npm package ships prebuilt binaries per platform. Its own postinstall is blocked by pnpm by default, so `lefthook install` must run in `prepare` (the console of iii in specimens uses it this way). Switch when the hooks have more checks and need to run them in parallel.
@@ -181,7 +197,7 @@ Tested in a throwaway pnpm workspace outside the repository, with Node 26.12.1, 
 The numbers continue from the original list, because issues refer to them.
 
 5. **What changed in Ink 8 compared with 7.** Ink 8.0.0 was released on 2026-10-03 and requires React 19.3 or later; the release notes have not been read yet. Check them when P1 introduces it.
-6. **How hooks under `core.hooksPath` behave on Windows.** Git for Windows runs hooks with its bundled sh, so they should behave as on other platforms. Test once on the local machine when V0.1 lands.
+6. **How hooks under `core.hooksPath` behave on Windows.** Verified on 2026-10-29 (#44) with Git for Windows 2.48.1 and Node 26.12: the three hooks run under the bundled sh as on other platforms, with no changes. The `.ts` scripts of the hooks run with `node` directly, and the agent hooks in `.claude/settings.json` receive Windows paths with backslashes, which the scripts convert to forward slashes. The results are in #44.
 
 ## Sources
 

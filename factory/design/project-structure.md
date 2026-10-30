@@ -38,14 +38,18 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 │  ├─ agents/                shared agent instructions
 │  ├─ skills/                shared skills (Agent Skills format)
 │  ├─ standards/             standards that can be taken to other products
+│  │  ├─ commit-messages.md  the commit message rule; the commit-msg hook enforces its first line
+│  │  └─ pull-requests.md    the pull request title and body
 │  ├─ workflow/              checklist copies, team conventions, release process
 │  ├─ templates/             templates for issues, PRs, ADRs, research, as-built documents and handoffs
-│  └─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
+│  ├─ sensors/               check scripts and check rules: boundaries, package contents, marker words, front matter, as-built freshness, CJK text
+│  └─ tools/                 scripts that help the agents work but check nothing in a commit, for example `pnpm plan:order`; type checked with harness/tsconfig.json
 ├─ playbook/                 general cross-team engineering standards; not part of the three zones; will move to another repository
 ├─ AGENTS.md                 a thin entry point that points to harness/agents/; read by both Codex and Claude Code
 ├─ .agents/skills/           generated from harness/skills/ for Codex; do not edit by hand
 ├─ .claude/skills/           generated from harness/skills/ for Claude Code; do not edit by hand
 ├─ .github/workflows/        CI: the CJK check on pull requests and on pushes to main and epic branches
+├─ .vscode/                  project VS Code settings (Biome on save, the commit and pull request rules for generated text) and recommended extensions
 ├─ package.json              root configuration: the shared script entry points; `packageManager` fixes the pnpm version
 ├─ pnpm-workspace.yaml       pnpm workspaces and dependency security settings (factory/design/security-and-data.md section 5)
 ├─ pnpm-lock.yaml            locked dependency versions; must be committed
@@ -147,6 +151,7 @@ Data produced at runtime is not repository content. Experiment data and product 
 | `harness/sensors/` (the CJK check, from 2026-10-27), `.githooks/`, `.github/workflows/` | Exist now |
 | The other checks in `harness/sensors/`, `harness/agents/`, `factory/as-built/TEMPLATE.md` and `index.md` | V0-28 |
 | The per-package pages of `factory/as-built/` | V0-29 (the first cleanup) |
+| `harness/tools/` (`pnpm plan:order`) | V0-32 (#96) |
 | `harness/skills/` and the sync script | When the first shared skill appears |
 | `memex/providers/` | V1 (the first real Provider) |
 | `memex/apps/` | P1 (product commands are designed after the decision gate) |
