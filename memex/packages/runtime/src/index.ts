@@ -1,3 +1,14 @@
+export {
+  type ActionEnvironment,
+  type ActionExecutor,
+  type ActionExecutorDependencies,
+  type ActionOrigin,
+  type ActionPolicy,
+  type ActionResult,
+  createActionExecutor,
+  type SubmitError,
+} from "./action-executor/action-executor.ts";
+export { createAllowAllPolicy } from "./action-executor/allow-all-policy.ts";
 export { type LoadError, loadResourceFile } from "./composition-root/load-resource-file.ts";
 export {
   type ComponentContext,
