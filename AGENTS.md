@@ -34,4 +34,4 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 
 ## Code Review Rules
 
-- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: only damage and recovery, not what programs can check.
+- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: only broken behavior, leaks and changes with no recovery.

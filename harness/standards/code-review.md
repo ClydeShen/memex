@@ -1,42 +1,39 @@
 # Code review
 
-`reviewer` reads the diff of a pull request into an epic branch or into `main`. A review is fast and looks at one thing: if this change is wrong, can we recover?
+`reviewer` reads the diff of a pull request into an epic branch or into `main`, and the code around it. A review is fast. It reports only what can do real harm.
 
-## Do not check
+## Do not report
 
-Do not report what a program can find: lint, format, types, compile errors, failing tests. `pnpm check` covers them. Do not run it. Do not report style or wording.
+- What a program can find: lint, format, types, compile errors, failing tests. `pnpm check` covers them. Do not run it.
+- Style, naming and wording.
+- A possible bug that you cannot show at a `path/file:line`.
 
-## Check
+## Report
 
-Read the diff and the scope of the linked issue. Answer two questions:
+Report only these three cases:
 
-1. **Damage.** What can this change break, and is that inside the scope of the issue?
-2. **Recovery.** If the change is wrong, can we undo it, for example with `git revert`?
-
-A change cannot be undone, or its damage is outside the code, in these cases:
-
-- It deletes or rewrites data, history or files outside the repository.
-- It publishes a secret or private data. The repository is public.
-- It acts on an external system, a shared branch or the real repository from a test or a script.
-- It weakens a check, a hook or a deny rule that would catch the mistake.
+1. **Broken behavior.** A clear logic error. Show the `path/file:line` and the input that gives the wrong result.
+2. **Leak.** The change exposes data or a secret. The repository is public.
+3. **No recovery.** The change cannot be undone, or you cannot estimate its damage. Examples:
+   - It deletes or rewrites data, history or files outside the repository.
+   - It acts on an external system, a shared branch or the real repository from a test or a script.
+   - It weakens a check, a hook or a deny rule that would catch the mistake.
 
 ## Result
 
-| Result | When | Action |
+| Result | When | Next step |
 |---|---|---|
-| `Verdict: acceptable` | The damage is inside the scope and the change can be undone | Pass. Do not add other comments. |
-| `Verdict: needs decision` | You cannot estimate the damage, or the change cannot be undone | Name the path and line, what can go wrong, and why it cannot be undone. `planner` asks the user. |
+| `Verdict: acceptable` | None of the three cases | `planner` merges after its acceptance check |
+| `Verdict: changes needed` | Case 1 | The author fixes it on the same branch, with no force-push. `reviewer` reviews the new head |
+| `Verdict: needs decision` | Case 2 or 3 | `planner` asks the user |
 
-A correct-looking change that may have a bug still passes if the damage is small and it can be undone.
-
-## Report
+## Format
 
 One comment on the pull request:
 
 ```text
 Head: <full commit SHA>
-Damage: <one sentence>
-Recovery: <one sentence>
+Findings: none, or one line per finding with its case, `path/file:line` and evidence
 Verdict: acceptable
 Role: reviewer
 ```
