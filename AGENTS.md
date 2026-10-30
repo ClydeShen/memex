@@ -12,7 +12,7 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 | Role | Who | Does | Commits to |
 |---|---|---|---|
 | `planner` | Planning session | Writes and syncs issues and epics; edits design docs; merges task pull requests | `main`, docs only |
-| `reviewer` | Codex session | Reviews pull requests; opens issues; sometimes opens fix pull requests | Own branch, pull request into the epic branch |
+| `reviewer` | Codex session, or a Claude routine that `planner` starts | Reviews pull requests; opens issues; sometimes opens fix pull requests | Own branch, pull request into the epic branch |
 | `local-impl` | Claude on the local machine | Stories that need the local environment, the GPU, or the user's help on this machine | The epic branch, directly |
 | `cloud-impl` | Claude in the cloud | Stories that need neither | Own branch, pull request into the epic branch |
 
