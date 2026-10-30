@@ -52,6 +52,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 - The branches of the old system are tags now (ADR 0031, 2026-10-28): `archive/master`, `archive/memex-v1`, `archive/ccr-80206efd-fwc2s7`, `archive/claude/new-session-t41aib`, `archive/eval/learning-engine-live`, `archive/exp/admission-verifier`, `archive/feat/freshness-substrate`. The user does not reuse the engineering standards and harness of the old system.
 - **The repository contains the monorepo skeleton and no product code yet**: five empty packages (`memex/packages/contracts`, `runtime`, `fakes`; `factory/validation/lab`, `worlds`), the root configuration (`package.json`, `pnpm-workspace.yaml`, `biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`, `vitest.config.ts`), the checks in `harness/sensors/`, `.githooks/` and `.github/`, and the documents. `pnpm check` checks all packages with one command.
 - Commit messages and pull requests follow `harness/standards/commit-messages.md` and `harness/standards/pull-requests.md` (ADR 0031). The commit-msg hook enforces the first line.
+- Dependabot pull requests target `main`, and the user merges them. CI does not run `pnpm check` before the decision gate (ADR 0012), so for a pull request that updates a check tool (Biome, TypeScript, Vitest, knip, dependency-cruiser, markdownlint-cli2), `planner` first runs `pnpm check` on its branch and reports the result in the pull request (user decision, 2026-10-29).
 - **Everything committed to the repository, and every issue, comment and pull request, is in English** (user decision, 2026-10-27). The CJK check in the pre-commit hook and in CI rejects added lines with CJK text.
 - The agent instructions are in `AGENTS.md`. The repository has no CLAUDE.md.
 
@@ -71,7 +72,7 @@ Note: point 1 of part 3 of `factory/records/research/cross-check-2026-10-10.md` 
 
 - **Talk with the user in Chinese.** Keep explanations simple and use analogies. The user likes to ask from several angles to understand a decision. What goes into the repository is in English (section 2).
 - **Discuss first, act later.** The user has said many times "do not start yet; talk first". Without clear authorization, do not start implementing. Execute after the user confirms, and report when done.
-- **The user starts the implementers.** `planner` prepares the stories; the user tells `local-impl` and `cloud-impl` which issue to do.
+- **`planner` starts `local-impl`** (user decision, 2026-10-29). When a `role:local-impl` story is ready, `planner` sends the `local-impl` session a short message: the issue, the branch, and how to report (the issue holds everything else). The user starts `cloud-impl`. The user does not want to coordinate the agents: `planner` handles the follow-up work itself and asks the user only for what only the user can do, such as lifting a deny rule or an action in the VS Code or GitHub interface.
 - **Research before you ask.** If public material, official documentation or third-party information can verify something, check it yourself first, and confirm it directly when confidence is high. Bring only what is really uncertain to the user. When you state something, say whether it is "official", "second-hand" or "inferred".
 - **Record decisions at once**: write them into an ADR, the GLOSSARY, the roadmap or the issue they affect, with the date.
 - **Do not hard-code.** Make what can be replaced configurable, and categorize it in `factory/design/dependencies.md`. llama.cpp is only one Model Backend, not a hard dependency.
@@ -112,6 +113,8 @@ Known risks for V1:
 **V0 follows `factory/records/plans/v0-integration.md`** (ADR 0025): components, seams, gates, and 27 stories in five phases A–E, plus the cleanup stories of ADR 0026 (V0-28 to V0-30) and #95. Each epic that produces code ends with a cleanup story: architecture review, fix serious problems, re-index, update `factory/as-built/`. First connect the thinnest end-to-end path (phase B), then contract first (phases C and D).
 
 **Branches**: `epic/v0-foundation` (#38), `epic/v0-end-to-end` (#39), `epic/v0-contracts` (#40), `epic/v0-gates` (#41). Commit after each story, with its verification result in the message. When the epic is done, it merges into `main` through a pull request with a merge commit, after `reviewer` has reviewed it and the user approves.
+
+**Engineering setup first** (user decision, 2026-10-29): no story writes product code or runs an experiment before the engineering setup is done: the configuration that keeps the agents inside their limits (git, CI, agent instructions, dev tools, environment, check tools). In V0 that is epic #38; #45 is blocked by its open stories.
 
 **Milestone overview**:
 1. **V0.1 Monorepo skeleton**: done in #43.

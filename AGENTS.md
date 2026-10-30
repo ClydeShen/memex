@@ -11,9 +11,9 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 
 | Role | Who | Does | Commits to |
 |---|---|---|---|
-| `planner` | Planning session | Writes and syncs issues and epics; edits design docs | `main`, docs only |
+| `planner` | Planning session | Writes and syncs issues and epics; edits design docs; merges task pull requests | `main`, docs only |
 | `reviewer` | Codex session | Reviews pull requests; opens issues; sometimes opens fix pull requests | Own branch, pull request into the epic branch |
-| `local-impl` | Claude on the local machine | Stories that need the local environment or the GPU | The epic branch, directly |
+| `local-impl` | Claude on the local machine | Stories that need the local environment, the GPU, or the user's help on this machine | The epic branch, directly |
 | `cloud-impl` | Claude in the cloud | Stories that need neither | Own branch, pull request into the epic branch |
 
 - Each story has exactly one label: `role:local-impl` or `role:cloud-impl`. Take only stories with your label.
@@ -24,6 +24,7 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 - `main` holds verified code. Only `planner` commits to it directly.
 - `epic/<topic>` holds the epic in progress, for example `epic/v0-foundation`. At most one exists at a time.
 - Task branches keep the default name their tool gives them (for example `claude/...` or `codex/...`). Each one holds one pull request into the epic branch. Each agent has at most one open.
+- `planner` merges a task pull request into the epic branch, after `reviewer` approves it and `planner` has verified its acceptance. The author does not merge it.
 - An epic merges into `main` through a pull request with a merge commit, after `reviewer` review and user approval.
 - Merged branches are deleted automatically. An epic that fails is kept as a tag with the same name under `archive/` (for example `archive/epic/v0-foundation`), then its branch is deleted.
 - Commit messages follow [harness/standards/commit-messages.md](harness/standards/commit-messages.md), and pull requests follow [harness/standards/pull-requests.md](harness/standards/pull-requests.md). `planner` closes issues after verification.
