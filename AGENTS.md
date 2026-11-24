@@ -12,7 +12,7 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 | Role | Who | Does | Commits to |
 |---|---|---|---|
 | `planner` | Planning session | Writes and syncs issues and epics; edits design docs; merges task pull requests | `main`, docs only |
-| `reviewer` | Codex session | Reviews pull requests; opens issues; sometimes opens fix pull requests | Own branch, pull request into the epic branch |
+| `reviewer` | Codex session, or a Claude routine that `planner` starts | Reviews pull requests; opens issues; sometimes opens fix pull requests | Own branch, pull request into the epic branch |
 | `local-impl` | Claude on the local machine | Stories that need the local environment, the GPU, or the user's help on this machine | The epic branch, directly |
 | `cloud-impl` | Claude in the cloud | Stories that need neither | Own branch, pull request into the epic branch |
 
@@ -29,9 +29,9 @@ Create or update an entry in `factory/records/implementation-notes.md` only when
 - Merged branches are deleted automatically. An epic that fails is kept as a tag with the same name under `archive/` (for example `archive/epic/v0-foundation`), then its branch is deleted.
 - Commit messages follow [harness/standards/commit-messages.md](harness/standards/commit-messages.md), and pull requests follow [harness/standards/pull-requests.md](harness/standards/pull-requests.md). `planner` closes issues after verification.
 - Do not push to `main` unless you are `planner`. Do not force-push.
-- Dependabot pull requests target `main`. The user merges them after CI passes.
+- Dependabot pull requests target `main`. `reviewer` does not review them. An implementer runs `pnpm check` on them in a batch story, and `planner` merges the ones that pass.
 - Do not commit generated output: run results, logs, caches, or files with a timestamp in the name. Write it under an ignored directory such as `factory/validation/runs/`. If a tool creates a new kind of output, add a `.gitignore` rule in the same commit.
 
 ## Code Review Rules
 
-- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: the checks, the severity levels and the report format.
+- Review every pull request as [harness/standards/code-review.md](harness/standards/code-review.md) says: only broken behavior, leaks and changes with no recovery.
