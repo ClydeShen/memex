@@ -25,21 +25,45 @@
     "rules": {
       "complexity": {
         "useArrowFunction": "error",
-        "noExcessiveCognitiveComplexity": "error"
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 10
+          }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 60
+          }
+        },
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 4
+          }
+        },
+        "noUselessCatch": "error"
       },
       "nursery": {
         "useExplicitType": "error",
         "noFloatingPromises": "error",
-        "noMisusedPromises": "error"
+        "noMisusedPromises": "error",
+        "noUnsafeTypeAssertion": "error",
+        "noUselessTypeAssertion": "error",
+        "useStrictBooleanExpressions": "error",
+        "usePromiseRejectErrors": "error",
+        "noChainedComparison": "error",
+        "useExhaustiveSwitchCases": "error"
       },
       "style": {
         "noParameterAssign": "error",
         "noUselessElse": "error",
         "noNestedTernary": "error",
         "noProcessEnv": "error",
-        "noEnum": "error",
-        "noNamespace": "error",
-        "noParameterProperties": "error",
+        "noEnum": "off",
+        "noNamespace": "off",
+        "noParameterProperties": "off",
         "noNonNullAssertion": "error",
         "noDefaultExport": "error",
         "noCommonJs": "error",
@@ -50,12 +74,50 @@
             "filenameCases": ["kebab-case"]
           }
         },
-        "noMagicNumbers": "error"
+        "noMagicNumbers": "error",
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 400
+          }
+        },
+        "useAsConstAssertion": "error",
+        "useThrowOnlyError": "error",
+        "useThrowNewError": "error",
+        "useErrorCause": "error",
+        "noNegationElse": "error",
+        "useCollapsedElseIf": "error",
+        "useCollapsedIf": "error",
+        "useBlockStatements": "error",
+        "noMultiAssign": "error",
+        "useForOf": "error",
+        "useConst": "error",
+        "useObjectSpread": "error",
+        "useImportType": "error",
+        "useExportType": "error",
+        "useImportsFirst": "error",
+        "useNodejsImportProtocol": "error",
+        "noRestrictedImports": "off"
       },
       "suspicious": {
         "noExplicitAny": "error",
         "noFocusedTests": "error",
-        "noSkippedTests": "error"
+        "noSkippedTests": "error",
+        "noEmptyBlockStatements": "error",
+        "useErrorMessage": "error",
+        "useAwait": "off",
+        "noVar": "error",
+        "noConsole": "error",
+        "noImportCycles": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      },
+      "performance": {
+        "noDelete": "error",
+        "noReExportAll": "error",
+        "noBarrelFile": "error"
       }
     }
   },
@@ -65,17 +127,52 @@
       "plugins": ["./harness/sensors/no-function-declaration.grit"]
     },
     {
+      "includes": ["memex/**", "factory/validation/**"],
+      "plugins": [
+        "./harness/sensors/no-vague-identifier.grit",
+        "./harness/sensors/no-let.grit",
+        "./harness/sensors/no-boolean-parameter.grit"
+      ]
+    },
+    {
+      "includes": [
+        "memex/**",
+        "factory/validation/**",
+        "!memex/packages/runtime/src/composition-root/load-resource-file.ts",
+        "!memex/packages/runtime/src/composition-root/registry.ts",
+        "!memex/packages/runtime/src/event-log/event-log.ts"
+      ],
+      "plugins": ["./harness/sensors/no-try-catch-outside-trust-boundary.grit"]
+    },
+    {
+      "includes": ["memex/**/*.test.ts", "factory/validation/**/*.test.ts"],
+      "plugins": [
+        "./harness/sensors/no-repo-mock.grit",
+        "./harness/sensors/no-snapshot.grit",
+        "./harness/sensors/no-truthiness-assertion.grit"
+      ]
+    },
+    {
       "includes": ["harness/**", ".claude/hooks/**"],
       "linter": {
         "rules": {
           "complexity": {
             "useArrowFunction": "off",
-            "noExcessiveCognitiveComplexity": "off"
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off",
+            "useMaxParams": "off",
+            "noUselessCatch": "off"
           },
           "nursery": {
             "useExplicitType": "off",
             "noFloatingPromises": "off",
-            "noMisusedPromises": "off"
+            "noMisusedPromises": "off",
+            "noUnsafeTypeAssertion": "off",
+            "noUselessTypeAssertion": "off",
+            "useStrictBooleanExpressions": "off",
+            "usePromiseRejectErrors": "off",
+            "noChainedComparison": "off",
+            "useExhaustiveSwitchCases": "off"
           },
           "style": {
             "noParameterAssign": "off",
@@ -90,7 +187,72 @@
             "noCommonJs": "off",
             "useNamingConvention": "off",
             "useFilenamingConvention": "off",
-            "noMagicNumbers": "off"
+            "noMagicNumbers": "off",
+            "noExcessiveLinesPerFile": "off",
+            "useAsConstAssertion": "off",
+            "useThrowOnlyError": "off",
+            "useThrowNewError": "off",
+            "useErrorCause": "off",
+            "noNegationElse": "off",
+            "useCollapsedElseIf": "off",
+            "useCollapsedIf": "off",
+            "useBlockStatements": "off",
+            "noMultiAssign": "off",
+            "useForOf": "off",
+            "useConst": "off",
+            "useObjectSpread": "off",
+            "useImportType": "off",
+            "useExportType": "off",
+            "useImportsFirst": "off",
+            "useNodejsImportProtocol": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+            "useErrorMessage": "off",
+            "useAwait": "off",
+            "noVar": "off",
+            "noConsole": "off"
+          },
+          "performance": {
+            "noDelete": "off",
+            "noReExportAll": "off",
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/src/index.ts"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noReExportAll": "off",
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["memex/packages/contracts/src/pipe/pipe.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useMaxParams": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["!**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": {
+                "maxAllowedComplexity": 15
+              }
+            }
           }
         }
       }
@@ -125,5 +287,12 @@
         }
       }
     }
-  ]
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
 }

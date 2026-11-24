@@ -1,0 +1,6 @@
+language js(typescript)
+
+JsIdentifierBinding() as $name where {
+  $name <: r"^(?:data|tmp|temp|res|val|obj|item|info|stuff|thing)$",
+  register_diagnostic(span=$name, message="This name says nothing about the value. Use a name from the glossary or the domain.", severity="error")
+}

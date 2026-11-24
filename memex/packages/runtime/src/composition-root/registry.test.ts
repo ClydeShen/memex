@@ -1,6 +1,6 @@
 import type { EnvironmentResource, ProviderResource } from "@memex/contracts";
 import { API_VERSION } from "@memex/contracts";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { type ComponentContext, type ConfigSchema, createRegistry } from "./registry.ts";
 
 type RoomsConfig = { readonly rooms: number };
@@ -9,22 +9,29 @@ const invalid = { success: false, error: { message: "rooms must be a number" } }
 
 const roomsSchema: ConfigSchema<RoomsConfig> = {
   safeParse: (input: unknown) => {
-    if (typeof input !== "object" || input === null) return invalid;
-    if (!("rooms" in input) || typeof input.rooms !== "number") return invalid;
+    if (typeof input !== "object" || input === null) {
+      return invalid;
+    }
+    if (!("rooms" in input) || typeof input.rooms !== "number") {
+      return invalid;
+    }
     return { success: true, data: { rooms: input.rooms } };
   },
 };
 
 const context: ComponentContext = {
   clock: { now: () => "2026-01-01T00:00:00Z" },
-  operationalLog: { info: () => {} },
+  operationalLog: { info: vi.fn() },
 };
 
-const environment = (type: string, config: Record<string, unknown>): EnvironmentResource => ({
+const environment = (
+  type: string,
+  config: EnvironmentResource["spec"]["config"],
+): EnvironmentResource => ({
   apiVersion: API_VERSION,
   kind: "Environment",
   metadata: { name: "one-room" },
-  spec: { type, config: config as EnvironmentResource["spec"]["config"] },
+  spec: { type, config },
 });
 
 const registerWorld = (registry: ReturnType<typeof createRegistry>): void => {
@@ -62,16 +69,13 @@ test("creates the component with a configuration that its own schema has checked
 
 test("does not create the component when its configuration is invalid", async () => {
   const registry = createRegistry();
-  let created = false;
+  const create = vi.fn(async () => ({}));
   registry.register({
     kind: "Environment",
     type: "environment.micro-world",
     configSchema: roomsSchema,
     capabilities: {},
-    create: async () => {
-      created = true;
-      return {};
-    },
+    create,
   });
   const result = await registry.instantiate(
     environment("environment.micro-world", { rooms: "many" }),
@@ -81,7 +85,7 @@ test("does not create the component when its configuration is invalid", async ()
     kind: "invalid-config",
     type: "environment.micro-world",
   });
-  expect(created).toBe(false);
+  expect(create).not.toHaveBeenCalled();
 });
 
 test("hands the core services to the component", async () => {

@@ -17,8 +17,10 @@ test("another seed gives another Goal", async () => {
 });
 
 test("describes one Action that can be undone", async () => {
-  const info = await createOneRoomWorld().describe();
-  expect(info.actions).toEqual([{ name: "open-door", paramsSchema: {}, risk: "reversible" }]);
+  const description = await createOneRoomWorld().describe();
+  expect(description.actions).toEqual([
+    { name: "open-door", paramsSchema: {}, risk: "reversible" },
+  ]);
 });
 
 test("the goal is not reached before the first step", async () => {

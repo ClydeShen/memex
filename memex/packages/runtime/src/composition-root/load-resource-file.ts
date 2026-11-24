@@ -12,23 +12,31 @@ export type LoadError = {
 const parseYamlAsData = (text: string): Result<unknown, LoadError> => {
   const document = parseDocument(text, { schema: "core" });
   const problem = [...document.errors, ...document.warnings][0];
-  if (problem !== undefined) return err({ kind: "invalid-yaml", message: problem.message });
+  if (problem !== undefined) {
+    return err({ kind: "invalid-yaml", message: problem.message });
+  }
   return ok(document.toJS());
 };
 
 export const loadResourceFile = async (path: string): Promise<Result<Resource, LoadError>> => {
-  let text: string;
-  try {
-    text = await readFile(path, "utf8");
-  } catch (error) {
-    return err({
-      kind: "unreadable",
-      message: error instanceof Error ? error.message : String(error),
-    });
+  const text = await readFile(path, "utf8").then(
+    (content) => ok(content),
+    (error: unknown) =>
+      err({
+        kind: "unreadable" as const,
+        message: error instanceof Error ? error.message : String(error),
+      }),
+  );
+  if (!text.ok) {
+    return text;
   }
-  const data = parseYamlAsData(text);
-  if (!data.ok) return data;
-  const parsed = resourceSchema.safeParse(data.value);
-  if (!parsed.success) return err({ kind: "invalid-resource", message: parsed.error.message });
+  const yamlResult = parseYamlAsData(text.value);
+  if (!yamlResult.ok) {
+    return yamlResult;
+  }
+  const parsed = resourceSchema.safeParse(yamlResult.value);
+  if (!parsed.success) {
+    return err({ kind: "invalid-resource", message: parsed.error.message });
+  }
   return ok(parsed.data);
 };

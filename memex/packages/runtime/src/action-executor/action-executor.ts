@@ -92,7 +92,9 @@ export const createActionExecutor = (dependencies: ActionExecutorDependencies): 
       memexactor: actor,
       memexinstance: instance,
     });
-    if (!appended.ok) return err({ kind: "log-failed", message: appended.error.message });
+    if (!appended.ok) {
+      return err({ kind: "log-failed", message: appended.error.message });
+    }
     const step = await environment.step(request);
     return ok({ status: "executed", observations: step.observations });
   };

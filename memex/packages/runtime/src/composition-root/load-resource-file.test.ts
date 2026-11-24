@@ -4,18 +4,18 @@ import { join } from "node:path";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import { loadResourceFile } from "./load-resource-file.ts";
 
-let dir = "";
+const workspace = { dir: "" };
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), "resource-file-"));
+  workspace.dir = await mkdtemp(join(tmpdir(), "resource-file-"));
 });
 
 afterEach(async () => {
-  await rm(dir, { recursive: true });
+  await rm(workspace.dir, { recursive: true });
 });
 
 const writeResource = async (text: string): Promise<string> => {
-  const path = join(dir, "resource.yaml");
+  const path = join(workspace.dir, "resource.yaml");
   await writeFile(path, text);
   return path;
 };
@@ -45,7 +45,7 @@ test("reads a resource from a YAML file", async () => {
 });
 
 test("reports a file that cannot be read", async () => {
-  const result = await loadResourceFile(join(dir, "missing.yaml"));
+  const result = await loadResourceFile(join(workspace.dir, "missing.yaml"));
   expect(result.ok === false && result.error.kind).toBe("unreadable");
 });
 

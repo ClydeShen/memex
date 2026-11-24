@@ -9,7 +9,9 @@ export type ScriptedStrategy = {
 export const createScriptedStrategy = (script: readonly ActionRequest[]): ScriptedStrategy => ({
   step: (ctx: StepContext): StepDecision => {
     const action = script[ctx.state.step];
-    if (action === undefined) return { actions: [], done: true };
+    if (action === undefined) {
+      return { actions: [], done: true };
+    }
     return { actions: [action], done: ctx.state.step + 1 >= script.length };
   },
 });

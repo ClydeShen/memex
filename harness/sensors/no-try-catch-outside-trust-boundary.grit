@@ -1,0 +1,5 @@
+language js(typescript)
+
+JsTryStatement() as $try where {
+  register_diagnostic(span=$try, message="Do not catch here. Let the error reach the caller; only a Trust Boundary file parses outside data and may catch.", severity="error")
+}

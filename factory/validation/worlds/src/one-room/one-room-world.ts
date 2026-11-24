@@ -45,11 +45,11 @@ const observe = (state: RoomState): Observation => ({
 
 // A World with one room and one closed door. Opening the door reaches the Goal.
 export const createOneRoomWorld = (): OneRoomWorld => {
-  let state: RoomState | undefined;
+  const world: { state: RoomState | undefined } = { state: undefined };
 
   const reset: OneRoomWorld["reset"] = async (seed: number) => {
     const first: RoomState = { seed, tick: 0, doorOpen: false };
-    state = first;
+    world.state = first;
     const goal: Goal = {
       id: `goal-${seed}`,
       description: "Open the door of the room.",
@@ -59,12 +59,15 @@ export const createOneRoomWorld = (): OneRoomWorld => {
   };
 
   const step: OneRoomWorld["step"] = async (request: ActionRequest) => {
-    if (state === undefined) throw new Error("reset must be called before step");
+    const { state } = world;
+    if (state === undefined) {
+      throw new Error("reset must be called before step");
+    }
     if (request.name !== OPEN_DOOR) {
       return { observations: [], valid: false, cost: 0, goalReached: state.doorOpen };
     }
     const next: RoomState = { ...state, tick: state.tick + 1, doorOpen: true };
-    state = next;
+    world.state = next;
     return { observations: [observe(next)], valid: true, cost: 1, goalReached: true };
   };
 

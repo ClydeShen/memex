@@ -8,8 +8,8 @@ import type {
   Event,
   StepResult,
 } from "@memex/contracts";
-import { afterEach, beforeEach, expect, test } from "vitest";
-import { createEventLog, type EventLog } from "../event-log/event-log.ts";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { createEventLog } from "../event-log/event-log.ts";
 import {
   type ActionEnvironment,
   type ActionPolicy,
@@ -17,21 +17,22 @@ import {
 } from "./action-executor.ts";
 import { createAllowAllPolicy } from "./allow-all-policy.ts";
 
-let dir = "";
-let eventLog: EventLog;
+const workspace = { dir: "", eventLog: createEventLog("unset") };
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), "action-executor-"));
-  eventLog = createEventLog(join(dir, "events.jsonl"));
+  workspace.dir = await mkdtemp(join(tmpdir(), "action-executor-"));
+  workspace.eventLog = createEventLog(join(workspace.dir, "events.jsonl"));
 });
 
 afterEach(async () => {
-  await rm(dir, { recursive: true });
+  await rm(workspace.dir, { recursive: true });
 });
 
 const readEvents = async (): Promise<readonly Event[]> => {
   const events: Event[] = [];
-  for await (const event of eventLog.read()) events.push(event);
+  for await (const event of workspace.eventLog.read()) {
+    events.push(event);
+  }
   return events;
 };
 
@@ -57,7 +58,7 @@ const createExecutor = (overrides: {
 }): ReturnType<typeof createActionExecutor> =>
   createActionExecutor({
     definitions: [MOVE],
-    eventLog,
+    eventLog: workspace.eventLog,
     environment: overrides.environment ?? { step: async () => STEP_RESULT },
     policy: overrides.policy ?? createAllowAllPolicy(),
     clock: { now: () => "2026-01-01T00:00:00Z" },
@@ -78,15 +79,8 @@ test("records an Action that a Strategy submits as done by the agent", async () 
 });
 
 test("rejects an unknown Action name and writes no event", async () => {
-  let stepped = false;
-  const executor = createExecutor({
-    environment: {
-      step: async () => {
-        stepped = true;
-        return STEP_RESULT;
-      },
-    },
-  });
+  const step = vi.fn(async () => STEP_RESULT);
+  const executor = createExecutor({ environment: { step } });
   const result = await executor.submit({ name: "fly", params: {} }, "strategy");
   expect(result).toEqual({
     ok: false,
@@ -97,7 +91,7 @@ test("rejects an unknown Action name and writes no event", async () => {
     },
   });
   expect(await readEvents()).toEqual([]);
-  expect(stepped).toBe(false);
+  expect(step).not.toHaveBeenCalled();
 });
 
 test("returns the Observations that the Environment step produced", async () => {
@@ -123,31 +117,26 @@ test("asks the Policy about the request, the actor and the definition", async ()
 });
 
 test("writes the event before the Environment executes the Action", async () => {
-  let eventsAtStep = -1;
+  const eventCounts: number[] = [];
   const environment: ActionEnvironment = {
     step: async () => {
-      eventsAtStep = (await readEvents()).length;
+      eventCounts.push((await readEvents()).length);
       return STEP_RESULT;
     },
   };
   await createExecutor({ environment }).submit({ name: "move", params: {} }, "strategy");
-  expect(eventsAtStep).toBe(1);
+  expect(eventCounts).toEqual([1]);
 });
 
 test("does not execute an Action that the Policy does not allow", async () => {
   const deny: Decision = { outcome: "deny", reason: "not today" };
-  let stepped = false;
+  const step = vi.fn(async () => STEP_RESULT);
   const executor = createExecutor({
     policy: { authorize: async () => deny },
-    environment: {
-      step: async () => {
-        stepped = true;
-        return STEP_RESULT;
-      },
-    },
+    environment: { step },
   });
   const result = await executor.submit({ name: "move", params: {} }, "strategy");
   expect(result.ok === false && result.error).toMatchObject({ kind: "not-allowed" });
   expect(await readEvents()).toEqual([]);
-  expect(stepped).toBe(false);
+  expect(step).not.toHaveBeenCalled();
 });

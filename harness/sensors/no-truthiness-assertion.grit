@@ -1,0 +1,9 @@
+language js(typescript)
+
+or {
+  `$subject.toBeTruthy($args)`,
+  `$subject.toBeFalsy($args)`,
+  `$subject.toBeDefined($args)`
+} as $call where {
+  register_diagnostic(span=$call, message="Assert the exact value with toBe or toEqual, not its truthiness.", severity="error")
+}

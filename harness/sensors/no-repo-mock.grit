@@ -1,0 +1,6 @@
+language js(typescript)
+
+`vi.mock($path, $factory)` as $call where {
+  $path <: r"^[\"'](?:\.|@memex).*",
+  register_diagnostic(span=$call, message="Do not mock a path of this repository. Replace the dependency at its port with a fake.", severity="error")
+}

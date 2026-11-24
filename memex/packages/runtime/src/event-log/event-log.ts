@@ -16,47 +16,64 @@ const readLines = async (path: string): Promise<readonly string[]> => {
     const text = await readFile(path, "utf8");
     return text.split("\n").filter((line) => line !== "");
   } catch (error) {
-    if (error instanceof Error && "code" in error && error.code === "ENOENT") return [];
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return [];
+    }
     throw error;
   }
 };
 
+type EventId = Event["id"];
+
+type Appended = {
+  readonly result: Result<EventId, AppendError>;
+  readonly lastId: EventId | undefined;
+};
+
+const loadLastId = async (path: string): Promise<EventId | undefined> => {
+  const last = (await readLines(path)).at(-1);
+  return last === undefined ? undefined : eventSchema.parse(JSON.parse(last)).id;
+};
+
+const appendOne = async (
+  path: string,
+  event: NewEvent,
+  lastId: EventId | undefined,
+): Promise<Appended> => {
+  const candidate = {
+    ...event,
+    id: randomUUIDv7(),
+    ...(lastId === undefined ? {} : { memexparent: lastId }),
+  };
+  const parsed = eventSchema.safeParse(candidate);
+  if (!parsed.success) {
+    return { result: err({ kind: "invalid-event", message: parsed.error.message }), lastId };
+  }
+  await appendFile(
+    path,
+    `${JSON.stringify(parsed.data)}
+`,
+  );
+  return { result: ok(parsed.data.id), lastId: parsed.data.id };
+};
+
 export const createEventLog = (path: string): EventLog => {
-  // Appends are chained so that each event names the one written just before it.
-  let lastId: Event["id"] | undefined;
-  let loaded = false;
-  let queue: Promise<unknown> = Promise.resolve();
-
-  const loadLastId = async (): Promise<void> => {
-    if (loaded) return;
-    const lines = await readLines(path);
-    const last = lines.at(-1);
-    lastId = last === undefined ? undefined : eventSchema.parse(JSON.parse(last)).id;
-    loaded = true;
-  };
-
-  const appendOne = async (event: NewEvent): Promise<Result<Event["id"], AppendError>> => {
-    await loadLastId();
-    const candidate = {
-      ...event,
-      id: randomUUIDv7(),
-      ...(lastId === undefined ? {} : { memexparent: lastId }),
-    };
-    const parsed = eventSchema.safeParse(candidate);
-    if (!parsed.success) return err({ kind: "invalid-event", message: parsed.error.message });
-    await appendFile(path, `${JSON.stringify(parsed.data)}\n`);
-    lastId = parsed.data.id;
-    return ok(parsed.data.id);
-  };
+  const chain: { tail: Promise<EventId | undefined> | undefined } = { tail: undefined };
 
   const append: EventLog["append"] = (event: NewEvent) => {
-    const result = queue.then(() => appendOne(event));
-    queue = result.catch(() => undefined);
-    return result;
+    const previous = chain.tail ?? loadLastId(path);
+    const written = previous.then((lastId) => appendOne(path, event, lastId));
+    chain.tail = written.then(
+      (appended) => appended.lastId,
+      () => loadLastId(path),
+    );
+    return written.then((appended) => appended.result);
   };
 
   const read: EventLog["read"] = async function* () {
-    for (const line of await readLines(path)) yield eventSchema.parse(JSON.parse(line));
+    for (const line of await readLines(path)) {
+      yield eventSchema.parse(JSON.parse(line));
+    }
   };
 
   return { append, read };

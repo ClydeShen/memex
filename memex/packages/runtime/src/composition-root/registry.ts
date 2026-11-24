@@ -89,7 +89,9 @@ export const createRegistry = (): Registry => {
       kind: entry.kind,
       create: async (config: unknown, ctx: ComponentContext) => {
         const parsed = entry.configSchema.safeParse(config);
-        if (!parsed.success) return err({ kind: "invalid-config", message: parsed.error.message });
+        if (!parsed.success) {
+          return err({ kind: "invalid-config", message: parsed.error.message });
+        }
         try {
           return ok(await entry.create(parsed.data, ctx));
         } catch (error) {
@@ -121,7 +123,9 @@ export const createRegistry = (): Registry => {
       });
     }
     const created = await registered.create(config, ctx);
-    if (!created.ok) return err({ ...created.error, type });
+    if (!created.ok) {
+      return err({ ...created.error, type });
+    }
     return created;
   };
 

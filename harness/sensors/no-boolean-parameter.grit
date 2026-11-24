@@ -1,0 +1,6 @@
+language js(typescript)
+
+TsBooleanType() as $type where {
+  $type <: within JsFormalParameter(),
+  register_diagnostic(span=$type, message="A boolean parameter hides two behaviors in one function. Split it into two named functions.", severity="error")
+}
