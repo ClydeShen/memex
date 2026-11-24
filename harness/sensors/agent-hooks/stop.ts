@@ -1,9 +1,3 @@
-// Stop hook: before the agent ends its turn, runs the type check, lint and the tests related to the
-// files changed since the last commit, except the files the agent is denied to edit. On failure it
-// blocks the stop and gives the reason, so the agent cannot report the work as done. When a check
-// fails in a file the agent is denied to edit, the reason tells it to report and stop instead of
-// fixing it. The full `pnpm check` runs in the pre-push hook.
-
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join, matchesGlob } from "node:path";
@@ -16,7 +10,6 @@ type HookInput = {
 
 type Check = { name: string; command: string; args: string[]; shell?: boolean };
 
-// Keep the reason short enough for the agent to read; the end of the output holds the summary.
 const MAX_REASON_LENGTH = 6000;
 
 const input = JSON.parse(readFileSync(0, "utf8")) as HookInput;
@@ -72,10 +65,8 @@ const run = (check: Check, denied: string[]): Failure | null => {
   return { name: check.name, output, protectedFiles: protectedFilesIn(output, denied) };
 };
 
-// A second stop right after a block: let it through, so the hook cannot loop.
 if (!input.stop_hook_active) {
   const files = changedFiles();
-  // With no file arguments Biome would check the whole repository.
   const checks = files.length === 0 ? [] : checksFor(files);
   const denied = deniedPatterns(input.cwd);
   const failures = checks.map((check) => run(check, denied)).filter((failure) => failure !== null);

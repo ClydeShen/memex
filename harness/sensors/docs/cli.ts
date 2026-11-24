@@ -1,10 +1,4 @@
 #!/usr/bin/env node
-// Entry point of the as-built document commands. The checks themselves are in the modules next to it.
-//
-// Usage (from the repository root):
-//   node harness/sensors/docs/cli.ts check      pnpm docs:check
-//   node harness/sensors/docs/cli.ts stale      pnpm docs:stale
-//   node harness/sensors/docs/cli.ts generate   pnpm docs:generate
 
 import { checkPages } from "./check.ts";
 import { generate } from "./generate.ts";

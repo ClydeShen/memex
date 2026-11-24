@@ -14,7 +14,6 @@ let outside = "";
 beforeAll(() => {
   project = mkdtempSync(join(tmpdir(), "post-edit-"));
   outside = mkdtempSync(join(tmpdir(), "post-edit-outside-"));
-  // The hook runs Biome from the project's node_modules.
   symlinkSync(ROOT_NODE_MODULES, join(project, "node_modules"), "junction");
   writeFileSync(
     join(project, "biome.json"),

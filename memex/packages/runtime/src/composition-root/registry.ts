@@ -7,13 +7,11 @@ import {
   type StrategyResource,
 } from "@memex/contracts";
 
-// The services that the core hands to every component it creates.
 export type ComponentContext = {
   readonly clock: { readonly now: () => string };
   readonly operationalLog: { readonly info: (message: string) => void };
 };
 
-// What a component's schema must offer. A Zod schema satisfies it, so the core does not import Zod.
 export type ConfigSchema<Config> = {
   readonly safeParse: (
     input: unknown,
@@ -59,8 +57,6 @@ export type Registry = {
   ) => Promise<Result<unknown, InstantiateError>>;
 };
 
-// An entry with its configuration type erased: the schema check and create are joined here,
-// where both still know the type of the configuration.
 type Registered = {
   readonly kind: ComponentResource["kind"];
   readonly create: (

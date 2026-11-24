@@ -1,7 +1,3 @@
-// Writes the generated part of the as-built documents (`pnpm docs:generate`): the package list, the
-// dependency graph between packages, and the exports of each package. The output depends only on the
-// code, so running it twice gives the same files.
-
 import { type SpawnSyncReturns, spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -14,7 +10,6 @@ const PACKAGE_DIRECTORY = "^(memex/(packages|providers|apps)|factory/validation)
 
 type WorkspacePackage = { name: string; directory: string };
 
-// pnpm is a .cmd file on Windows, which needs a shell; the command line is fixed.
 const PNPM_LS = "pnpm ls --recursive --depth -1 --json";
 
 const output = (result: SpawnSyncReturns<string>, command: string): string => {

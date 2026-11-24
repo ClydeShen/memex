@@ -8,12 +8,6 @@ import {
   type Report,
 } from "./plan-order-report.ts";
 
-// A synthetic epic #10. #900 is a blocker in a different epic.
-//
-//   #11 (closed) blocks #12
-//   #13 blocks #14, #14 blocks #15
-//   #900 (open, other epic) blocks #16
-//   #17 and #18 have no blockers
 const issue = (number: number, state: Issue["state"], role?: string): Issue => ({
   number,
   title: `story ${number}`,
@@ -83,7 +77,6 @@ const orderTable = (order: number[]): string[] => [
 const node = (number: number): string =>
   number === 900 ? `N${number}["#${number} outside (epic #20)"]` : `N${number}["#${number} story"]`;
 
-// The epic body in the format the planner writes, with CRLF line endings as GitHub returns them.
 const epicBody = (overrides: Partial<Body> = {}): string => {
   const body = { ...DEFAULT_BODY, ...overrides };
   return [

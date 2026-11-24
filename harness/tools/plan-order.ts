@@ -1,11 +1,4 @@
 #!/usr/bin/env node
-// Orders the stories of an epic from the dependency links on GitHub, and reports where the epic
-// body disagrees with them. Read only: every request is a GET.
-//
-// Usage (from the repository root, with an authenticated GitHub CLI):
-//   pnpm plan:order <epic number>
-//
-// Exit code: 0 when the report has no cycle and no mismatch, 1 when it has, 2 on a usage or request error.
 
 import { execFileSync } from "node:child_process";
 import { formatReport, hasProblems, type Issue, planOrder } from "./plan-order-report.ts";
@@ -20,8 +13,6 @@ type GitHubIssue = {
 
 const MAX_OUTPUT = 64 * 1024 * 1024;
 
-// The only way this tool talks to GitHub. `--method GET` is explicit, so `gh api` never switches
-// to POST, which it does when a request has fields.
 const getJson = (path: string, { paginate }: { paginate: boolean }): unknown => {
   const pages = paginate ? ["--paginate", "--slurp"] : [];
   const output = execFileSync("gh", ["api", "--method", "GET", ...pages, path], {
@@ -31,7 +22,6 @@ const getJson = (path: string, { paginate }: { paginate: boolean }): unknown => 
   return JSON.parse(output);
 };
 
-// With --paginate --slurp, gh returns one array per page.
 const getAllPages = (path: string): GitHubIssue[] =>
   (getJson(path, { paginate: true }) as GitHubIssue[][]).flat();
 

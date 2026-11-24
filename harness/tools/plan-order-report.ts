@@ -1,7 +1,3 @@
-// The report of `pnpm plan:order`: which stories of an epic are ready for each role, which are
-// blocked and by what, and where the epic body disagrees with the dependency links on GitHub.
-// Pure: GitHub data and the epic body in, the report out. plan-order.ts fetches the data.
-
 type IssueState = "open" | "closed";
 
 export type Issue = {
@@ -15,7 +11,6 @@ export type PlanInput = {
   epic: number;
   body: string;
   subIssues: Issue[];
-  // The blockers of each sub-issue, by its number. A blocker can be outside the epic.
   blockedBy: Record<number, Issue[]>;
 };
 
@@ -28,7 +23,6 @@ export type Report = {
   cycles: number[][];
   ready: ReadyGroup[];
   blocked: Layer[];
-  // Open issues whose blockers never clear because they are in or behind a cycle.
   blockedByCycle: BlockedIssue[];
   mismatches: string[];
 };
@@ -41,8 +35,6 @@ const DIAGRAM_END = "<!-- progress-diagram:end -->";
 const DONE = "\u{1F7E2}";
 const READY = "\u{1F535}";
 const BLOCKED = "⚫";
-
-// ---- Epic body ----
 
 type EpicBody = {
   statuses: Map<number, string>;
@@ -65,7 +57,6 @@ const sections = (body: string, heading: RegExp): string[][] => {
   return result;
 };
 
-// The tables of a section, each as its body rows split into cells. Header and separator rows are dropped.
 const tables = (lines: string[]): string[][][] => {
   const result: string[][][] = [];
   let rows: string[][] | null = null;
@@ -106,7 +97,6 @@ const parseStatuses = (body: string): Map<number, string> => {
   return statuses;
 };
 
-// A newer suggested-order table is added below the older ones, so the last table is the current one.
 const parseSuggestedOrder = (body: string): number[] => {
   const all = sections(body, /^#{1,6}\s+Suggested order/i).flatMap(tables);
   const last = all.at(-1) ?? [];
@@ -143,11 +133,8 @@ const parseEpicBody = (body: string): EpicBody => {
   };
 };
 
-// ---- Dependency graph ----
-
 type Graph = {
   issues: Map<number, Issue>;
-  // blocker -> the issues it blocks
   blocks: Map<number, number[]>;
 };
 
@@ -172,8 +159,6 @@ const openBlockersOf = (input: PlanInput, graph: Graph, issue: number): number[]
     .filter((blocker) => graph.issues.get(blocker)?.state === "open")
     .toSorted((a, b) => a - b);
 
-// Strongly connected components (Tarjan). A component with more than one issue, or an issue
-// that blocks itself, is a cycle.
 const findCycles = (graph: Graph): number[][] => {
   const index = new Map<number, number>();
   const lowLink = new Map<number, number>();
@@ -215,8 +200,6 @@ const findCycles = (graph: Graph): number[][] => {
   return cycles.toSorted((a, b) => (a[0] ?? 0) - (b[0] ?? 0));
 };
 
-// Kahn's algorithm over the open issues, one layer at a time. An issue lands in layer N+1 when its
-// last open blocker is in layer N. Issues in or behind a cycle never land in a layer.
 const layerOpenIssues = (input: PlanInput, graph: Graph): Map<number, number> => {
   const open = [...graph.issues.values()].filter((issue) => issue.state === "open");
   const remaining = new Map(
@@ -241,8 +224,6 @@ const layerOpenIssues = (input: PlanInput, graph: Graph): Map<number, number> =>
   }
   return layers;
 };
-
-// ---- Report sections ----
 
 const rolesOf = (issue: Issue): string[] =>
   issue.labels.filter((label) => label.startsWith(ROLE_PREFIX));
@@ -380,8 +361,6 @@ export const planOrder = (input: PlanInput): Report => {
 
 export const hasProblems = (report: Report): boolean =>
   report.cycles.length > 0 || report.mismatches.length > 0;
-
-// ---- Text ----
 
 const NONE = "  none";
 

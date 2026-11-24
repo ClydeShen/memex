@@ -7,8 +7,6 @@ export type LoadError = {
   readonly message: string;
 };
 
-// The core schema reads plain data only. A tag it does not know becomes a warning here, and
-// the file is rejected, so no tag can build an object or run code.
 const parseYamlAsData = (text: string): Result<unknown, LoadError> => {
   const document = parseDocument(text, { schema: "core" });
   const problem = [...document.errors, ...document.warnings][0];

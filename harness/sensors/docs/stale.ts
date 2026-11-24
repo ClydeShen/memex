@@ -1,6 +1,3 @@
-// Finds as-built pages whose covered files changed after the commit the page was checked at
-// (`pnpm docs:stale`).
-
 import { spawnSync } from "node:child_process";
 import { asList, listPages, readPage } from "./pages.ts";
 

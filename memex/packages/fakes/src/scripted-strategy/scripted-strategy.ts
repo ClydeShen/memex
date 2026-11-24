@@ -4,8 +4,6 @@ export type ScriptedStrategy = {
   readonly step: (ctx: StepContext) => StepDecision;
 };
 
-// Acts from a fixed script and ignores everything else in the context, so the same step
-// always gives the same decision.
 export const createScriptedStrategy = (script: readonly ActionRequest[]): ScriptedStrategy => ({
   step: (ctx: StepContext): StepDecision => {
     const action = script[ctx.state.step];

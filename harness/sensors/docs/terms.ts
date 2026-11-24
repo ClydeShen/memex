@@ -1,6 +1,3 @@
-// Finds words in the as-built pages that the glossary says to avoid. A word can be right in its
-// context, so this only reports and never fails a check.
-
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { AS_BUILT } from "./pages.ts";
@@ -10,7 +7,6 @@ const NOT_CHECKED = /^factory\/as-built\/(?:TEMPLATE\.md|generated\/)/;
 
 export type AvoidedWord = { word: string; term: string };
 
-// `**Term**:` starts an entry; `_Avoid_: a, b (only in this sense), c` lists its words.
 export const parseAvoidedWords = (glossary: string): AvoidedWord[] => {
   const words: AvoidedWord[] = [];
   const terms = new Set<string>();
@@ -28,7 +24,6 @@ export const parseAvoidedWords = (glossary: string): AvoidedWord[] => {
       }
     }
   }
-  // A word that is itself a term, such as "Ground Truth", is used in its own sense.
   return words.filter(({ word }) => !terms.has(word.toLowerCase()));
 };
 
@@ -49,7 +44,6 @@ export const findAvoidedWords = (root: string): string[] => {
       .split("\n")
       .flatMap((text, index) =>
         words
-          // Code in backticks and link targets name things; only the prose is checked.
           .filter(({ pattern }) => pattern.test(text.replace(/`[^`]*`|\]\([^)]*\)/g, "")))
           .map(
             ({ word, term }) =>

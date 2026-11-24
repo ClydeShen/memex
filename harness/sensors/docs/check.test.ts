@@ -4,7 +4,6 @@ import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { checkPage } from "./check.ts";
 
-// A synthetic repository with one package and one page that describes it.
 const FILES: Record<string, string> = {
   "memex/packages/demo/package.json": '{ "name": "@memex/demo" }',
   "memex/packages/demo/src/index.ts": "export const appendEvent = (): number => 1;\n",

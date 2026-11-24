@@ -1,7 +1,3 @@
-// PostToolUse hook for Edit and Write: lints the edited TypeScript file at once, so the agent
-// sees the rule that failed in the same turn instead of at commit time.
-// Exit code 2 sends stderr back to the agent.
-
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { isAbsolute, join, relative } from "node:path";
@@ -14,9 +10,7 @@ type HookInput = {
 const BLOCK = 2;
 
 const input = JSON.parse(readFileSync(0, "utf8")) as HookInput;
-// Windows paths arrive with backslashes; Biome and the checks below expect forward slashes.
 const file = input.tool_input?.file_path?.replaceAll("\\", "/");
-// Biome only checks files inside the project; it fails on a path outside it.
 const path = file === undefined ? "" : relative(input.cwd, file);
 const inProject = path !== "" && !path.startsWith("..") && !isAbsolute(path);
 

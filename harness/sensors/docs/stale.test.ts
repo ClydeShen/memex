@@ -9,8 +9,6 @@ const PAGE_PATH = "factory/as-built/demo.md";
 let root = "";
 let restoreGitEnv = (): void => {};
 
-// A hook such as pre-push sets GIT_DIR. Git commands in a fixture would then act on that repository
-// instead of the temporary one, so the tests run without any GIT_* variable.
 const isolateGit = (): (() => void) => {
   const saved = Object.entries(process.env).filter(([name]) => name.startsWith("GIT_"));
   for (const [name] of saved) delete process.env[name];
@@ -48,7 +46,6 @@ const commit = (message: string): string => {
   return git("rev-parse", "HEAD");
 };
 
-// A temporary repository: one commit of code, then a page that was checked at that commit.
 const createFixture = (): void => {
   root = mkdtempSync(join(tmpdir(), "docs-stale-"));
   git("init", "--quiet");
@@ -107,7 +104,6 @@ describe("with GIT_DIR set by a hook", () => {
 
       rmSync(root, { recursive: true, force: true });
       process.env.GIT_DIR = join(other, ".git");
-      // The setup that beforeEach runs, now with GIT_DIR set.
       restoreGitEnv = isolateGit();
       createFixture();
       findStalePages(root);

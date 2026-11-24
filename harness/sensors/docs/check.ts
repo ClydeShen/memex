@@ -1,6 +1,3 @@
-// The structural checks of an as-built page (`pnpm docs:check`). Each problem is one line of text
-// that names the page, the line and the reason.
-
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 import { asList, coveredFiles, listPages, type Page, readPage } from "./pages.ts";
@@ -52,7 +49,6 @@ const symbolExists = (context: Context, symbol: string): boolean => {
   return context.covered.some((file) => name.test(readFileSync(join(context.root, file), "utf8")));
 };
 
-// Code in backticks: a path, a package name or a symbol. Commands, globs and placeholders are skipped.
 const checkCode = (context: Context, code: string): string | null => {
   if (/[\s*<>]/.test(code) || code in context.page.frontMatter) return null;
   if (PACKAGE_NAME.test(code)) {
@@ -83,7 +79,6 @@ const checkLine = (context: Context, text: string): string[] => {
 
 const isTableRow = (text: string): boolean => text.startsWith("|") && !/^\|[\s|:-]+\|$/.test(text);
 
-// Every row of the "Key invariants" table links to a test file that exists.
 const checkInvariants = (context: Context): string[] => {
   const start = context.page.body.findIndex(({ text }) => INVARIANTS_HEADING.test(text));
   if (start < 0) return ['no "Key invariants" section'];
@@ -93,7 +88,6 @@ const checkInvariants = (context: Context): string[] => {
   const rows = context.page.body
     .slice(start + 1, next < 0 ? undefined : next)
     .filter(({ text }) => isTableRow(text));
-  // The first row is the header.
   return rows.slice(1).flatMap(({ text, line }) => {
     const tests = [...text.matchAll(/\]\(([^)\s]+\.test\.ts)\)/g)].map(
       ([, target]) => target ?? "",

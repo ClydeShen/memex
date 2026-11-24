@@ -10,7 +10,6 @@ import {
 } from "@memex/contracts";
 import type { EventLog } from "../event-log/event-log.ts";
 
-// Where a request came in. The executor derives the actor from it; the request carries no actor.
 export type ActionOrigin = "strategy" | "user";
 
 export type ActionResult = {

@@ -32,7 +32,6 @@ type RoomState = {
   readonly doorOpen: boolean;
 };
 
-// The time of the World is a counter that starts at a fixed instant, never the real clock.
 const simulatedTime = (tick: number): string =>
   new Date(START_TIME_MS + tick * MS_PER_TICK).toISOString();
 
@@ -43,7 +42,6 @@ const observe = (state: RoomState): Observation => ({
   payload: { room: "room-a", door: state.doorOpen ? "open" : "closed" },
 });
 
-// A World with one room and one closed door. Opening the door reaches the Goal.
 export const createOneRoomWorld = (): OneRoomWorld => {
   const world: { state: RoomState | undefined } = { state: undefined };
 

@@ -1,14 +1,7 @@
 #!/usr/bin/env node
-// Fails when a change adds CJK text to the repository.
-// Only added lines and new paths are checked, so existing records stay as they are.
-//
-// Usage:
-//   node harness/sensors/no-cjk.mjs --staged        check the staged changes (pre-commit)
-//   node harness/sensors/no-cjk.mjs <base> <head>   check the changes between two commits (CI)
 
 import { execFileSync } from "node:child_process";
 
-// Code point ranges, so this file itself contains no CJK characters.
 const range = (from, to) => `${String.fromCodePoint(from)}-${String.fromCodePoint(to)}`;
 const CJK = new RegExp(
   `[\\p{Script=Han}\\p{Script=Hiragana}\\p{Script=Katakana}\\p{Script=Hangul}${range(0x3000, 0x303f)}${range(0xff00, 0xffef)}]`,
@@ -28,7 +21,6 @@ function diffArgs(argv) {
   if (argv[0] === "--staged") return [...base, "--cached"];
   if (argv.length === 2) {
     const [from, to] = argv;
-    // A new branch has no "before" commit: check only its head commit.
     if (ZERO_SHA.test(from)) return [...base, `${to}^`, to];
     return [...base, `${from}...${to}`];
   }
@@ -40,7 +32,6 @@ function findViolations(diff) {
   const violations = [];
   let file = null;
   let line = 0;
-  // Lines still expected in the current hunk, so content that starts with "+++" is not read as a header.
   let oldLeft = 0;
   let newLeft = 0;
   for (const text of diff.split("\n")) {

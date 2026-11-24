@@ -1,10 +1,7 @@
-// Reads the as-built pages: which files are pages, and their front matter and body.
-
 import { existsSync, globSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export const AS_BUILT = "factory/as-built";
-// Not pages: the template, the package list, and the generated files.
 const NOT_PAGES = new Set(["TEMPLATE.md", "index.md"]);
 
 export type FrontMatter = Record<string, string | string[]>;
@@ -12,11 +9,9 @@ export type FrontMatter = Record<string, string | string[]>;
 export type Page = {
   path: string;
   frontMatter: FrontMatter;
-  // The lines after the front matter, with the line number of each in the file.
   body: { text: string; line: number }[];
 };
 
-// The values of a front matter field, as a list.
 export const asList = (value: FrontMatter[string] | undefined): string[] => {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
@@ -33,7 +28,6 @@ export const listPages = (root: string): string[] => {
 
 const unquote = (value: string): string => value.replace(/^(["'])(.*)\1$/, "$2");
 
-// A small YAML subset: `key: value` and `key:` followed by `  - item` lines.
 const parseFrontMatter = (lines: string[]): FrontMatter => {
   const frontMatter: FrontMatter = {};
   let listKey: string | null = null;
@@ -59,7 +53,6 @@ export const readPage = (root: string, path: string): Page => {
   return { path, frontMatter, body };
 };
 
-// The files matched by the `covers` globs of a page, relative to the root.
 export const coveredFiles = (root: string, covers: string[]): string[] =>
   [...new Set(covers.flatMap((pattern) => globSync(pattern, { cwd: root })))]
     .map((file) => file.replaceAll("\\", "/"))

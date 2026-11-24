@@ -1,11 +1,4 @@
 #!/usr/bin/env node
-// Fails when a file under the given directories contains a marker word.
-// Marker words tell the history of a decision ("previously", "legacy") or point to
-// development records ("ADR 12", "factory/"). Shipped code explains itself in the present
-// tense, so these words are a sign that history leaked into it. This is a backstop for review.
-//
-// Usage:
-//   node harness/sensors/marker-words.mjs <directory>...
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -34,7 +27,6 @@ function listFiles(directory) {
 
 function findViolations(file) {
   const content = readFileSync(file);
-  // Binary files cannot carry an explanation.
   if (content.includes(0)) return [];
   const violations = [];
   content
