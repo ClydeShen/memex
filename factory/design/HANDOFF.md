@@ -63,7 +63,7 @@ If a session is not available, `planner` runs the routine `memex cloud-impl` or 
 - Put process notes in the issue or the pull request, not in a new file.
 - Add a `.md` file only if the issue scope names it.
 - Write procedures in ASD-STE100. Use tables and lists. Write long text only to explain why.
-- If you do the same thing three times, change it to a hook, a configuration, a script or a skill. Then delete the text and keep one link.
+- Put each rule as high as it can go (ADR 0032): program check, Claude hook or permission, skill or subdirectory `AGENTS.md`, root `AGENTS.md`, document. If a mistake repeats, move its rule up. Then delete the text and keep one link.
 
 ## 7. Items for the user to decide
 
@@ -84,4 +84,5 @@ If a session is not available, `planner` runs the routine `memex cloud-impl` or 
 - Do not add Kubernetes or your own monitoring panel (ADR 0013, 0015).
 - Do not break a constraint in `roadmap.md` without a new ADR.
 - In V0, do not connect real models, add Oxigraph, write Docker files, or build the Web interface or MCP.
-- Do not push from a linked worktree until #105 is done. Before each push, compare `git log origin/<branch>..HEAD` with the expected commits.
+- Do not push without a check. Before each push, compare `git log origin/<branch>..HEAD` with the expected commits.
+- Do not share a working directory between two agents. Each implementer works in its own clone.
