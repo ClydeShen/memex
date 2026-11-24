@@ -25,7 +25,7 @@ describe("checkLimits", () => {
     write("factory/design/HANDOFF.md", 100);
     write("factory/design/GLOSSARY.md", 300);
     write("factory/as-built/runtime.md", 300);
-    write("harness/standards/commit-messages.md", 300);
+    write("harness/rules/commit-messages.md", 300);
     write("harness/agents/README.md", 300);
     write("harness/README.md", 300);
     expect(checkLimits(root)).toEqual([]);
@@ -38,7 +38,7 @@ describe("checkLimits", () => {
 
   test.each([
     ["factory/as-built/runtime.md"],
-    ["harness/standards/code-review.md"],
+    ["harness/rules/code-review.md"],
     ["harness/agents/README.md"],
     ["factory/design/architecture/c4.md"],
   ])("fails %s with 301 lines", (file) => {

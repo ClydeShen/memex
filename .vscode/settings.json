@@ -3,12 +3,12 @@
   "js/ts.tsdk.path": "./node_modules/typescript",
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
-      "file": "harness/standards/commit-messages.md"
+      "file": "harness/rules/commit-messages.md"
     }
   ],
   "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
     {
-      "file": "harness/standards/pull-requests.md"
+      "file": "harness/rules/pull-requests.md"
     }
   ],
   "[javascript]": {

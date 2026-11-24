@@ -18,7 +18,7 @@ const DIRECTORIES: { path: string; limit: number | null }[] = [
   { path: "factory/design", limit: DEFAULT_LIMIT },
   { path: "factory/as-built", limit: DEFAULT_LIMIT },
   { path: "factory/records", limit: null },
-  { path: "harness/standards", limit: DEFAULT_LIMIT },
+  { path: "harness/rules", limit: DEFAULT_LIMIT },
   { path: "harness/agents", limit: DEFAULT_LIMIT },
 ];
 const SINGLE_FILES = ["harness/README.md"];
