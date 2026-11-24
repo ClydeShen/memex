@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const SCRIPT = join(import.meta.dirname, "post-edit.ts");
-const ROOT_NODE_MODULES = join(import.meta.dirname, "..", "..", "node_modules");
+const ROOT_NODE_MODULES = join(import.meta.dirname, "..", "..", "..", "node_modules");
 const BLOCK = 2;
 
 let project = "";
