@@ -37,7 +37,7 @@ The repository has three zones (ADR 0028): `harness/` drives how the agents work
 │  ├─ README.md              the map: what each subdirectory holds, who can change it, how it syncs to each tool
 │  ├─ agents/                shared agent instructions
 │  ├─ skills/                shared skills (Agent Skills format)
-│  ├─ standards/             standards that can be taken to other products
+│  ├─ rules/                 all rules that agents follow
 │  │  ├─ commit-messages.md  the commit message rule; the commit-msg hook enforces its first line
 │  │  └─ pull-requests.md    the pull request title and body
 │  ├─ workflow/              checklist copies, team conventions, release process

@@ -1,10 +1,10 @@
 # Rule writing
 
-Follow this procedure before you add, change or remove a rule for agents. A rule tells an agent what to do or what not to do. This file is written in ASD-STE100.
+Follow this procedure before you add, change or remove a rule for agents. A rule tells an agent what to do or what not to do. All rules that agents follow are in `harness/rules/` (user decision, 2026-11-24). This file is written in ASD-STE100.
 
 ## 1. Before you write a rule
 
-1. Search for the same rule. Look in `harness/rules/`, `harness/standards/`, each `AGENTS.md`, the ADRs in `factory/records/decisions/` and the check configuration (`biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`).
+1. Search for the same rule. Look in `harness/rules/`, each `AGENTS.md`, the ADRs in `factory/records/decisions/` and the check configuration (`biome.json`, `.dependency-cruiser.cjs`, `knip.json`, `tsconfig.base.json`).
 2. If the same rule exists, change that rule. Do not write a second one.
 3. If the new rule overlaps another rule, merge them into one rule in one place.
 4. If the new rule conflicts with another rule, stop. Write the two rules and the conflict in the issue, and ask `planner`. `planner` asks the user.
@@ -50,7 +50,7 @@ Put the rule at the highest level that can hold it (ADR 0032):
 | How to write code | `harness/rules/coding.md` |
 | Names of files, identifiers and concepts | `harness/rules/naming.md` |
 | Where files go | `harness/rules/folders.md` |
-| Commit messages, pull requests, review | `harness/standards/` |
+| Commit messages, pull requests, review | `harness/rules/commit-messages.md`, `pull-requests.md`, `code-review.md` |
 | Rules for one directory only | the `AGENTS.md` in that directory |
 
 ## 5. Change or remove a rule
