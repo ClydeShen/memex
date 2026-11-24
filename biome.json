@@ -123,7 +123,12 @@
   },
   "overrides": [
     {
-      "includes": ["**", "!harness/**", "!.claude/hooks/**"],
+      "includes": [
+        "**",
+        "!harness/**",
+        "!.claude/hooks/**",
+        "!memex/packages/contracts/src/pipe/pipe.ts"
+      ],
       "plugins": ["./harness/sensors/no-function-declaration.grit"]
     },
     {

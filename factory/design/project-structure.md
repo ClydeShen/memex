@@ -91,6 +91,15 @@ Notes:
 - **Fakes are in two places**: the Fakes that the product's own tests need are in `memex/packages/fakes`; the Micro World, Oracle and polluting Provider, which exist only for experiments, are in `factory/validation/worlds`. So the product tests do not need to refer to the workshop.
 - **How the Lab gets concrete Providers**: the Lab business code does not import Providers. It gets them only through the Composition Root registry. During the whole validation stage (V0–V2), the startup file of the Lab Worker is the composition entry point: in V0 it imports the Fake Providers and the Micro World and records them; from V1 it also adds the real Providers in `memex/providers/*`. From P1, the product composition entry point is in `memex/apps/`. The principle is "only the composition entry point knows the concrete implementations" (GLOSSARY: Composition Root).
 
+### Deep modules
+
+A deep module is a directory in the deep list (cognitive complexity 15 instead of 10). Classification is by dependency direction (ADR 0032, point 5). The list is in two files, and `pnpm check` fails if they differ: the `includes` of the complexity-15 override in `biome.json`, and `DEEP_MODULES` in `.dependency-cruiser.cjs`. The list is empty now. The user decides which directory is deep.
+- It imports no Node built-in, no npm package and no adapter. It imports ports from `@memex/contracts` as types only. The Composition Root injects each adapter.
+- Its entry file is `index.ts`, with at most 5 runtime exports (types do not count). The user sets this limit; an agent that needs more tells the user.
+- Code outside imports only `index.ts`. Its tests import only `index.ts`, and at least one test uses fast-check.
+- A port is a type named `*Port` in `@memex/contracts`. When an adapter implements it (a test fake counts), a `<port>-conformance.ts` Conformance Suite exists next to it. A port with one adapter gives a warning: the seam is hypothetical.
+- The rules are in `.dependency-cruiser.cjs` (`deep-module-*`) and `harness/sensors/code/deep-modules.ts`.
+
 ## 2. Package internal structure
 
 ```

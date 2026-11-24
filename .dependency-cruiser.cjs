@@ -6,6 +6,19 @@ const WORKSPACE = "^(memex|factory|harness)/|^@memex/";
 const CONTRACTS = "^memex/packages/contracts/|^@memex/contracts$";
 const FAKES = "^memex/packages/fakes/|^@memex/fakes$";
 const TEST_FILE = "\\.test\\.ts$";
+const DEEP_MODULES = [];
+const DEEP = DEEP_MODULES.length > 0 ? `(?:${DEEP_MODULES.join("|")})` : "no-deep-module-yet";
+const NODE_OR_NPM = [
+  "core",
+  "npm",
+  "npm-dev",
+  "npm-optional",
+  "npm-peer",
+  "npm-bundled",
+  "npm-no-pkg",
+  "npm-unknown",
+];
+const ADAPTERS = `^memex/providers/|^factory/|${FAKES}`;
 const PACKAGE_ROOT = "(?:memex/(?:packages|providers|apps)|factory/validation)/[^/]+";
 
 module.exports = {
@@ -72,6 +85,52 @@ module.exports = {
       severity: "error",
       from: { path: `^(${PACKAGE_ROOT})/` },
       to: { path: `^${PACKAGE_ROOT}/`, pathNot: `^$1/|^${PACKAGE_ROOT}/src/index\\.ts$` },
+    },
+    {
+      name: "deep-module-no-node-or-npm",
+      comment:
+        "A deep module does no I/O and uses no npm package. Move that work to an adapter behind a port in @memex/contracts.",
+      severity: "error",
+      from: { path: `^${DEEP}/`, pathNot: TEST_FILE },
+      to: { dependencyTypes: NODE_OR_NPM },
+    },
+    {
+      name: "deep-module-no-adapters",
+      comment:
+        "A deep module does not import an adapter. Depend on the port in @memex/contracts; the Composition Root injects the adapter.",
+      severity: "error",
+      from: { path: `^${DEEP}/`, pathNot: TEST_FILE },
+      to: { path: ADAPTERS },
+    },
+    {
+      name: "deep-module-ports-as-types-only",
+      comment:
+        "A deep module imports ports from @memex/contracts as types only. Write import type.",
+      severity: "error",
+      from: { path: `^${DEEP}/`, pathNot: TEST_FILE },
+      to: { path: CONTRACTS, dependencyTypesNot: ["type-only"] },
+    },
+    {
+      name: "deep-module-entry-file-only-from-outside",
+      comment: "Import a deep module only through its index.ts.",
+      severity: "error",
+      from: { path: "^(memex|factory|harness)/", pathNot: `^${DEEP}/` },
+      to: { path: `^${DEEP}/`, pathNot: `^${DEEP}/index.ts$` },
+    },
+    {
+      name: "deep-module-entry-file-only-from-other-deep-modules",
+      comment: "Import another deep module only through its index.ts.",
+      severity: "error",
+      from: { path: `^(${DEEP})/` },
+      to: { path: `^${DEEP}/`, pathNot: `^$1/|^${DEEP}/index.ts$` },
+    },
+    {
+      name: "deep-module-tests-through-the-entry-file",
+      comment:
+        "A test of a deep module imports only the entry file, so that the test checks the interface.",
+      severity: "error",
+      from: { path: `^(${DEEP})/.*${TEST_FILE}` },
+      to: { path: "^$1/", pathNot: "^$1/index.ts$" },
     },
     {
       name: "no-circular",
