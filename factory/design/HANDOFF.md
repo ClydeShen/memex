@@ -77,12 +77,12 @@ If a session is not available, `planner` runs the routine `memex cloud-impl` or 
 ## 8. Hard limits
 
 - Keep the `archive/*` tags as they are.
-- Learn by configuration only, such as Calibration. Model training and fine-tuning are a hard limit (VISION principle 3).
+- Learn by configuration only, such as Calibration (VISION principle 3).
 - Use only the candidate models and control groups of the experiment matrix (ADR 0010).
 - Assemble each Model Backend, store and composition layer through configuration and the Composition Root (ADR 0008).
 - Change the Worldview only through an Action (ADR 0014).
-- Run on the runtime of ADR 0013 and use standard observability tools (ADR 0015). Kubernetes and a custom monitoring panel are hard limits.
+- Run on the runtime of ADR 0013 and use standard observability tools (ADR 0015).
 - Write a new ADR before you change a constraint in `roadmap.md`.
-- In V0, use Fake Providers and JSONL only. Real models, Oxigraph, Docker, the Web interface and MCP come in later milestones.
+- In V0, use Fake Providers and the JSONL Event Log only (`roadmap.md`).
 - Before each push, compare `git log origin/<branch>..HEAD` with the expected commits.
 - Work in your own clone. Each implementer has its own working directory.

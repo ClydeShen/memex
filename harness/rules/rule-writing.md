@@ -71,6 +71,7 @@ A prohibition puts the prohibited behavior into the context of the agent, and th
 - Write what to do. Example: "Write one-line comments", in place of "Do not write long comments".
 - Use a prohibition only for a hard limit that has no positive form. Then write the positive target in the same item, so that the agent knows what to do.
 - When you edit a rule, change each prohibition that has a positive form.
+- Write only about concepts and settings that exist in the project. A rule against a thing that does not exist puts that thing into the context. If a rule names such a thing, delete the rule.
 
 ## 7. Change or remove a rule
 
