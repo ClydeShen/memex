@@ -8,20 +8,21 @@
 
 import { checkPages } from "./check.ts";
 import { generate } from "./generate.ts";
+import { checkLimits } from "./limits.ts";
 import { findStalePages } from "./stale.ts";
 import { findAvoidedWords } from "./terms.ts";
 
 const root = process.cwd();
 
 const check = (): number => {
-  const problems = checkPages(root);
+  const problems = [...checkLimits(root), ...checkPages(root)];
   const avoided = findAvoidedWords(root);
   if (avoided.length > 0) {
     console.warn("Words the glossary says to avoid (a report only; check each one by hand):");
     for (const line of avoided) console.warn(`  ${line}`);
   }
   if (problems.length === 0) return 0;
-  console.error("As-built pages with problems:");
+  console.error("Document problems:");
   for (const problem of problems) console.error(`  ${problem}`);
   return 1;
 };

@@ -14,7 +14,7 @@ Shared by Codex and Claude Code. The root `AGENTS.md` points here. It also holds
 | `pnpm install` | Installs the dependencies; on a fresh clone it also turns on the git hooks in `.githooks/` |
 | `pnpm check` | The full check of all packages: lint, architecture, marker words, types, unused code, tests, and the as-built documents. Must pass before you push |
 | `pnpm test` | The tests only |
-| `pnpm docs:check` | Checks the as-built pages: front matter, links, paths, symbols, line references, tests of the key invariants. Also reports words that the glossary says to avoid, without failing |
+| `pnpm docs:check` | Checks the as-built pages: front matter, links, paths, symbols, line references, tests of the key invariants. Also checks the size and place of every Markdown document: `AGENTS.md` 60 lines, `HANDOFF.md` 100, other documents in `factory/design`, `factory/as-built`, `harness/standards` and `harness/agents` 300, no limit in `factory/records`, no other directory. Also reports words that the glossary says to avoid, without failing |
 | `pnpm docs:stale` | Lists the as-built pages whose covered files changed since the page was checked. A gate in the cleanup stories only |
 | `pnpm docs:generate` | Writes `factory/as-built/generated/`: the package list, the dependency graph and the exports of each package |
 

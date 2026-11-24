@@ -22,7 +22,7 @@ Every session starts here. This file says what to read, the current state, how t
 | For the task | `factory/records/plans/v0-integration.md` | V0 components, seams, gates, stories (ADR 0025) |
 | For the task | `harness/README.md`, `harness/agents/README.md`, `harness/standards/` | Commands, commit, pull request and review rules |
 | For the task | `factory/design/local-environment.md` | Local machine checks (`local-impl`) |
-| To look up | `factory/records/decisions/`, `factory/records/research/` | Decisions and evidence. Do not read them all. Write a new ADR before you change a decision |
+| To look up | `factory/records/decisions/`, `factory/records/research/index.md` | Decisions and evidence (the index has one line for each research file). Do not read them all. Write a new ADR before you change a decision |
 
 Some research has correction notes: `cross-check-2026-10-10.md` (no model training, VISION principle 3) and `core-algorithms-2026-10-11.md` (ADR 0018).
 
