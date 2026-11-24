@@ -3,19 +3,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type {
   ActionDefinition,
+  ActionEnvironment,
+  ActionPolicy,
   ActionRequest,
   Decision,
   Event,
   StepResult,
 } from "@memex/contracts";
+import { createAllowAllPolicy } from "@memex/fakes";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { createEventLog } from "../event-log/event-log.ts";
-import {
-  type ActionEnvironment,
-  type ActionPolicy,
-  createActionExecutor,
-} from "./action-executor.ts";
-import { createAllowAllPolicy } from "./allow-all-policy.ts";
+import { createActionExecutor } from "./action-executor.ts";
 
 const workspace = { dir: "", eventLog: createEventLog("unset") };
 
