@@ -63,7 +63,7 @@ If a session is not available, `planner` runs the routine `memex cloud-impl` or 
 - Put process notes in the issue or the pull request, not in a new file.
 - Add a `.md` file only if the issue scope names it.
 - Write procedures in ASD-STE100. Use tables and lists. Write long text only to explain why.
-- If you do the same thing three times, change it to a hook, a configuration, a script or a skill. Then delete the text and keep one link.
+- Put each rule as high as it can go (ADR 0032): program check, Claude hook or permission, skill or subdirectory `AGENTS.md`, root `AGENTS.md`, document. If a mistake repeats, move its rule up. Then delete the text and keep one link.
 
 ## 7. Items for the user to decide
 
