@@ -1,32 +1,20 @@
 import {
   type ActionDefinition,
+  type ActionEnvironment,
+  type ActionPolicy,
   type ActionRequest,
   type Decision,
   err,
   type Observation,
   ok,
   type Result,
-  type StepResult,
 } from "@memex/contracts";
 import type { EventLog } from "../event-log/event-log.ts";
-
 export type ActionOrigin = "strategy" | "user";
 
 export type ActionResult = {
   readonly status: "executed";
   readonly observations: readonly Observation[];
-};
-
-export type ActionPolicy = {
-  readonly authorize: (
-    request: ActionRequest,
-    actor: string,
-    definition: ActionDefinition,
-  ) => Promise<Decision>;
-};
-
-export type ActionEnvironment = {
-  readonly step: (request: ActionRequest) => Promise<StepResult>;
 };
 
 export type SubmitError =

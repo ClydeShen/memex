@@ -1,7 +1,9 @@
 export { type ActionDefinition, actionDefinitionSchema } from "./action/action-definition.ts";
 export { actionNameSchema } from "./action/action-name.ts";
+export type { ActionPolicy } from "./action/action-policy.ts";
 export { type ActionRequest, actionRequestSchema } from "./action/action-request.ts";
 export { type RiskLevel, riskLevelSchema } from "./action/risk-level.ts";
+export type { ActionEnvironment } from "./environment/action-environment.ts";
 export { type StepResult, stepResultSchema } from "./environment/step-result.ts";
 export { type Event, eventSchema } from "./event/event.ts";
 export { type Goal, goalSchema } from "./goal/goal.ts";
