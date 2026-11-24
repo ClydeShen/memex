@@ -1,0 +1,11 @@
+{
+  "path": ["memex", "factory/validation"],
+  "format": ["typescript"],
+  "minTokens": 50,
+  "minLines": 5,
+  "ignore": ["**/node_modules/**", "**/*.test.ts", "**/fixtures/**"],
+  "gitignore": true,
+  "threshold": 1,
+  "reporters": ["console", "json"],
+  "output": "factory/validation/runs/jscpd"
+}
