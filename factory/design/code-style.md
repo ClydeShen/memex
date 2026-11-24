@@ -66,7 +66,7 @@ const authorize = (action: ActionRequest, actor: Actor): Decision => {
 
 ## 4. pipe / compose
 
-1. **Chain pure data transformations with `pipe`**, so that each step is a small pure function. Good places are:
+1. **`pipe` is optional.** Use it when a chain of pure data transformations is easier to read as a list of steps. Plain function calls and named `const` values are equally correct. Possible places are:
    - a Projector that builds a view from events;
    - normalizing a Trace and then hashing it;
    - merging configuration overlays and then validating.
