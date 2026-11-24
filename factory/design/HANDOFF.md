@@ -84,4 +84,5 @@ If a session is not available, `planner` runs the routine `memex cloud-impl` or 
 - Do not add Kubernetes or your own monitoring panel (ADR 0013, 0015).
 - Do not break a constraint in `roadmap.md` without a new ADR.
 - In V0, do not connect real models, add Oxigraph, write Docker files, or build the Web interface or MCP.
-- Do not push from a linked worktree until #105 is done. Before each push, compare `git log origin/<branch>..HEAD` with the expected commits.
+- Do not push without a check. Before each push, compare `git log origin/<branch>..HEAD` with the expected commits.
+- Do not share a working directory between two agents. Each implementer works in its own clone.
