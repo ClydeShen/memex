@@ -12,7 +12,8 @@ Create a subdirectory the first time it is needed. Do not create empty directori
 |---|---|
 | `agents/` | Shared agent instructions: commands, ways of working, what to read first |
 | `skills/` | Shared skills, one directory for each skill, with a `SKILL.md` (Agent Skills format) |
-| `standards/` | Standards that can be taken to other products |
+| `rules/` | Rules that agents follow when they write code, names, folders and rules (`rules/rule-writing.md` first) |
+| `standards/` | Formats for commit messages, pull requests and reviews |
 | `workflow/` | Copies of checklists selected from the playbook, team conventions, states and gates, release process |
 | `templates/` | Templates for issues, PRs, ADRs, research, as-built documents and handoffs |
 | `sensors/` | Check scripts and check rules: zone boundaries, package contents, marker words in `memex/`, front matter, as-built freshness, consistency of generated copies |

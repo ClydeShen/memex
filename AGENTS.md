@@ -2,6 +2,8 @@ Start every session by reading `factory/design/HANDOFF.md`.
 
 The shared agent instructions are in [harness/agents/README.md](harness/agents/README.md): what to read first, the commands, and how to work.
 
+Before you add, change or remove a rule for agents, follow [harness/rules/rule-writing.md](harness/rules/rule-writing.md).
+
 Create or update an entry in `factory/records/implementation-notes.md` only when both conditions apply:
 
 - The change involves a significant design decision, or deviates from the agreed design or expected behavior.
