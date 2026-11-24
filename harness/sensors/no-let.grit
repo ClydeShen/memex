@@ -2,5 +2,5 @@ language js(typescript)
 
 JsVariableDeclaration() as $declaration where {
   $declaration <: r"(?s)^let\s.*",
-  register_diagnostic(span=$declaration, message="Use const only. Return a new value from a function, or use pipe, instead of reassigning a variable.", severity="error")
+  register_diagnostic(span=$declaration, message="Use const only. Return a new value from a function instead of reassigning a variable.", severity="error")
 }
