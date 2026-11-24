@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { API_VERSION, resourceSchema } from "./resource.ts";
+import { API_VERSION } from "./api-version.ts";
+import { resourceSchema } from "./resource.ts";
 
 const environment = {
   apiVersion: API_VERSION,

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { observationSchema } from "../observation/observation.ts";
 
-// The answer of the Environment to one Action.
 export const stepResultSchema = z.strictObject({
   observations: z.array(observationSchema),
   valid: z

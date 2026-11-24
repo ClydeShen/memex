@@ -1,9 +1,6 @@
 import { z } from "zod";
-import { actionNameSchema } from "./action-request.ts";
-
-export const riskLevelSchema = z
-  .enum(["read-only", "reversible", "irreversible", "external-send", "self-modify"])
-  .describe("The Policy decides by this level. Only the user can execute a self-modify Action.");
+import { actionNameSchema } from "./action-name.ts";
+import { riskLevelSchema } from "./risk-level.ts";
 
 export const actionDefinitionSchema = z.strictObject({
   name: actionNameSchema,
@@ -11,5 +8,4 @@ export const actionDefinitionSchema = z.strictObject({
   risk: riskLevelSchema,
 });
 
-export type RiskLevel = z.infer<typeof riskLevelSchema>;
 export type ActionDefinition = z.infer<typeof actionDefinitionSchema>;

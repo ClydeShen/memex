@@ -1,5 +1,7 @@
 import { expect, test } from "vitest";
-import { err, ok, type Result } from "./result.ts";
+import { err } from "./err.ts";
+import { ok } from "./ok.ts";
+import type { Result } from "./result.ts";
 
 const describeResult = (result: Result<string, { kind: "missing" }>): string =>
   result.ok ? `value ${result.value}` : `error ${result.error.kind}`;

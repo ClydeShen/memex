@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// What happened: one raw perception from the World, or the result of one Action.
 export const observationSchema = z.strictObject({
   id: z.string().min(1),
   source: z
