@@ -4,11 +4,13 @@ export {
   type RiskLevel,
   riskLevelSchema,
 } from "./action/action-definition.ts";
+export type { ActionPolicy } from "./action/action-policy.ts";
 export {
   type ActionRequest,
   actionNameSchema,
   actionRequestSchema,
 } from "./action/action-request.ts";
+export type { ActionEnvironment } from "./environment/action-environment.ts";
 export { type StepResult, stepResultSchema } from "./environment/step-result.ts";
 export { type Event, eventSchema } from "./event/event.ts";
 export { type Goal, goalSchema } from "./goal/goal.ts";
